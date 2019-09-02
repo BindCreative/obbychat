@@ -8,7 +8,7 @@ import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
 import styles from './styles';
 
 
-class QRScanner extends React.Component {
+class QRScannerScreen extends React.Component {
   static navigationOptions = {
     header: null,
     tabBarVisible: false,
@@ -73,15 +73,15 @@ class QRScanner extends React.Component {
   }
 }
 
-QRScanner.defaultProps = {
+QRScannerScreen.defaultProps = {
   tint: 'dark',
   intensity: 80,
 };
 
-QRScanner.propTypes = {
+QRScannerScreen.propTypes = {
   tint: PropTypes.string.isRequired,
   intensity: PropTypes.number.isRequired,
   onScanned: PropTypes.func.isRequired,
 };
 
-export default QRScanner;
+export default QRScannerScreen;

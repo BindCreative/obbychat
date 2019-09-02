@@ -25,6 +25,10 @@
     "ios": {
       "supportsTablet": true
     },
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content"
+    },
     "packagerOpts": {
       "config": "metro.config.js",
       "sourceExts": ["js", "jsx", "svg"]
