@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { View } from 'native-base';
+import { withNavigation } from 'react-navigation';
 import SendIcon from './../../assets/images/icon-send.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
@@ -15,14 +16,14 @@ class ActionsBar extends React.Component {
           <SendIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton}>
-          <QRIcon style={styles.icon} width={20} height={20} />
+          <QRIcon style={styles.icon} width={20} height={20} onPress={() => this.props.navigation.navigate('MyWalletQR')} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton}>
-          <ScanIcon style={styles.icon} width={20} height={20} />
+          <ScanIcon style={styles.icon} width={20} height={20} onPress={() => this.props.navigation.navigate('WalletScanner')} />
         </TouchableOpacity>
       </View>
     );
   }
 }
 
-export default ActionsBar;
+export default withNavigation(ActionsBar);
