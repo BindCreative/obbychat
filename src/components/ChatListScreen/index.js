@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Container, View, Text, Button, Icon } from 'native-base';
 import { colors } from './../../constants';
 import styles from './styles';

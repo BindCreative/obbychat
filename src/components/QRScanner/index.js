@@ -1,13 +1,17 @@
 import React from 'react';
-import { View, SafeAreaView, Text, StyleSheet,  } from 'react-native';
+import PropTypes from 'prop-types';
+import { View, SafeAreaView, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Permissions from 'expo-permissions';
+import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
 import styles from './styles';
 
 
-export default class UserScannerScreen extends React.Component {
+class QRScanner extends React.Component {
   static navigationOptions = {
     header: null,
+    tabBarVisible: false,
   };
 
   state = {
@@ -28,11 +32,12 @@ export default class UserScannerScreen extends React.Component {
 
   handleBarCodeScanned = ({ type, data }) => {
     this.setState({ scanned: true });
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    this.props.onScanned({ type, data });
   };
 
   render() {
     const { hasCameraPermission, scanned } = this.state;
+    const { tint, intensity } = this.props;
 
     if (hasCameraPermission === null) {
       return <Text>Requesting for camera permission</Text>;
@@ -43,19 +48,40 @@ export default class UserScannerScreen extends React.Component {
 
     return (
       <SafeAreaView style={styles.container}>
+        <StatusBar hidden={true} />
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
           style={styles.scanner}
         >
-          <View style={styles.layerTop} />
+          <BlurView intensity={intensity} tint={tint} style={styles.layerTop}>
+            <TouchableOpacity 
+              style={styles.backBtn}
+              onPress={() => this.props.navigation.pop()}
+            >
+              <ArrowLeftIcon color='#ffffff' height={24} width={24} />
+            </TouchableOpacity>
+          </BlurView>
           <View style={styles.layerCenter}>
-            <View style={styles.layerLeft} />
+            <BlurView style={styles.layerLeft} intensity={intensity} tint={tint} />
             <View style={styles.focused} />
-            <View style={styles.layerRight} />
+            <BlurView style={styles.layerRight} intensity={intensity} tint={tint} />
           </View>
-          <View style={styles.layerBottom} />
+          <BlurView intensity={intensity} tint={tint} style={styles.layerBottom} />
         </BarCodeScanner>
       </SafeAreaView>
     );
   }
 }
+
+QRScanner.defaultProps = {
+  tint: 'dark',
+  intensity: 80,
+};
+
+QRScanner.propTypes = {
+  tint: PropTypes.string.isRequired,
+  intensity: PropTypes.number.isRequired,
+  onScanned: PropTypes.func.isRequired,
+};
+
+export default QRScanner;

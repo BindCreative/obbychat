@@ -3,7 +3,7 @@ import {
   createStackNavigator,
 } from 'react-navigation';
 import ChatListScreen from '../components/ChatListScreen';
-import ContactScanScreen from '../components/ContactScanScreen';
+import QRScanner from '../components/QRScanner';
 
 
 const ChatTab = createStackNavigator({
@@ -12,8 +12,11 @@ const ChatTab = createStackNavigator({
     path: '/chat',
   },
   ContactScanner: {
-    screen: ContactScanScreen,
+    screen: props => <QRScanner {...props} onScanned={({ type, data }) => console.log(type, data)} />,
     path: '/chat/contact-scan',
+    navigationOptions: {
+      header: null,
+    },
   },
 },{
   initialRouteName: 'Chat',

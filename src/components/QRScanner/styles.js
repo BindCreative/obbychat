@@ -2,15 +2,22 @@ import { StyleSheet } from 'react-native';
 import { colors } from './../../constants';
 
 
-const opacity = 'rgba(0,0,0, .8)';
+const opacity = 'rgba(33,33,33, .9)';
 export default StyleSheet.create({
+  backBtn: {
+    position: 'relative',
+    top: 50,
+    marginLeft: 20,
+    maxWidth: 24,
+    maxHeight: 24,
+  },
   container: {
     flex: 1,
+    backgroundColor: colors.black,
   },
   scanner: {
-    backgroundColor: colors.black,
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   layerTop: {
     flex: 1,
@@ -18,14 +25,15 @@ export default StyleSheet.create({
   },
   layerCenter: {
     flex: 1,
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   layerLeft: {
     flex: 1,
     backgroundColor: opacity
   },
   focused: {
-    flex: 2
+    width: '70%',
+    aspectRatio: 1,
   },
   layerRight: {
     flex: 1,
