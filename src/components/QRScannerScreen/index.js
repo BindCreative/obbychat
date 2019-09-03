@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View, SafeAreaView, Text, StatusBar, TouchableOpacity } from 'react-native';
+import { SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import { View, Text } from 'native-base';
 import { BlurView } from 'expo-blur';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import * as Permissions from 'expo-permissions';
