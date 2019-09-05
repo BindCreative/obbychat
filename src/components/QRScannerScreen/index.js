@@ -22,6 +22,7 @@ class QRScannerScreen extends React.Component {
 
   componentDidMount() {
     this._requestCameraPermission();
+    StatusBar.setHidden(true);
   }
 
   _requestCameraPermission = async () => {
@@ -36,6 +37,10 @@ class QRScannerScreen extends React.Component {
     this.props.onScanned({ type, data });
   };
 
+  componentWillUnmount() {
+    StatusBar.setHidden(false);
+  }
+
   render() {
     const { hasCameraPermission, scanned } = this.state;
     const { tint, intensity } = this.props;
@@ -49,7 +54,6 @@ class QRScannerScreen extends React.Component {
 
     return (
       <SafeAreaView style={styles.container}>
-        <StatusBar hidden={true} />
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : this.handleBarCodeScanned}
           style={styles.scanner}
