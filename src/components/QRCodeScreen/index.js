@@ -1,14 +1,33 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import QRCode from 'react-native-qrcode';
-import { Container, View, Text } from 'native-base';
+import { AppLoading } from 'expo';
+import * as Font from 'expo-font';
+import { Container, Button, Text } from 'native-base';
 import { colors } from './../../constants';
 import styles from './styles';
 
 
 class QRCodeScreen extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { loading: true };
+  }
+
+  async componentWillMount() {
+    await Font.loadAsync({
+      Roboto: require("../../../node_modules/native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("../../../node_modules/native-base/Fonts/Roboto_medium.ttf")
+    });
+    this.setState({ loading: false });
+  }
 
   render() {
+    if (this.state.loading) {
+      return(
+        <AppLoading/>
+      );
+    }
     return (
       <Container style={styles.container}>
         <QRCode
@@ -17,6 +36,9 @@ class QRCodeScreen extends React.Component {
           bgColor={colors.black}
           fgColor={colors.white}
         />
+        <Button rounded style={styles.button}>
+          <Text style={{fontWeight: '500', fontSize: 20}}>Done</Text>
+        </Button>
       </Container>
     );
   }
