@@ -5,13 +5,14 @@ import {
 import ChatListScreen from '../components/ChatListScreen';
 import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
+import ChatScreen from '../components/ChatScreen';
 import { colors } from './../constants';
 
 
 const ChatTab = createStackNavigator({
   Chat: {
     screen: ChatListScreen,
-    path: '/chat',
+    path: '/chat/list',
   },
   ContactScanner: {
     screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} />,
@@ -37,6 +38,13 @@ const ChatTab = createStackNavigator({
         fontSize: 20,
         marginLeft: 15,
       },
+    },
+  },
+  ContactChat: {
+    screen: ChatScreen,
+    path: '/chat/contact-chat',
+    navigationOptions: {
+      header: null,
     },
   },
 },{

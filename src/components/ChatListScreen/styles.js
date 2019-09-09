@@ -29,5 +29,16 @@ export default StyleSheet.create({
     padding: 14,
     backgroundColor: colors.grey.lightest,
     borderRadius: 50,
-  }
+  },
+  list: {
+    justifyContent: 'flex-start',
+    marginLeft: 0,
+  },
+  listItem: {
+    marginLeft: 0,
+    paddingLeft: 0,
+  },
+  listItemBody: {
+    borderBottomWidth: 0,
+  },
 });
