@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import UserAvatar from 'react-native-user-avatar';
+import makeBlockie from 'ethereum-blockies-base64';
 import {
   Container,
   Text,
@@ -19,17 +20,17 @@ const contacts = [
   {
     id: 1,
     nickname: 'Tarmo',
-    avatarThumb: null,
+    walletAddress: '1aTest',
   },
   {
     id: 2,
     nickname: 'Alvar',
-    avatarThumb: null,
+    walletAddress: '3bTest',
   },
   {
     id: 3,
     nickname: 'Amid',
-    avatarThumb: null,
+    walletAddress: '6cTest',
   },
 ];
 
@@ -51,7 +52,8 @@ class ChatListScreen extends React.Component {
             {contacts.map((contact, i) => (
               <ListItem avatar style={styles.list} key={i} onPress={() => this.props.navigation.navigate('ContactChat', { name: contact.nickname })}>
                 <Left style={styles.listItemAvatar}>
-                  <UserAvatar size={42} name={contact.nickname} src={contact.avatarThumb} />
+                
+                  <UserAvatar size={42} name={contact.nickname} src={makeBlockie(contact.walletAddress)} />
                 </Left>
                 <Body style={styles.listItemBody}>
                   <Text>{contact.nickname}</Text>
