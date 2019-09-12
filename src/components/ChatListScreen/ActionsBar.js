@@ -11,14 +11,16 @@ import styles from './styles';
 class ActionsBar extends React.Component {
   render() {
     return (
-      <View style={styles.headerActions}>
+      <View style={styles.actionsBar}>
+        {/** 
         <TouchableOpacity style={styles.iconButton}>
           <AddContactIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('MyQR')}>
+        */}
+        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.push('MyQR')}>
           <QRIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('ContactScanner')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.push('ContactScanner')}>
           <ScanIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
       </View>

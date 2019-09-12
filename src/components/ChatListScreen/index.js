@@ -10,10 +10,12 @@ import {
   Left,
   Right,
   Body,
+  View,
 } from 'native-base';
 import { colors } from './../../constants';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
+import Header from './../Header';
 
 
 const contacts = [
@@ -38,10 +40,7 @@ const contacts = [
 class ChatListScreen extends React.Component {
   static navigationOptions = {
     title: 'Chat',
-    headerStyle: styles.header,
-    headerTintColor: colors.black,
-    headerTitleStyle: styles.headerTitle,
-    headerRight: <ActionsBar />,
+    header: props => <Header {...props} right={<ActionsBar />} />,
   };
 
   render() {
@@ -50,7 +49,7 @@ class ChatListScreen extends React.Component {
         <Container style={styles.content}>
           <List style={styles.list}>
             {contacts.map((contact, i) => (
-              <ListItem avatar style={styles.list} key={i} onPress={() => this.props.navigation.navigate('ContactChat', { name: contact.nickname })}>
+              <ListItem avatar style={styles.listItem} key={i} onPress={() => this.props.navigation.push('ContactChat', { name: contact.nickname })}>
                 <Left style={styles.listItemAvatar}>
                 
                   <UserAvatar size={42} name={contact.nickname} src={makeBlockie(contact.walletAddress)} />

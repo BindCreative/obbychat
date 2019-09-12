@@ -15,10 +15,13 @@ class QRScannerScreen extends React.Component {
     tabBarVisible: false,
   };
 
-  state = {
-    hasCameraPermission: null,
-    scanned: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasCameraPermission: null,
+      scanned: false,
+    };
+  }
 
   componentDidMount() {
     this._requestCameraPermission();
@@ -59,7 +62,7 @@ class QRScannerScreen extends React.Component {
           style={styles.scanner}
         >
           <BlurView intensity={intensity} tint={tint} style={styles.layerTop}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.backBtn}
               onPress={() => this.props.navigation.pop()}
             >

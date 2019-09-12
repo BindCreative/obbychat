@@ -2,25 +2,6 @@ import { StyleSheet } from 'react-native';
 import { colors } from './../../constants';
 
 export default StyleSheet.create({
-  header: {
-    height: 100,
-    backgroundColor: colors.white,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  headerTitle: {
-    fontWeight: 'bold',
-    color: colors.black,
-    fontSize: 32,
-    marginLeft: 15,
-  },
-  headerActions: {
-    marginRight: 15,
-    flexDirection: 'row',
-  },
-  content: {
-    margin: 15,
-  },
   icon: {
     color: colors.black,
   },
@@ -36,9 +17,13 @@ export default StyleSheet.create({
   },
   listItem: {
     marginLeft: 0,
-    paddingLeft: 0,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
   },
   listItemBody: {
     borderBottomWidth: 0,
   },
+  actionsBar: {
+    flexDirection: 'row',
+  }
 });

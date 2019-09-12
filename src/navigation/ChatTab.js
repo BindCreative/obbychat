@@ -6,17 +6,18 @@ import ChatListScreen from '../components/ChatListScreen';
 import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
 import ChatScreen from '../components/ChatScreen';
+import Header from '../components/Header';
 import { colors } from './../constants';
 
 
 const ChatTab = createStackNavigator({
-  Chat: {
+  List: {
     screen: ChatListScreen,
     path: '/chat/list',
   },
   ContactScanner: {
     screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} />,
-    path: '/chat/contact-scan',
+    path: '/chat/scan',
     navigationOptions: {
       header: null,
     },
@@ -26,29 +27,18 @@ const ChatTab = createStackNavigator({
     path: '/chat/my-qr',
     navigationOptions: {
       title: 'My QR code',
-      headerStyle: {
-        maxHeight: 200,
-        backgroundColor: colors.white,
-        elevation: 0,
-        shadowOpacity: 0,
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        color: colors.black,
-        fontSize: 20,
-        marginLeft: 15,
-      },
+      header: props => <Header {...props} hasBackButton={true} titlePosition='center' size='compact' />,
     },
   },
   ContactChat: {
     screen: ChatScreen,
-    path: '/chat/contact-chat',
+    path: '/chat/contact',
     navigationOptions: {
       header: null,
     },
   },
 },{
-  initialRouteName: 'Chat',
+  initialRouteName: 'List',
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: ![1, 2].includes(navigation.state.index),
   })

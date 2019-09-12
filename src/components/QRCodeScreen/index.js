@@ -9,6 +9,7 @@ import styles from './styles';
 
 
 class QRCodeScreen extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = { loading: true };
@@ -24,8 +25,8 @@ class QRCodeScreen extends React.Component {
 
   render() {
     if (this.state.loading) {
-      return(
-        <AppLoading/>
+      return (
+        <AppLoading />
       );
     }
     return (
@@ -36,8 +37,12 @@ class QRCodeScreen extends React.Component {
           bgColor={colors.black}
           fgColor={colors.white}
         />
-        <Button rounded style={styles.button}>
-          <Text style={{fontWeight: '500', fontSize: 20}}>Done</Text>
+        <Button
+          rounded
+          style={styles.button}
+          onPress={() => this.props.navigation.pop()}
+        >
+          <Text style={{ fontWeight: '500', fontSize: 20 }}>Done</Text>
         </Button>
       </Container>
     );

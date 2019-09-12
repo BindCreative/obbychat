@@ -5,17 +5,17 @@ import {
 import WalletScreen from '../components/WalletScreen';
 import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
-import { colors } from './../constants';
+import Header from '../components/Header';
 
 
 const WalletTab = createStackNavigator({
   Wallet: {
     screen: WalletScreen,
-    path: 'wallet',
+    path: '/wallet/main',
   },
   WalletScanner: {
     screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} />,
-    path: '/chat/contact-scan',
+    path: '/wallet/scan',
     navigationOptions: {
       header: null,
     },
@@ -25,18 +25,7 @@ const WalletTab = createStackNavigator({
     path: '/wallet/my-qr',
     navigationOptions: {
       title: 'My wallet address',
-      headerStyle: {
-        maxHeight: 200,
-        backgroundColor: colors.white,
-        elevation: 0,
-        shadowOpacity: 0,
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        color: colors.black,
-        fontSize: 20,
-        marginLeft: 15,
-      },
+      header: props => <Header {...props} hasBackButton={true} titlePosition='center' size='compact' />,
     },
   },
 },{

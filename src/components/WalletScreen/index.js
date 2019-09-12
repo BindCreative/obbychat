@@ -3,16 +3,14 @@ import PropTypes from 'prop-types';
 import { Container, View, Text } from 'native-base';
 import { colors } from './../../constants';
 import styles from './styles';
+import Header from './../Header';
 import ActionsBar from './ActionsBar';
 
 
 class WalletScreen extends React.Component {
   static navigationOptions = {
     title: 'Wallet',
-    headerStyle: styles.header,
-    headerTintColor: colors.black,
-    headerTitleStyle: styles.headerTitle,
-    headerRight: <ActionsBar />,
+    header: props => <Header {...props} right={<ActionsBar />} />,
   };
 
   render() {

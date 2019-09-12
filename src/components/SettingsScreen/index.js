@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 import { Container } from 'native-base';
 import { colors } from '../../constants';
 import styles from './styles';
+import Header from './../Header';
 
 
 class SettingsScreen extends React.Component {
   static navigationOptions = {
     title: 'Settings',
-    headerStyle: styles.header,
-    headerTintColor: colors.black,
-    headerTitleStyle: styles.headerTitle,
+    header: props => <Header {...props}/>,
   };
 
   render() {
