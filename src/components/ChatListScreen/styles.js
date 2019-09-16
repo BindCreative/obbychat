@@ -17,7 +17,7 @@ export default StyleSheet.create({
   },
   listItem: {
     marginLeft: 0,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingBottom: 15,
   },
   listItemBody: {

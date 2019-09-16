@@ -1,9 +1,16 @@
 import React from 'react';
-import UserAvatar from 'react-native-user-avatar';
-import { Container } from 'native-base';
+import { Keyboard, TouchableOpacity } from 'react-native';
+import { Container, View, Text } from 'native-base';
 import { GiftedChat } from 'react-native-gifted-chat';
-import { colors } from './../../constants';
+import ActionSheet from 'react-native-actionsheet';
+import UserAvatar from 'react-native-user-avatar';
+import makeBlockie from 'ethereum-blockies-base64';
+import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
+import MoreIcon from './../../assets/images/icon-more.svg';
+import ReceiveIcon from './../../assets/images/icon-receive.svg';
+import SendIcon from './../../assets/images/icon-send.svg';
 import styles from './styles';
+import { colors } from './../../constants/';
 
 
 const contacts = [
@@ -27,10 +34,22 @@ const contacts = [
 
 class ChatListScreen extends React.Component {
   static state = {
+    keyboardVisible: false,
     messages: [],
   }
 
+  constructor(props) {
+    super(props);
+    this.ActionSheet = {};
+    this.showMoreActions = this.showMoreActions.bind(this);
+    this.onSend = this.onSend.bind(this);
+  }
+
   componentWillMount() {
+    // Handle keyboard in state
+    this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.setState({ keyboardVisible: true }));
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.setState({ keyboardVisible: false }));
+    // Load latest messages
     this.setState({
       messages: [
         {
@@ -53,9 +72,90 @@ class ChatListScreen extends React.Component {
     }))
   }
 
+  showMoreActions() {
+    this.ActionSheet.show();
+  }
+
+
   render() {
+    const contact = this.props.navigation.state.params.contact;
+
     return (
       <Container>
+        <ActionSheet
+          tintColor={colors.black}
+          ref={o => this.ActionSheet = o}
+          options={[
+            'Insert my address',
+            'Insert private profile',
+            'Sign a message',
+            'Offer a smart contract',
+            'Cancel'
+          ]}
+          cancelButtonIndex={4}
+          destructiveButtonIndex={4}
+          onPress={(index) => { alert('TODO') }}
+        />
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={() => this.props.navigation.pop()}
+            >
+              <ArrowLeftIcon color='#000000' height={24} width={24} />
+            </TouchableOpacity>
+            {this.state.keyboardVisible && <Text style={styles.headerTitleSmall}>{contact.nickname}</Text>}
+          </View>
+          {!this.state.keyboardVisible &&
+            <View style={styles.headerCenter}>
+              <UserAvatar size={60} name={contact.nickname} src={makeBlockie(contact.walletAddress)} />
+              <Text style={styles.headerTitle}>{contact.nickname}</Text>
+            </View>
+          }
+          <View style={styles.headerRight}>
+            {this.state.keyboardVisible &&
+              <React.Fragment>
+                <View>
+                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() => alert('TODO')}>
+                    <ReceiveIcon style={styles.icon} width={14} height={14} />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() => alert('TODO')}>
+                    <SendIcon style={styles.icon} width={14} height={14} />
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <TouchableOpacity style={styles.iconButtonSmallTransparent} onPress={this.showMoreActions}>
+                    <MoreIcon style={styles.icon} width={14} height={14} />
+                  </TouchableOpacity>
+                </View>
+              </React.Fragment>
+            }
+          </View>
+          {!this.state.keyboardVisible &&
+            <View style={styles.headerActionsBar}>
+              <View>
+                <TouchableOpacity style={styles.iconButton} onPress={() => alert('TODO')}>
+                  <ReceiveIcon style={styles.icon} width={20} height={20} />
+                </TouchableOpacity>
+                <Text style={styles.iconBottomText}>Request</Text>
+              </View>
+              <View>
+                <TouchableOpacity style={styles.iconButton} onPress={() => alert('TODO')}>
+                  <SendIcon style={styles.icon} width={20} height={20} />
+                </TouchableOpacity>
+                <Text style={styles.iconBottomText}>Send</Text>
+              </View>
+              <View>
+                <TouchableOpacity style={styles.iconButtonTransparent} onPress={this.showMoreActions}>
+                  <MoreIcon style={styles.icon} width={20} height={20} />
+                </TouchableOpacity>
+                <Text style={styles.iconBottomText}>More</Text>
+              </View>
+            </View>
+          }
+        </View>
         <GiftedChat
           messages={this.state.messages}
           onSend={messages => this.onSend(messages)}

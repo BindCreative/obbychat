@@ -49,7 +49,13 @@ class ChatListScreen extends React.Component {
         <Container style={styles.content}>
           <List style={styles.list}>
             {contacts.map((contact, i) => (
-              <ListItem avatar style={styles.listItem} key={i} onPress={() => this.props.navigation.push('ContactChat', { name: contact.nickname })}>
+              <ListItem 
+                avatar 
+                style={styles.listItem} 
+                key={i} onPress={() => (
+                  this.props.navigation.push('ContactChat', { contact })
+                )}
+              >
                 <Left style={styles.listItemAvatar}>
                 
                   <UserAvatar size={42} name={contact.nickname} src={makeBlockie(contact.walletAddress)} />

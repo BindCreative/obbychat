@@ -22,7 +22,7 @@ export default StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 15,
+    marginLeft: 20,
   },
   headerCenter: {
     flexDirection: 'row',
@@ -30,7 +30,7 @@ export default StyleSheet.create({
   },
   headerRight: {
     flexDirection: 'row',
-    marginRight: 15,
+    marginRight: 20,
     alignItems: 'flex-end',
   },
   headerTitle: {

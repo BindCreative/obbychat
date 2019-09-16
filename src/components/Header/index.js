@@ -36,7 +36,7 @@ class Header extends React.Component {
             <Text style={styles.headerTitle}>{this.props.scene.descriptor.options.title}</Text>
           }
         </View>
-      </View >
+      </View>
     );
   }
 }

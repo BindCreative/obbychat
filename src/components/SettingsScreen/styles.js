@@ -3,6 +3,6 @@ import { colors } from './../../constants';
 
 export default StyleSheet.create({
   content: {
-    margin: 15,
+    margin: 20,
   }
 });
