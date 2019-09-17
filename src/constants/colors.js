@@ -8,5 +8,4 @@ export default {
     main: '#b4b4b4',
     lightest: '#f7f7f7',
   },
-  buttonPrimary: '#33C7D0',
 }

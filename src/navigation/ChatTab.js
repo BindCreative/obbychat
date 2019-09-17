@@ -20,6 +20,9 @@ const ChatTab = createStackNavigator({
     path: '/chat/scan',
     navigationOptions: {
       header: null,
+      transitionConfig: {
+        isModal: true,
+      },
     },
   },
   MyQR: {
@@ -28,6 +31,9 @@ const ChatTab = createStackNavigator({
     navigationOptions: {
       title: 'My QR code',
       header: props => <Header {...props} hasBackButton={true} titlePosition='center' size='compact' />,
+      transitionConfig: {
+        isModal: true,
+      },
     },
   },
   ContactChat: {

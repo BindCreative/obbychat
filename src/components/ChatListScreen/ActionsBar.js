@@ -17,10 +17,10 @@ class ActionsBar extends React.Component {
           <AddContactIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
         */}
-        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.push('MyQR')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('MyQR')}>
           <QRIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.push('ContactScanner')}>
+        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('ContactScanner')}>
           <ScanIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
       </View>

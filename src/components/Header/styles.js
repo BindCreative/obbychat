@@ -1,10 +1,12 @@
-import { StyleSheet, StatusBar } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
+import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { colors } from './../../constants';
 
 
 export default StyleSheet.create({
   headerNormal: {
-    height: 140,
+    paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
+    height: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 140,
     backgroundColor: colors.white,
     alignItems: 'flex-end',
     flexDirection: 'row',
@@ -12,7 +14,8 @@ export default StyleSheet.create({
     paddingBottom: 15,
   },
   headerCompact: {
-    height: 60,
+    paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
+    height: Platform.OS === 'ios' ? getStatusBarHeight() + 60 : 60,
     backgroundColor: colors.white,
     alignItems: 'flex-end',
     flexDirection: 'row',

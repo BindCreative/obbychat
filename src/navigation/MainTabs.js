@@ -1,4 +1,5 @@
 import React from 'react';
+import { Animated } from 'react-native';
 import {
   createBottomTabNavigator,
   createAppContainer,
@@ -39,6 +40,10 @@ const MainStackNav = createBottomTabNavigator({
   },
 }, {
   initialRouteName: 'ChatStack',
+  mode: 'modal',
+  defaultNavigationOptions: {
+    gesturesEnabled: true,
+  },
   tabBarOptions: {
     showIcon: true,
     showLabel: false,

@@ -53,7 +53,7 @@ class ChatListScreen extends React.Component {
                 avatar 
                 style={styles.listItem} 
                 key={i} onPress={() => (
-                  this.props.navigation.push('ContactChat', { contact })
+                  this.props.navigation.navigate('ContactChat', { contact })
                 )}
               >
                 <Left style={styles.listItemAvatar}>

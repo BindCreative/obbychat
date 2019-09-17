@@ -1,49 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import QRCode from 'react-native-qrcode';
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
-import { Container, Button, Text } from 'native-base';
+import { Container, View } from 'native-base';
 import { colors } from './../../constants';
+import Button from './../Button';
 import styles from './styles';
 
 
 class QRCodeScreen extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = { loading: true };
-  }
-
-  async componentWillMount() {
-    await Font.loadAsync({
-      Roboto: require("../../../node_modules/native-base/Fonts/Roboto.ttf"),
-      Roboto_medium: require("../../../node_modules/native-base/Fonts/Roboto_medium.ttf")
-    });
-    this.setState({ loading: false });
-  }
-
   render() {
-    if (this.state.loading) {
-      return (
-        <AppLoading />
-      );
-    }
     return (
       <Container style={styles.container}>
-        <QRCode
-          value={this.props.qrData}
-          size={200}
-          bgColor={colors.black}
-          fgColor={colors.white}
-        />
-        <Button
-          rounded
-          style={styles.button}
-          onPress={() => this.props.navigation.pop()}
-        >
-          <Text style={{ fontWeight: '500', fontSize: 20 }}>Done</Text>
-        </Button>
+        <View style={styles.qrContainer}>
+          <QRCode
+            value={this.props.qrData}
+            size={220}
+            bgColor={colors.black}
+            fgColor={colors.white}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button text='Done' onPress={() => this.props.navigation.pop()} style={{ width: 220 }} />
+        </View>
       </Container>
     );
   }

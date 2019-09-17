@@ -13,25 +13,6 @@ import styles from './styles';
 import { colors } from './../../constants/';
 
 
-const contacts = [
-  {
-    id: 1,
-    nickname: 'Tarmo',
-    avatarThumb: null,
-  },
-  {
-    id: 2,
-    nickname: 'Alvar',
-    avatarThumb: null,
-  },
-  {
-    id: 3,
-    nickname: 'Amid',
-    avatarThumb: null,
-  },
-];
-
-
 class ChatListScreen extends React.Component {
   static state = {
     keyboardVisible: false,
@@ -76,7 +57,6 @@ class ChatListScreen extends React.Component {
     this.ActionSheet.show();
   }
 
-
   render() {
     const contact = this.props.navigation.state.params.contact;
 
@@ -87,13 +67,13 @@ class ChatListScreen extends React.Component {
           ref={o => this.ActionSheet = o}
           options={[
             'Insert my address',
-            'Insert private profile',
-            'Sign a message',
-            'Offer a smart contract',
+            //'Insert private profile',
+            //'Sign a message',
+            //'Offer a smart contract',
             'Cancel'
           ]}
-          cancelButtonIndex={4}
-          destructiveButtonIndex={4}
+          cancelButtonIndex={1}
+          destructiveButtonIndex={1}
           onPress={(index) => { alert('TODO') }}
         />
         <View style={styles.header}>
@@ -116,12 +96,12 @@ class ChatListScreen extends React.Component {
             {this.state.keyboardVisible &&
               <React.Fragment>
                 <View>
-                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() => alert('TODO')}>
+                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() =>  this.props.navigation.navigate('RequestPayment', { recipientWallet: contact.walletAddress })}>
                     <ReceiveIcon style={styles.icon} width={14} height={14} />
                   </TouchableOpacity>
                 </View>
                 <View>
-                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() => alert('TODO')}>
+                  <TouchableOpacity style={styles.iconButtonSmall} onPress={() =>  this.props.navigation.navigate('MakePayment', { recipientWallet: contact.walletAddress })}>
                     <SendIcon style={styles.icon} width={14} height={14} />
                   </TouchableOpacity>
                 </View>
@@ -136,13 +116,13 @@ class ChatListScreen extends React.Component {
           {!this.state.keyboardVisible &&
             <View style={styles.headerActionsBar}>
               <View>
-                <TouchableOpacity style={styles.iconButton} onPress={() => alert('TODO')}>
+                <TouchableOpacity style={styles.iconButton} onPress={() =>  this.props.navigation.navigate('RequestPayment', { recipientWallet: contact.walletAddress })}>
                   <ReceiveIcon style={styles.icon} width={20} height={20} />
                 </TouchableOpacity>
                 <Text style={styles.iconBottomText}>Request</Text>
               </View>
               <View>
-                <TouchableOpacity style={styles.iconButton} onPress={() => alert('TODO')}>
+                <TouchableOpacity style={styles.iconButton} onPress={() =>  this.props.navigation.navigate('MakePayment', { recipientWallet: contact.walletAddress })}>
                   <SendIcon style={styles.icon} width={20} height={20} />
                 </TouchableOpacity>
                 <Text style={styles.iconBottomText}>Send</Text>

@@ -23,7 +23,7 @@ class ActionsBar extends React.Component {
             style={styles.icon}
             width={20}
             height={20}
-            onPress={() =>  this.props.navigation.push('MyWalletQR')}
+            onPress={() =>  this.props.navigation.navigate('MyWalletQR')}
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton}>
@@ -31,7 +31,7 @@ class ActionsBar extends React.Component {
             style={styles.icon}
             width={20}
             height={20}
-            onPress={() =>  this.props.navigation.push('WalletScanner')}
+            onPress={() =>  this.props.navigation.navigate('WalletScanner')}
           />
         </TouchableOpacity>
       </View>

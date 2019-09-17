@@ -1,23 +1,18 @@
 import { StyleSheet } from 'react-native';
-import { colors } from './../../constants';
-import { Button } from 'native-base';
-import { bold, red } from 'ansi-colors';
 
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    flexDirection: 'column',
+    height: '100%'
   },
-  button: {
-    backgroundColor: colors.buttonPrimary,
-    position: 'absolute',
-    bottom: 0,
-    width: 250,
-    height: 60,
-    marginBottom: 50,
-    justifyContent: 'center',
-    alignItems: 'center'
+  qrContainer: {
+    top: '20%'
+  },
+  buttonContainer: {
+    bottom: 50,
   },
 });

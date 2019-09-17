@@ -8,7 +8,7 @@ import SettingsScreen from '../components/SettingsScreen';
 const SettingsTab = createStackNavigator({
   Settings: {
     screen: SettingsScreen,
-    path: 'settings',
+    path: '/settings',
   },
 },{ initialRouteName: 'Settings' });
 
