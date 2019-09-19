@@ -8,6 +8,7 @@ import styles from './styles';
 
 
 class QRCodeScreen extends React.Component {
+
   render() {
     return (
       <Container style={styles.container}>
@@ -20,15 +21,20 @@ class QRCodeScreen extends React.Component {
           />
         </View>
         <View style={styles.buttonContainer}>
-          <Button text='Done' onPress={() => this.props.navigation.pop()} style={{ width: 220 }} />
+          <Button text='Done' onPress={() => this.props.navigation.navigate(this.props.backRoute)} style={{ width: 220 }} />
         </View>
       </Container>
     );
   }
 }
 
+QRCodeScreen.defaultProps = {
+  backRoute: null,
+};
+
 QRCodeScreen.propTypes = {
   qrData: PropTypes.any.isRequired,
+  backRoute: PropTypes.string,
 };
 
 export default QRCodeScreen;

@@ -10,11 +10,6 @@ import styles from './styles';
 
 
 class QRScannerScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-    tabBarVisible: false,
-  };
-
   constructor(props) {
     super(props);
     this.state = {

@@ -4,7 +4,7 @@ import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import { PersistGate } from 'redux-persist/integration/react';
 import configureStore from './src/store/configureStore';
-import Navigator from './src/navigation/MainTabs';
+import Navigator from './src/navigation/Root';
 
 
 export default class App extends React.Component {

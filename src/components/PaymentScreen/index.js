@@ -8,8 +8,6 @@ class PaymentScreen extends React.Component {
   }
 
   render() {
-    const contact = this.props.navigation.state.params.contact;
-
     return (
       <Container>
         <Text>Send payment</Text>

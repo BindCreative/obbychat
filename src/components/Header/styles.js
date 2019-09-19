@@ -6,7 +6,7 @@ import { colors } from './../../constants';
 export default StyleSheet.create({
   headerNormal: {
     paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
-    height: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 140,
+    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 140,
     backgroundColor: colors.white,
     alignItems: 'flex-end',
     flexDirection: 'row',
@@ -15,7 +15,7 @@ export default StyleSheet.create({
   },
   headerCompact: {
     paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
-    height: Platform.OS === 'ios' ? getStatusBarHeight() + 60 : 60,
+    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 60 : 60,
     backgroundColor: colors.white,
     alignItems: 'flex-end',
     flexDirection: 'row',

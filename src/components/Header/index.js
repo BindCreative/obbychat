@@ -7,7 +7,9 @@ import styles from './styles';
 
 
 class Header extends React.Component {
+  
   render() {
+    const title = this.props.scene ? this.props.scene.descriptor.options.title : '';
     return (
       <View style={this.props.size === 'compact' ? styles.headerCompact : styles.headerNormal }>
         <View style={styles.headerLeft}>
@@ -21,19 +23,19 @@ class Header extends React.Component {
           }
           {this.props.left !== undefined && this.props.left}
           {this.props.left === undefined && this.props.titlePosition === 'left' &&
-            <Text style={styles.headerTitle}>{this.props.scene.descriptor.options.title}</Text>
+            <Text style={styles.headerTitle}>{title}</Text>
           }
         </View>
         <View style={styles.headerCenter}>
           {this.props.center !== undefined && this.props.center}
           {this.props.center === undefined && this.props.titlePosition === 'center' &&
-            <Text style={{ ...styles.headerTitle, ...styles.headerTitleSmall }} > {this.props.scene.descriptor.options.title}</Text>
+            <Text style={{ ...styles.headerTitle, ...styles.headerTitleSmall }} > {title}</Text>
           }
         </View>
         <View style={styles.headerRight}>
           {this.props.right !== undefined && this.props.right}
           {this.props.right === undefined && this.props.titlePosition === 'right' &&
-            <Text style={styles.headerTitle}>{this.props.scene.descriptor.options.title}</Text>
+            <Text style={styles.headerTitle}>{title}</Text>
           }
         </View>
       </View>

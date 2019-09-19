@@ -1,21 +1,19 @@
 import React from 'react';
-import { Animated } from 'react-native';
 import {
   createBottomTabNavigator,
-  createAppContainer,
 } from 'react-navigation';
-import ChatTab from './ChatTab';
-import WalletTab from './WalletTab';
-import SettingsTab from './SettingsTab';
-import { colors } from './../constants';
+import ChatStack from './ChatStack';
+import WalletStack from './WalletStack';
+import SettingsStack from './SettingsStack';
 import ChatIcon from './../assets/images/icon-chat-bubble.svg';
 import WalletIcon from './../assets/images/icon-wallet.svg';
 import MenuIcon from './../assets/images/icon-menu.svg';
+import { colors } from '../constants';
 
 
-const MainStackNav = createBottomTabNavigator({
+const MainStack = createBottomTabNavigator({
   ChatStack: {
-    screen: ChatTab,
+    screen: ChatStack,
     navigationOptions: {
       tabBarIcon: ({ focused, tintColor }) => (
         <ChatIcon style={{ color: tintColor }} />
@@ -23,7 +21,7 @@ const MainStackNav = createBottomTabNavigator({
     }
   },
   WalletStack: {
-    screen: WalletTab,
+    screen: WalletStack,
     navigationOptions: {
       tabBarIcon: ({ focused, tintColor }) => (
         <WalletIcon style={{ color: tintColor }} />
@@ -31,7 +29,7 @@ const MainStackNav = createBottomTabNavigator({
     }
   },
   SettingsStack: {
-    screen: SettingsTab,
+    screen: SettingsStack,
     navigationOptions: {
       tabBarIcon: ({ focused, tintColor }) => (
         <MenuIcon style={{ color: tintColor }} />
@@ -40,9 +38,9 @@ const MainStackNav = createBottomTabNavigator({
   },
 }, {
   initialRouteName: 'ChatStack',
-  mode: 'modal',
   defaultNavigationOptions: {
-    gesturesEnabled: true,
+    tabBarVisible: true,
+    header: null,
   },
   tabBarOptions: {
     showIcon: true,
@@ -71,6 +69,4 @@ const MainStackNav = createBottomTabNavigator({
   }
 });
 
-const Navigator = MainStackNav;
-
-export default createAppContainer(Navigator);
+export default MainStack;

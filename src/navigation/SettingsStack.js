@@ -5,11 +5,11 @@ import {
 import SettingsScreen from '../components/SettingsScreen';
 
 
-const SettingsTab = createStackNavigator({
+const SettingsStack = createStackNavigator({
   Settings: {
     screen: SettingsScreen,
     path: '/settings',
   },
 },{ initialRouteName: 'Settings' });
 
-export default SettingsTab;
+export default SettingsStack;
