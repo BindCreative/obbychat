@@ -12,6 +12,9 @@ const WalletStack = createStackNavigator({
   },
 },{
   initialRouteName: 'MyWallet',
+  defaultNavigationOptions: {
+    header: null,
+  },
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: ![1, 2].includes(navigation.state.index),
   })

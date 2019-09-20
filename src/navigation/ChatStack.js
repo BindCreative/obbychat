@@ -14,12 +14,12 @@ const ChatStack = createStackNavigator({
   Chat: {
     screen: ChatScreen,
     path: '/chat/contact',
-    navigationOptions: {
-      header: null,
-    },
   },
 },{
   initialRouteName: 'ChatList',
+  defaultNavigationOptions: {
+    header: null,
+  },
   navigationOptions: ({ navigation }) => ({
     tabBarVisible: ![1, 2].includes(navigation.state.index),
   })

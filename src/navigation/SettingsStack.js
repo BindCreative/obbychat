@@ -10,6 +10,11 @@ const SettingsStack = createStackNavigator({
     screen: SettingsScreen,
     path: '/settings',
   },
-},{ initialRouteName: 'Settings' });
+},{
+  initialRouteName: 'Settings',
+  defaultNavigationOptions: {
+    header: null,
+  },
+});
 
 export default SettingsStack;

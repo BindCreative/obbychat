@@ -14,19 +14,10 @@ import Header from './../components/Header';
 const RootNav = createStackNavigator({
   MainStack: {
     screen: MainStack,
-    navigationOptions: {
-      header: null,
-    },
   },
   ContactScanner: {
     screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} backRoute='ChatStack' />,
     path: '/chat/scan',
-    navigationOptions: {
-      header: null,
-      transitionConfig: {
-        isModal: true,
-      },
-    },
   },
   MyQR: {
     screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} qrData={{ foo: 'bar' }} backRoute='ChatStack' />,
@@ -34,20 +25,11 @@ const RootNav = createStackNavigator({
     navigationOptions: {
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
       title: 'My QR code',
-      transitionConfig: {
-        isModal: true,
-      },
     },
   },
   WalletScanner: {
     screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} backRoute='WalletStack' />,
     path: '/wallet/scan',
-    navigationOptions: {
-      header: null,
-      transitionConfig: {
-        isModal: true,
-      },
-    },
   },
   MyWalletQR: {
     screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} qrData={{ foo: 'bar' }} backRoute='WalletStack' />,
@@ -55,9 +37,6 @@ const RootNav = createStackNavigator({
     navigationOptions: {
       title: 'My wallet address',
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
-      transitionConfig: {
-        isModal: true,
-      },
     },
   },
   MakePayment: {
@@ -68,9 +47,6 @@ const RootNav = createStackNavigator({
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
       tabBarIcon: null,
       tabBarVisible: false,
-      transitionConfig: {
-        isModal: true,
-      },
     }
   },
   RequestPayment: {
@@ -81,14 +57,14 @@ const RootNav = createStackNavigator({
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
       tabBarIcon: null,
       tabBarVisible: false,
-      transitionConfig: {
-        isModal: true,
-      },
     }
   },
 }, {
   initialRouteName: 'MainStack',
   mode: 'modal',
+  defaultNavigationOptions: {
+    header: null,
+  }
 });
 
 export default createAppContainer(RootNav);
