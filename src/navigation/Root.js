@@ -7,7 +7,6 @@ import MainStack from './MainStack';
 import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
 import PaymentScreen from './../components/PaymentScreen';
-import RequestPaymentScreen from './../components/RequestPaymentScreen';
 import Header from './../components/Header';
 
 
@@ -40,7 +39,7 @@ const RootNav = createStackNavigator({
     },
   },
   MakePayment: {
-    screen: props => <PaymentScreen {...props} />,
+    screen: props => <PaymentScreen {...props} method='send' />,
     path: '/wallet/make-payment',
     navigationOptions: {
       title: 'Enter amount',
@@ -50,7 +49,7 @@ const RootNav = createStackNavigator({
     }
   },
   RequestPayment: {
-    screen: props => <RequestPaymentScreen {...props} />,
+    screen: props => <PaymentScreen {...props} method='request' />,
     path: '/wallet/request-payment',
     navigationOptions: {
       title: 'Enter amount',

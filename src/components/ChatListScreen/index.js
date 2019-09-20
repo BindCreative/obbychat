@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
 import {
@@ -10,9 +10,7 @@ import {
   Left,
   Right,
   Body,
-  View,
 } from 'native-base';
-import { colors } from './../../constants';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from './../Header';
