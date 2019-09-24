@@ -26,7 +26,7 @@ class ChatListScreen extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     // Handle keyboard in state
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => this.setState({ keyboardVisible: true }));
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => this.setState({ keyboardVisible: false }));
@@ -45,6 +45,11 @@ class ChatListScreen extends React.Component {
         },
       ],
     })
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   onSend(messages = []) {
