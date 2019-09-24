@@ -16,8 +16,8 @@ export default class App extends React.Component {
 
   async componentWillMount() {
     await Font.loadAsync({
-      Roboto: require("./node_modules/native-base/Fonts/Roboto.ttf"),
-      Roboto_medium: require("./node_modules/native-base/Fonts/Roboto_medium.ttf")
+      Roboto: require('./node_modules/native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf')
     });
     this.setState({ loading: false });
   }
@@ -32,7 +32,9 @@ export default class App extends React.Component {
 
     return (
       <Provider store={store}>
-        <Navigator />
+        <PersistGate loading={null} persistor={persistor}>
+          <Navigator />
+        </PersistGate>
       </Provider>
     );
   }

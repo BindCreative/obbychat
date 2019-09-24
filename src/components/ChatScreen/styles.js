@@ -6,7 +6,7 @@ import { colors } from './../../constants';
 export default StyleSheet.create({
   header: {
     paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
-    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 140,
+    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 40,
     margin: 20,
     paddingBottom: 20,
     backgroundColor: colors.white,
