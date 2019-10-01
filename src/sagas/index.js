@@ -1,4 +1,4 @@
-import { all } from 'redux-saga/effects';
+import { all } from '@redux-saga/core/effects';
 import walletSaga from './wallet';
 
 

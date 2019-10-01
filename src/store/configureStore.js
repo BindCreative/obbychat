@@ -2,7 +2,7 @@ import { AsyncStorage } from 'react-native';
 import createSecureStore from 'redux-persist-expo-securestore';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
-import createSagaMiddleware from 'redux-saga';
+import createSagaMiddleware from '@redux-saga/core';
 import { mainReducer, mainSecureReducer } from './../reducers';
 import rootSaga from './../sagas';
 
