@@ -1,10 +1,17 @@
 import { REHYDRATE } from 'redux-persist';
+import { actionTypes } from '../constants';
 
 
-const initialState = {};
+const initialState = {
+  seedWords: null,
+  privKey: null,
+  pubKey: null,
+  currentAddress: null,
+  currentPath: null,
+  wif: null,
+};
 
 function walletReducer(state = initialState, action) {
-
   switch (action.type) {
     case REHYDRATE:
       return {
@@ -12,6 +19,15 @@ function walletReducer(state = initialState, action) {
         ...action.payload.wallet,
       };
 
+    case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    case actionTypes.INITIAL_WALLET_CREATE_FAILED:
+      return initialState;
+      
     default:
       return state;
   }

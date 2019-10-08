@@ -42,7 +42,8 @@
     "levelup": "^4.3.0",
     "lodash": "^4.17.15",
     "native-base": "^2.13.5",
-    "ocore": "git+https://github.com/byteball/ocore.git",
+    "obyte": "^0.1.6",
+    "ocore": "git+https://github.com/daniellaanpere/ocore.git#react-native",
     "path-browserify": "0.0.0",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",
@@ -79,7 +80,8 @@
     "tty-browserify": "0.0.0",
     "url": "^0.10.3",
     "util": "^0.10.4",
-    "vm-browserify": "0.0.4"
+    "vm-browserify": "0.0.4",
+    "wif": "^2.0.6"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.0.0",

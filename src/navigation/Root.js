@@ -7,6 +7,7 @@ import MainStack from './MainStack';
 import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
 import PaymentScreen from './../components/PaymentScreen';
+import SeedWordsScreen from './../components/SeedWordsScreen';
 import Header from './../components/Header';
 
 
@@ -54,6 +55,16 @@ const RootNav = createStackNavigator({
     navigationOptions: {
       title: 'Enter amount',
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
+      tabBarIcon: null,
+      tabBarVisible: false,
+    }
+  },
+  SeedWords: {
+    screen: props => <SeedWordsScreen {...props} />,
+    path: '/settings/seed-words',
+    navigationOptions: {
+      title: 'Backup',
+      header: props => <Header {...props} size='compact' titlePosition='center' />,
       tabBarIcon: null,
       tabBarVisible: false,
     }

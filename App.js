@@ -6,6 +6,7 @@ import * as Font from 'expo-font';
 import { PersistGate } from 'redux-persist/integration/react';
 import configureStore from './src/store/configureStore';
 import Navigator from './src/navigation/Root';
+import NavigationService from './src/navigation/service';
 import { createInitialWallet } from './src/actions/wallet';
 
 
@@ -38,7 +39,11 @@ class App extends React.Component {
     return (
       <Provider store={this.store}>
         <PersistGate loading={<AppLoading />} persistor={this.persistor}>
-          <Navigator />
+          <Navigator
+            ref={navigatorRef => {
+              NavigationService.setTopLevelNavigator(navigatorRef);
+            }}
+          />
         </PersistGate>
       </Provider>
     );
