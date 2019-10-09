@@ -1,33 +1,50 @@
-import { createStore, applyMiddleware, compose } from 'redux';
-import { persistStore, persistReducer } from 'redux-persist';
-import createSagaMiddleware from 'redux-saga';
-import storage from 'redux-persist/lib/storage';
-import rootReducer from './../reducers';
+import { AsyncStorage } from 'react-native';
+import createSecureStore from 'redux-persist-expo-securestore';
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { persistStore, persistReducer, persistCombineReducers } from 'redux-persist';
+import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from './../sagas';
+import { reducer as formReducer } from 'redux-form';
+import walletReducer from '../reducers/wallet';
 
 
-export default function configureStore(preloadedState = {}) {
+export default function configureStore() {
   // Middleware setup
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [ sagaMiddleware ];
+  const middlewares = [sagaMiddleware];
   const middlewareEnhancer = applyMiddleware(...middlewares);
-  const storeEnhancers = [ middlewareEnhancer ];
+  const storeEnhancers = [middlewareEnhancer];
   const composedEnhancer = compose(...storeEnhancers);
 
-  // Persist setup
-  const persistConfig = {
-    key: 'root',
-    storage,
+  // Secure storage
+  const secureStorage = createSecureStore();
+  const securePersistConfig = {
+    key: 'secure',
+    storage: secureStorage
   };
-  const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+  // Non-secure storage
+  const mainPersistConfig = {
+    key: 'main',
+    storage: AsyncStorage
+  };
+
+  const rootReducer = combineReducers({
+    main: persistReducer(mainPersistConfig, combineReducers({
+      form: formReducer
+    })),
+    secure: persistReducer(securePersistConfig, combineReducers({
+      wallet: walletReducer,
+    }))
+  });
 
   const store = createStore(
-    persistedReducer,
-    preloadedState,
+    rootReducer,
+    undefined,
     composedEnhancer,
   );
   sagaMiddleware.run(rootSaga);
   const persistor = persistStore(store);
 
-  return { store,  persistor };
+  return { store, persistor };
 }

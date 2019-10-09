@@ -1,8 +1,10 @@
 import colors from './colors';
-import * as actionTypes from './actionTypes';
+import common from './common';
+import actionTypes from './actionTypes';
 
 
 export {
   actionTypes,
   colors,
+  common,
 }

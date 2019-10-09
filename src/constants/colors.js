@@ -3,6 +3,7 @@ export default {
   white: '#ffffff',
   cyan: {
     main: '#40C7D2',
+    dark: '#179aa6',
   },
   grey: {
     main: '#b4b4b4',
