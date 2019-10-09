@@ -12,7 +12,7 @@ import styles from './styles';
 
 class SettingsScreen extends React.Component {
   static navigationOptions = {
-    title: 'Wallet',
+    title: 'Settings',
     header: props => <Header {...props} />,
   };
 
