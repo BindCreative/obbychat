@@ -12,3 +12,8 @@ export const selectSeedWordsArray = () => createSelector(
   walletState,
   state => state.seedWords.split(' '),
 );
+
+export const selectInitialAddress = () => createSelector(
+  walletState,
+  state => state.initialAddress,
+);

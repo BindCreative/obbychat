@@ -26,6 +26,8 @@ export function* createInitialWallet(action) {
         pubKey: newWallet.publicKey,
         currentAddress: newWallet.address,
         currentPath: newWallet.path,
+        initialAddress: newWallet.address,
+        initialPath: newWallet.path,
         wif: newWallet.wif,
       }));
       yield call(NavigationService.navigate, 'SeedWords');

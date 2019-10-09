@@ -64,7 +64,7 @@ const RootNav = createStackNavigator({
     path: '/settings/seed-words',
     navigationOptions: {
       title: 'Backup',
-      header: props => <Header {...props} size='compact' titlePosition='center' />,
+      header: null,
       tabBarIcon: null,
       tabBarVisible: false,
     }
