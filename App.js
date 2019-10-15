@@ -7,7 +7,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import configureStore from './src/store/configureStore';
 import Navigator from './src/navigation/Root';
 import NavigationService from './src/navigation/service';
-import { createInitialWallet } from './src/actions/wallet';
+import { initWallet } from './src/actions/wallet';
 
 
 class App extends React.Component {
@@ -26,7 +26,7 @@ class App extends React.Component {
       Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf')
     });
     this.setState({ loading: false });
-    this.store.dispatch(createInitialWallet());
+    this.store.dispatch(initWallet());
   }
 
   render() {

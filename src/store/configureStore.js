@@ -6,6 +6,9 @@ import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from './../sagas';
 import { reducer as formReducer } from 'redux-form';
 import walletReducer from '../reducers/wallet';
+import balancesReducer from '../reducers/balances';
+import exchangeRatesReducer from '../reducers/exchangeRates';
+import settingsReducer from '../reducers/settings';
 
 
 export default function configureStore() {
@@ -31,7 +34,10 @@ export default function configureStore() {
 
   const rootReducer = combineReducers({
     main: persistReducer(mainPersistConfig, combineReducers({
-      form: formReducer
+      form: formReducer,
+      balances: balancesReducer,
+      exchangeRates: exchangeRatesReducer,
+      settings: settingsReducer,
     })),
     secure: persistReducer(securePersistConfig, combineReducers({
       wallet: walletReducer,

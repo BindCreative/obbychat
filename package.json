@@ -7,6 +7,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest --watchAll",
+    "clean": "watchman watch-del-all && rm -rf node_modules && npm install && rm -rf /tmp/metro-bundler-cache-* && rm -rf /tmp/haste-map-react-native-packager-*",
     "postinstall": "./node_modules/.bin/rn-nodeify --hack --install"
   },
   "jest": {
@@ -43,7 +44,6 @@
     "lodash": "^4.17.15",
     "native-base": "^2.13.5",
     "obyte": "^0.1.6",
-    "ocore": "git+https://github.com/daniellaanpere/ocore.git#react-native",
     "path-browserify": "0.0.0",
     "punycode": "^1.4.1",
     "querystring-es3": "^0.2.1",

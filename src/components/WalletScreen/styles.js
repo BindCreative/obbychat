@@ -17,4 +17,25 @@ export default StyleSheet.create({
   actionsBar: {
     flexDirection: 'row',
   },
+  balanceRow: {
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginBottom: 5,
+  },
+  balanceText: {
+    fontSize: 44,
+    color: colors.black,
+  },
+  balanceUnitText: {
+    marginLeft: 6,
+    fontSize: 22,
+    color: colors.grey.main,
+    marginBottom: 6,
+    fontWeight: 'bold',
+  },
+  convertedBalanceText: {
+    fontSize: 28,
+    color: colors.cyan.main,
+  },
 });
