@@ -8,6 +8,10 @@ import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
   setExchangeRates,
+  setWitnessesSuccess,
+  loadTransactionsHistory,
+  loadTransactionsHistorySuccess,
+  loadTransactionsHistoryFail,
 } from './../actions/wallet';
 import { selectWallet } from './../selectors/wallet';
 import { rejects } from 'assert';
@@ -20,39 +24,20 @@ export function* initWallet(action) {
     if (walletData.addresses.length < 1) {
       // New wallet
       yield call(createInitialWallet, action);
-    } 
-
-    yield call(loadBalances, action);
-
-    // Handle web socket messages
-
-    const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
-      console.log(999 ,messageType);
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ messageType, message });
-      }
-    }));
-    const { messageType, message } = yield wsPromise;
-    console.log(111, messageType, message);
-    if (messageType === 'justsaying' && message.subject && message.body) {
-      if (message.subject === 'exchange_rates' && message.body) {
-        yield put(setExchangeRates(message.body));
-      } else {
-        console.log('Unhandled WS message', message);
-      }
-    } else {
-      console.log('Unhandled WS message', message);
     }
 
-    //yield call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
-  } catch(error) {
-    console.error(error);
+    // Handle web socket traffic
+    yield call(subscribeToHub, action);
+    yield call(heartbeatToHub, action);
+    // Load wallet data from hub
+    yield call(loadBalances, action);
+    yield call(loadWitnesses, action);
+    yield call(loadTransactions, action);
+  } catch (error) {
     yield put(createInitialWalletFail({
       error,
       type: 'ERROR',
-      message: 'Something went wrong, unable to init wallet.',
+      message: 'Unable to init wallet.',
     }));
   }
 }
@@ -69,7 +54,7 @@ export function* createInitialWallet(action) {
       wif: wallet.wif,
     }));
     yield call(NavigationService.navigate, 'SeedWords');
-  } catch(error) {
+  } catch (error) {
     yield put(createInitialWalletFail({
       error,
       type: 'ERROR',
@@ -82,14 +67,84 @@ export function* loadBalances(action) {
   try {
     const walletData = yield select(selectWallet());
     const balances = yield call(oClient.api.getBalances, walletData.addresses);
-    yield put(loadWalletBalancesSuccess(balances));
-  } catch(error) {
+    put(loadWalletBalancesSuccess(balances));
+  } catch (error) {
     yield put(loadWalletBalancesFail({
       error,
       type: 'ERROR',
       message: 'Something went wrong, unable to generate new wallet.',
     }));
   }
+}
+
+export function* loadWitnesses(action) {
+  try {
+    const witnessesPromise = new Promise((resolve, reject) => oClient.api.getWitnesses((err, witnesses) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(witnesses);
+      }
+    }));
+    const witnesses = yield witnessesPromise;
+    yield put(setWitnessesSuccess(witnesses));
+  } catch(error) {
+    console.error(error);
+  }
+}
+
+export function* loadTransactions(action) {
+  try {
+    yield put(loadTransactionsHistory());
+    const walletData = yield select(selectWallet());
+    const params = {
+      witnesses: walletData.witnesses,
+      addresses: walletData.addresses
+    };
+    
+    const historyPromise = new Promise((resolve, reject) => oClient.api.getHistory(params, (err, history) => {
+      //console.log(history, err);
+      if (err) {
+        reject(err);
+      } else {
+        resolve(history);
+      }
+    }));
+    const history = yield historyPromise;
+    yield put(loadTransactionsHistorySuccess(history));
+  } catch(error) {
+    yield put(loadTransactionsHistoryFail({
+      error,
+      type: 'ERROR',
+      message: 'Unable to fetch transactions.',
+    }));
+    console.error(error);
+  }
+}
+
+export function* subscribeToHub(action) {
+  const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
+    if (err) {
+      reject(err);
+    } else {
+      resolve({ messageType, message });
+    }
+  }));
+  const { messageType, message } = yield wsPromise;
+
+  if (messageType === 'justsaying' && message.subject && message.body) {
+    if (message.subject === 'exchange_rates' && message.body) {
+      put(setExchangeRates(message.body));
+    } else {
+      console.log('Unhandled WS message', message);
+    }
+  } else {
+    console.log('Unhandled WS message', message);
+  }
+}
+
+export function* heartbeatToHub(action) {
+  call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
 }
 
 export default function* walletSagas() {
