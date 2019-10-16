@@ -4,7 +4,7 @@ import { actionTypes } from '../constants';
 
 const initialState = {};
 
-function balancesReducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
         return {
@@ -23,4 +23,4 @@ function balancesReducer(state = initialState, action) {
   }
 }
 
-export default balancesReducer;
+export default reducer;

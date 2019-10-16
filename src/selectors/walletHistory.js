@@ -1,0 +1,56 @@
+import { createSelector } from 'reselect';
+import { getWalletState } from './wallet';
+
+
+export const getWalletHistoryState = (state) => state.main.walletHistory;
+
+export const selectWalletHistory = () => createSelector(
+  getWalletHistoryState,
+  state => state.history,
+);
+
+export const selectTransactions = () => createSelector(
+  [
+    getWalletHistoryState,
+    getWalletState,
+  ],
+  (walletHistory, wallet) => {
+    if (!walletHistory.history || !walletHistory.history.joints) {
+      return null;
+    }
+
+    let transactions = [];
+    for (let [ij, joint] of walletHistory.history.joints.entries()) {
+      let amount = 0;
+      let type;
+
+      for (let [ia, author] of joint.unit.authors.entries()) {
+        type = wallet.addresses.includes(author.address) ? 'SENT' : 'RECEIVED';
+      }
+
+      for (let [im, message] of joint.unit.messages.entries()) {
+        for (let [io, output] of message.payload.outputs.entries()) {
+          if (wallet.addresses.includes(output.address)) {
+            amount += output.amount;
+          }
+        }
+      }
+
+      let address  = joint.unit.authors.reduce((combinedValue, value) => {
+        combinedValue.push(value.address);
+        return combinedValue;
+      }, []);
+      
+      transactions.push({
+        address,
+        amount,
+        type,
+        timestamp: joint.unit.timestamp,
+        headersCommission: joint.unit.headers_commission,
+        payloadCommission: joint.unit.payload_commission,
+        totalCommission: joint.unit.headers_commission + joint.unit.payload_commission,
+      });
+    }
+    return transactions;
+  }
+);

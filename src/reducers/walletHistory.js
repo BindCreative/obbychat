@@ -6,15 +6,15 @@ const initialState = {
   history: null,
 };
 
-function transactionsReducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
         return {
           ...state,
-          ...action.payload.transactions,
+          ...action.payload.walletHistory,
         };
 
-    case actionTypes.TRANSACTIONS_HISTORY_GET_SUCCESS:
+    case actionTypes.WALLET_HISTORY_GET_SUCCESS:
       return {
         ...state,
         history: action.payload,
@@ -25,4 +25,4 @@ function transactionsReducer(state = initialState, action) {
   }
 }
 
-export default transactionsReducer;
+export default reducer;

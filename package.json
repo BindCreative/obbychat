@@ -49,6 +49,7 @@
     "querystring-es3": "^0.2.1",
     "react": "16.9.0",
     "react-dom": "^16.8.6",
+    "react-moment": "^0.9.6",
     "react-native": "https://github.com/expo/react-native/archive/sdk-34.0.1.tar.gz",
     "react-native-actionsheet": "^2.4.2",
     "react-native-crypto": "^2.2.0",

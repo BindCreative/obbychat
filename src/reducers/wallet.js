@@ -13,7 +13,7 @@ const initialState = {
   witnesses: [],
 };
 
-function walletReducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
       return {
@@ -48,4 +48,4 @@ function walletReducer(state = initialState, action) {
   }
 }
 
-export default walletReducer;
+export default reducer;

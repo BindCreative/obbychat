@@ -9,9 +9,10 @@ const initialState = {
   GBB_USD: null,
   GBYTE_USD: null,
   GBYTE_USD: null,
+  updated: null,
 };
 
-function exchangeRatesReducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
         return {
@@ -30,4 +31,4 @@ function exchangeRatesReducer(state = initialState, action) {
   }
 }
 
-export default exchangeRatesReducer;
+export default reducer;

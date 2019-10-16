@@ -8,6 +8,7 @@ import { reducer as formReducer } from 'redux-form';
 import walletReducer from '../reducers/wallet';
 import balancesReducer from '../reducers/balances';
 import exchangeRatesReducer from '../reducers/exchangeRates';
+import walletHistoryReducer from '../reducers/walletHistory';
 import settingsReducer from '../reducers/settings';
 
 
@@ -37,6 +38,7 @@ export default function configureStore() {
       form: formReducer,
       balances: balancesReducer,
       exchangeRates: exchangeRatesReducer,
+      walletHistory: walletHistoryReducer,
       settings: settingsReducer,
     })),
     secure: persistReducer(securePersistConfig, combineReducers({

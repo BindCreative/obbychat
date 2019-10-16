@@ -6,7 +6,7 @@ const initialState = {
   unitSize: 'MB', // B | kB | MB | GB
 };
 
-function settingsReducer(state = initialState, action) {
+function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
         return {
@@ -25,4 +25,4 @@ function settingsReducer(state = initialState, action) {
   }
 }
 
-export default settingsReducer;
+export default reducer;

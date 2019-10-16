@@ -29,44 +29,7 @@ export const createInitialWalletFail = (payload) => ({
   payload,
 })
 
-export const loadWalletBalances = () => ({
-  type: actionTypes.WALLET_BALANCES_FETCH_START,
-})
-
-export const loadWalletBalancesSuccess = (payload) => ({
-  type: actionTypes.WALLET_BALANCES_FETCH_SUCCESS,
-  payload,
-})
-
-export const loadWalletBalancesFail = (payload) => ({
-  type: actionTypes.WALLET_BALANCES_FETCH_FAILED,
-  payload,
-})
-
-export const loadTransactionsHistory = () => ({
-  type: actionTypes.TRANSACTIONS_HISTORY_GET_START,
-})
-
-export const loadTransactionsHistorySuccess = (payload) => ({
-  type: actionTypes.TRANSACTIONS_HISTORY_GET_SUCCESS,
-  payload,
-})
-
-export const loadTransactionsHistoryFail = (payload) => ({
-  type: actionTypes.TRANSACTIONS_HISTORY_GET_FAILED,
-  payload,
-})
-
-export const setExchangeRates = (payload) => ({
-  type: actionTypes.EXCHANGE_RATES_SET,
-  payload,
-})
-
-export const resetExchangeRates = () => ({
-  type: actionTypes.EXCHANGE_RATES_RESET,
-})
-
-export const setWitnessesSuccess = (payload) => ({
+export const getWitnessesSuccess = (payload) => ({
   type: actionTypes.WITNESSES_GET_SUCCESS,
   payload,
 })

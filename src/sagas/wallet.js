@@ -5,16 +5,19 @@ import { actionTypes, common } from './../constants';
 import {
   createInitialWalletSuccess,
   createInitialWalletFail,
+  getWitnessesSuccess,
+} from './../actions/wallet';
+import {
+  loadWalletHistory,
+  loadWalletHistorySuccess,
+  loadWalletHistoryFail,
+} from '../actions/walletHistory';
+import { setExchangeRates } from './../actions/exchangeRates';
+import { 
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
-  setExchangeRates,
-  setWitnessesSuccess,
-  loadTransactionsHistory,
-  loadTransactionsHistorySuccess,
-  loadTransactionsHistoryFail,
-} from './../actions/wallet';
+ } from './../actions/balances';
 import { selectWallet } from './../selectors/wallet';
-import { rejects } from 'assert';
 
 
 export function* initWallet(action) {
@@ -28,11 +31,16 @@ export function* initWallet(action) {
 
     // Handle web socket traffic
     yield call(subscribeToHub, action);
+    console.log('Subscribed to hub');
     yield call(heartbeatToHub, action);
-    // Load wallet data from hub
-    yield call(loadBalances, action);
-    yield call(loadWitnesses, action);
-    yield call(loadTransactions, action);
+    console.log('Started heartbeating to hub');
+    // Fetch wallet data from hub
+    yield call(fetchBalances, action);
+    console.log('Loaded balances');
+    yield call(fetchWitnesses, action);
+    console.log('Loaded witnesses');
+    yield call(fetchWalletHistory, action);
+    console.log('Loaded wallet history');
   } catch (error) {
     yield put(createInitialWalletFail({
       error,
@@ -58,12 +66,12 @@ export function* createInitialWallet(action) {
     yield put(createInitialWalletFail({
       error,
       type: 'ERROR',
-      message: 'Something went wrong, unable to generate new wallet.',
+      message: 'Unable to generate new wallet.',
     }));
   }
 }
 
-export function* loadBalances(action) {
+export function* fetchBalances(action) {
   try {
     const walletData = yield select(selectWallet());
     const balances = yield call(oClient.api.getBalances, walletData.addresses);
@@ -72,12 +80,12 @@ export function* loadBalances(action) {
     yield put(loadWalletBalancesFail({
       error,
       type: 'ERROR',
-      message: 'Something went wrong, unable to generate new wallet.',
+      message: 'Unable to fetch balances.',
     }));
   }
 }
 
-export function* loadWitnesses(action) {
+export function* fetchWitnesses(action) {
   try {
     const witnessesPromise = new Promise((resolve, reject) => oClient.api.getWitnesses((err, witnesses) => {
       if (err) {
@@ -87,15 +95,15 @@ export function* loadWitnesses(action) {
       }
     }));
     const witnesses = yield witnessesPromise;
-    yield put(setWitnessesSuccess(witnesses));
+    yield put(getWitnessesSuccess(witnesses));
   } catch(error) {
     console.error(error);
   }
 }
 
-export function* loadTransactions(action) {
+export function* fetchWalletHistory(action) {
   try {
-    yield put(loadTransactionsHistory());
+    yield put(loadWalletHistory());
     const walletData = yield select(selectWallet());
     const params = {
       witnesses: walletData.witnesses,
@@ -111,9 +119,9 @@ export function* loadTransactions(action) {
       }
     }));
     const history = yield historyPromise;
-    yield put(loadTransactionsHistorySuccess(history));
+    yield put(loadWalletHistorySuccess(history));
   } catch(error) {
-    yield put(loadTransactionsHistoryFail({
+    yield put(loadWalletHistoryFail({
       error,
       type: 'ERROR',
       message: 'Unable to fetch transactions.',
@@ -150,5 +158,5 @@ export function* heartbeatToHub(action) {
 export default function* walletSagas() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
-  yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, loadBalances);
+  yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
 }
