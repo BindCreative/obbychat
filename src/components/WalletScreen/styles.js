@@ -10,8 +10,11 @@ export default StyleSheet.create({
     color: colors.black,
   },
   iconButton: {
-    marginLeft: 20,
-    padding: 14,
+    width: 42,
+    height: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 24,
     backgroundColor: colors.grey.lightest,
     borderRadius: 50,
   },

@@ -7,6 +7,7 @@ export default {
   },
   grey: {
     main: '#b4b4b4',
+    light: '#cdcdcd',
     lightest: '#f7f7f7',
   },
 }

@@ -29,8 +29,28 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     backgroundColor: 'transparent',
   },
+  addressInputBox: {
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: colors.grey.lightest,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addressInput: {
+    padding: 10,
+    fontSize: 18,
+    backgroundColor: 'transparent',
+  },
+  addressInputPaste: {
+    marginLeft: 'auto',
+    marginRight: 10,
+    marginVertical: 10,
+  },
+  addressInputPasteIcon: {
+    marginLeft: 'auto',
+  },
   confirmButton: {
+    alignSelf: 'center',
     marginTop: 40,
-    alignSelf: 'center'
   }
 });

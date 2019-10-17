@@ -18,10 +18,10 @@ class ActionsBar extends React.Component {
         </TouchableOpacity>
         */}
         <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('MyQR')}>
-          <QRIcon style={styles.icon} width={20} height={20} />
+          <QRIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('ContactScanner')}>
-          <ScanIcon style={styles.icon} width={20} height={20} />
+          <ScanIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>
       </View>
     );

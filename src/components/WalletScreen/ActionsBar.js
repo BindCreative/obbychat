@@ -1,6 +1,5 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import { NavigationActions } from 'react-navigation';
 import { View } from 'native-base';
 import { withNavigation } from 'react-navigation';
 import SendIcon from './../../assets/images/icon-send.svg';
@@ -13,25 +12,34 @@ class ActionsBar extends React.Component {
   render() {
     return (
       <View style={styles.actionsBar}>
-        {/**
-        <TouchableOpacity style={styles.iconButton}>
-          <SendIcon style={styles.icon} width={20} height={20} />
-        </TouchableOpacity>
-        */}
-        <TouchableOpacity style={styles.iconButton}>
-          <QRIcon
-            style={styles.icon}
-            width={20}
-            height={20}
-            onPress={() =>  this.props.navigation.navigate('MyWalletQR')}
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() => this.props.navigation.navigate('MakePayment')}
+        >
+          <SendIcon 
+            style={styles.icon} 
+            width={14} 
+            height={11}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() =>  this.props.navigation.navigate('MyWalletQR')}
+        >
+          <QRIcon
+            style={styles.icon}
+            width={15}
+            height={15}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() =>  this.props.navigation.navigate('WalletScanner')}
+        >
           <ScanIcon
             style={styles.icon}
-            width={20}
-            height={20}
-            onPress={() =>  this.props.navigation.navigate('WalletScanner')}
+            width={15}
+            height={15}
           />
         </TouchableOpacity>
       </View>
