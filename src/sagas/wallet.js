@@ -13,10 +13,10 @@ import {
   loadWalletHistoryFail,
 } from '../actions/walletHistory';
 import { setExchangeRates } from './../actions/exchangeRates';
-import { 
+import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
- } from './../actions/balances';
+} from './../actions/balances';
 import { selectWallet } from './../selectors/wallet';
 
 
@@ -96,7 +96,7 @@ export function* fetchWitnesses(action) {
     }));
     const witnesses = yield witnessesPromise;
     yield put(getWitnessesSuccess(witnesses));
-  } catch(error) {
+  } catch (error) {
     console.error(error);
   }
 }
@@ -109,9 +109,8 @@ export function* fetchWalletHistory(action) {
       witnesses: walletData.witnesses,
       addresses: walletData.addresses
     };
-    
+
     const historyPromise = new Promise((resolve, reject) => oClient.api.getHistory(params, (err, history) => {
-      //console.log(history, err);
       if (err) {
         reject(err);
       } else {
@@ -120,7 +119,7 @@ export function* fetchWalletHistory(action) {
     }));
     const history = yield historyPromise;
     yield put(loadWalletHistorySuccess(history));
-  } catch(error) {
+  } catch (error) {
     yield put(loadWalletHistoryFail({
       error,
       type: 'ERROR',
@@ -131,23 +130,27 @@ export function* fetchWalletHistory(action) {
 }
 
 export function* subscribeToHub(action) {
-  const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
-    if (err) {
-      reject(err);
-    } else {
-      resolve({ messageType, message });
-    }
-  }));
-  const { messageType, message } = yield wsPromise;
-
-  if (messageType === 'justsaying' && message.subject && message.body) {
-    if (message.subject === 'exchange_rates' && message.body) {
-      put(setExchangeRates(message.body));
+  try {
+    const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ messageType, message });
+      }
+    }));
+    const { messageType, message } = yield wsPromise;
+    if (messageType === 'justsaying' && message.subject && message.body) {
+      if (message.subject === 'exchange_rates' && message.body) {
+        put(setExchangeRates(message.body));
+        console.log('Exchange rates updated')
+      } else {
+        console.log('Unhandled WS message', message);
+      }
     } else {
       console.log('Unhandled WS message', message);
     }
-  } else {
-    console.log('Unhandled WS message', message);
+  } catch (error) {
+    console.log(error);
   }
 }
 

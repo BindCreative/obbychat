@@ -8,7 +8,9 @@ const initialState = {
   GBB_GBYTE: null,
   GBB_USD: null,
   GBYTE_USD: null,
-  GBYTE_USD: null,
+  MBYTE_USD: null,
+  kBYTE_USD: null,
+  BYTE_USD: null,
   updated: null,
 };
 

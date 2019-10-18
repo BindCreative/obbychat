@@ -28,6 +28,7 @@ export default StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     backgroundColor: 'transparent',
+    flex: 1,
   },
   addressInputBox: {
     borderRadius: 7,
@@ -40,6 +41,7 @@ export default StyleSheet.create({
     padding: 10,
     fontSize: 18,
     backgroundColor: 'transparent',
+    flex: 1,
   },
   addressInputPaste: {
     marginLeft: 'auto',

@@ -9,7 +9,7 @@ import { selectAddresses } from './../../selectors/wallet';
 import { selectWalletBalances } from './../../selectors/balances';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { selectTransactions } from './../../selectors/walletHistory';
-import { formatBytes, bytesToDollars } from './../../lib/Wallet';
+import { bytesToUnit } from './../../lib/Wallet';
 import styles from './styles';
 import Header from './../Header';
 import ActionsBar from './ActionsBar';
@@ -24,13 +24,16 @@ class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
     this._renderTx = this._renderTx.bind(this);
+    this.state = {
+      unit: 'MB',
+    };
   }
 
   _renderTx(tx, i) {
     return (
       <TouchableOpacity key={i} style={styles.transaction}>
         <View style={styles.txBoxRow}>
-          <Text style={styles.txAmount}>{formatBytes(tx.amount, 'MB')} MB</Text>
+          <Text style={styles.txAmount}>{bytesToUnit(tx.amount, this.state.unit)} {this.state.unit}</Text>
           <Moment
             unix
             element={Text}
@@ -45,13 +48,13 @@ class WalletScreen extends React.Component {
   }
 
   render() {
-    const balanceInDollars = bytesToDollars(this.props.walletBalance, this.props.exchangeRates.GBYTE_USD);
+    const balanceInDollars = ((this.props.walletBalance / 1000000000) * this.props.exchangeRates.GBYTE_USD).toFixed(2);
 
     return (
       <Container style={styles.content}>
         <View style={styles.balanceRow}>
-          <Text style={styles.balanceText}>{formatBytes(this.props.walletBalance, 'MB')}</Text>
-          <Text style={styles.balanceUnitText}>MB</Text>
+          <Text style={styles.balanceText}>{bytesToUnit(this.props.walletBalance, this.state.unit)}</Text>
+          <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
         </View>
         <View style={styles.balanceRow}>
           <Text style={styles.convertedBalanceText}>${balanceInDollars}</Text>

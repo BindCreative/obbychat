@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import { TextInput, Clipboard, KeyboardAvoidingView } from 'react-native';
 import { View, Text } from 'native-base';
 import RNPickerSelect from 'react-native-picker-select';
@@ -9,15 +11,16 @@ import Button from '../Button';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { selectExchangeRates } from './../../selectors/exchangeRates';
+import { availableUnits, bytesToUnit, unitToBytes } from './../../lib/Wallet';
 
 
 class PaymentScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.onChangePrimaryValue = this.onChangePrimaryValue.bind(this);
-    this.onChangeSecondaryValue = this.onChangeSecondaryValue.bind(this);
-    this.onChangePrimaryUnit = this.onChangePrimaryUnit.bind(this);
-    this.onChangeSecondaryUnit = this.onChangeSecondaryUnit.bind(this);
+    this.changeValue = this.changeValue.bind(this);
+    this.changePrimaryUnit = this.changePrimaryUnit.bind(this);
+    this.changeSecondaryUnit = this.changeSecondaryUnit.bind(this);
     this.onChangeAddress = this.onChangeAddress.bind(this);
     this.pasteAddress = this.pasteAddress.bind(this);
     this.submitStep = this.submitStep.bind(this);
@@ -25,11 +28,10 @@ class PaymentScreen extends React.Component {
     this.state = {
       step: 1,
       address: null,
-      primaryUnit: 'MB',
+      primaryUnit: 'MBYTE',
       secondaryUnit: 'USD',
-      primaryValue: 0, // bytes
-      secondaryValue: 0, // USD
-      valueRatio: 2, // X:1
+      primaryValue: 0,
+      secondaryValue: 0,
     };
   }
 
@@ -42,31 +44,46 @@ class PaymentScreen extends React.Component {
     }
   }
 
-  onChangePrimaryValue(primaryValue) {
+  changeValue(value, type) {
+    value = value;
+    let primaryValue, secondaryValue;
+    const {
+      primaryUnit,
+      secondaryUnit,
+    } = this.state;
+    const { exchangeRates } = this.props;
+
+    if (type === 'primary') {
+      if (typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] != 'undefined') {
+        secondaryValue = value * exchangeRates[`${primaryUnit}_${secondaryUnit}`];
+      }
+    } else if (type === 'secondary') {
+      if (typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] != 'undefined') {
+        primaryValue = value / exchangeRates[`${primaryUnit}_${secondaryUnit}`];
+      }
+    } else {
+      return;
+    }
+
     this.setState({
-      primaryValue,
-      secondaryValue: primaryValue / this.state.valueRatio
+      primaryValue: type === 'primary' ? value : primaryValue,
+      secondaryValue: type === 'secondary' ? value : secondaryValue,
     });
   }
 
-  onChangeSecondaryValue(secondaryValue) {
-    this.setState({
-      secondaryValue,
-      primaryValue: secondaryValue * this.state.valueRatio
-    });
+  async changePrimaryUnit(primaryUnit) {
+    await this.setState({ primaryUnit });
+    this.changeValue(this.state.primaryValue, 'primary');
   }
 
-  onChangePrimaryUnit(primaryUnit) {
-    this.setState({ primaryUnit });
-  }
-
-  onChangeSecondaryUnit(secondaryUnit) {
-    this.setState({ secondaryUnit });
+  async changeSecondaryUnit(secondaryUnit) {
+    await this.setState({ secondaryUnit });
+    this.changeValue(this.state.secondaryValue, 'secondary');
   }
 
   onChangeAddress(value) {
-    let address = String(value.trim()).toUpperCase();
-    if (address.length < 34) {
+    let address = String(value.trim());
+    if (address.length <= 34) {
       this.setState({ address });
     }
   }
@@ -140,36 +157,31 @@ class PaymentScreen extends React.Component {
             <View style={{ ...styles.field, ...styles.primaryField }}>
               <TextInput
                 style={styles.input}
-                onChangeText={value => this.onChangePrimaryValue(value)}
-                value={(primaryValue === 0) ? '' : String(primaryValue)}
+                onChangeText={value => this.changeValue(value, 'primary')}
+                value={(!primaryValue) ? '' : String(primaryValue)}
                 keyboardType='decimal-pad'
                 autoFocus={true}
               />
               <RNPickerSelect
                 value={primaryUnit}
-                onValueChange={value => this.onChangePrimaryUnit(value)}
-                items={[
-                  { label: 'bytes', value: 'B' },
-                  { label: 'KB', value: 'kB' },
-                  { label: 'MB', value: 'MB' },
-                  { label: 'GB', value: 'GB' },
-                ]}
+                onValueChange={value => this.changePrimaryUnit(value)}
+                items={availableUnits.map(unit => ({ label: unit.label, value: unit.altValue }))}
               />
             </View>
             <View style={styles.field}>
               <TextInput
                 style={styles.input}
-                onChangeText={value => this.onChangeSecondaryValue(value)}
-                value={(secondaryValue === 0) ? '' : String(secondaryValue)}
+                onChangeText={value => this.changeValue(value, 'secondary')}
+                value={(!secondaryValue) ? '' : String(secondaryValue)}
                 keyboardType='decimal-pad'
               />
               <RNPickerSelect
                 value={secondaryUnit}
-                onValueChange={value => this.onChangeSecondaryUnit(value)}
+                onValueChange={value => this.changeSecondaryUnit(value)}
                 items={[
                   { label: 'USD', value: 'USD' },
+                  { label: 'BTC', value: 'BTC' },
                 ]}
-                disabled
               />
             </View>
             <Button
@@ -192,4 +204,11 @@ PaymentScreen.propTypes = {
   method: PropTypes.string.isRequired,
 };
 
+const mapStateToProps = createStructuredSelector({
+  exchangeRates: selectExchangeRates(),
+});
+
+mapDispatchToProps = () => ({});
+
+PaymentScreen = connect(mapStateToProps, mapDispatchToProps)(PaymentScreen);
 export default PaymentScreen;

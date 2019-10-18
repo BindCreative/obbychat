@@ -38,28 +38,49 @@ export const createWallet = () => {
 
 /**
  * Converts bytes to other sizes
- * @param {int} value - in bytes (b)
- * @param {string} output - B | kB | MB | GB
+ * @param {int} n - in bytes (B)
+ * @param {string} unit - kB | MB | GB
  * @returns {int}
  */
-export const formatBytes = (value = 0, output = 'B') => {
-  switch(output) {
+export const bytesToUnit = (n, unit) => {
+  switch (unit) {
+    case 'B':
+      return n;
     case 'kB':
-      return value / 1000;
-    
+      return n / 1000;
     case 'MB':
-      return value / 1000000;
-
+      return n / 1000000;
     case 'GB':
-      return value / 1000000000;
-
+      return n / 1000000000;
     default:
-      return value;
+      return false;
   }
 }
 
-export const bytesToDollars = (bytes, rate) => {
-  const GB = bytes / 1000000000;
-  const dollars = (GB * rate).toFixed(2);
-  return dollars;
+/**
+ * Converts unit to bytes
+ * @param {int} n - in bytes (b)
+ * @param {string} unit - kB | MB | GB
+ * @returns {int}
+ */
+export const unitToBytes = (n, unit) => {
+  switch (unit) {
+    case 'GB':
+      return n * 1000000000;
+    case 'MB':
+      return n * 1000000;
+    case 'kB':
+      return n * 1000;
+    case 'B':
+      return n;
+    default:
+      return false;
+  }
 }
+
+export const availableUnits = [
+  { label: 'bytes', value: 'B', altValue: 'BYTE' },
+  { label: 'kB', value: 'kB', altValue: 'kBYTE' },
+  { label: 'MB', value: 'MB', altValue: 'MBYTE' },
+  { label: 'GB', value: 'GB', altValue: 'GBYTE' },
+];
