@@ -1,11 +1,16 @@
-import { takeLatest, call, put, select, delay } from '@redux-saga/core/effects';
+import { takeLatest, takeEvery, call, put, select, delay } from '@redux-saga/core/effects';
 import NavigationService from './../navigation/service';
 import { createWallet, oClient } from './../lib/Wallet';
 import { actionTypes, common } from './../constants';
 import {
+  createInitialWalletStart,
   createInitialWalletSuccess,
   createInitialWalletFail,
   getWitnessesSuccess,
+  initWalletFailed,
+  initWalletSuccess,
+  sendPaymentSuccess,
+  sendPaymentFail,
 } from './../actions/wallet';
 import {
   loadWalletHistory,
@@ -26,7 +31,7 @@ export function* initWallet(action) {
 
     if (walletData.addresses.length < 1) {
       // New wallet
-      yield call(createInitialWallet, action);
+      yield put(createInitialWalletStart());
     }
 
     // Handle web socket traffic
@@ -41,8 +46,9 @@ export function* initWallet(action) {
     console.log('Loaded witnesses');
     yield call(fetchWalletHistory, action);
     console.log('Loaded wallet history');
+    yield put(initWalletSuccess());
   } catch (error) {
-    yield put(createInitialWalletFail({
+    yield put(initWalletFailed({
       error,
       type: 'ERROR',
       message: 'Unable to init wallet.',
@@ -75,13 +81,14 @@ export function* fetchBalances(action) {
   try {
     const walletData = yield select(selectWallet());
     const balances = yield call(oClient.api.getBalances, walletData.addresses);
-    put(loadWalletBalancesSuccess(balances));
+    yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
     yield put(loadWalletBalancesFail({
       error,
       type: 'ERROR',
       message: 'Unable to fetch balances.',
     }));
+    console.error(error);
   }
 }
 
@@ -140,9 +147,8 @@ export function* subscribeToHub(action) {
     }));
     const { messageType, message } = yield wsPromise;
     if (messageType === 'justsaying' && message.subject && message.body) {
-      if (message.subject === 'exchange_rates' && message.body) {
+      if (message.subject === 'exchange_rates' && message.body && message.body.exchangeRates) {
         put(setExchangeRates(message.body));
-        console.log('Exchange rates updated')
       } else {
         console.log('Unhandled WS message', message);
       }
@@ -150,7 +156,28 @@ export function* subscribeToHub(action) {
       console.log('Unhandled WS message', message);
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+  }
+}
+
+export function* sendPayment(action) {
+  try {
+    const walletData = yield select(selectWallet());
+    const params = {
+      ...action.payload,
+      inputs: [walletData.addresses[walletData.address]]
+    };
+    const result = yield call(oClient.post.payment, params, walletData.wif);
+    yield call(fetchBalances, action);
+    yield call(fetchWalletHistory, action);
+    yield put(sendPaymentSuccess());
+  } catch (error) {
+    yield put(sendPaymentFail({
+      error,
+      type: 'ERROR',
+      message: 'Unable to send payment',
+    }));
+    console.error(error);
   }
 }
 
@@ -162,4 +189,5 @@ export default function* walletSagas() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
+  yield takeEvery(actionTypes.PAYMENT_SEND_START, sendPayment);
 }

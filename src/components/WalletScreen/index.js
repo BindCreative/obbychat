@@ -69,9 +69,6 @@ class WalletScreen extends React.Component {
             }
           </Content>
         }
-        {this.props.transactions.length === 0 &&
-          <Text style={styles.txNoData}>No transactions data</Text>
-        }
       </Container>
     );
   }

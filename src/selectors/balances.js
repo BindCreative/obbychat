@@ -14,7 +14,7 @@ export const selectWalletBalances = (walletAddress = null, includePending = fals
     if (balancesState[wallet]) {
       let total = 0;
       for (let [key, value] of Object.entries(balancesState[wallet])) {
-        total += value.stable;
+        total += value.stable + value.pending;
         if (includePending) {
           total += value.pending;
         }

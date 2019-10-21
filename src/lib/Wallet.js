@@ -44,16 +44,20 @@ export const createWallet = () => {
  */
 export const bytesToUnit = (n, unit) => {
   switch (unit) {
+    case 'BYTE':
     case 'B':
       return n;
+    case 'kBYTE':
     case 'kB':
       return n / 1000;
+    case 'MBYTE':
     case 'MB':
       return n / 1000000;
+    case 'GBYTE':
     case 'GB':
       return n / 1000000000;
     default:
-      return false;
+      return n;
   }
 }
 
@@ -65,16 +69,20 @@ export const bytesToUnit = (n, unit) => {
  */
 export const unitToBytes = (n, unit) => {
   switch (unit) {
+    case 'GBYTE':
     case 'GB':
       return n * 1000000000;
+    case 'MBYTE':
     case 'MB':
       return n * 1000000;
+    case 'kBYTE':
     case 'kB':
       return n * 1000;
+    case 'BYTE':
     case 'B':
       return n;
     default:
-      return false;
+      return n;
   }
 }
 

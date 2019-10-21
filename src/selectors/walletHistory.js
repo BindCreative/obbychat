@@ -16,7 +16,7 @@ export const selectTransactions = () => createSelector(
   ],
   (walletHistory, wallet) => {
     if (!walletHistory.history || !walletHistory.history.joints) {
-      return null;
+      return [];
     }
 
     let transactions = [];

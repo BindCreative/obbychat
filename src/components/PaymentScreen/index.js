@@ -7,11 +7,13 @@ import { View, Text } from 'native-base';
 import RNPickerSelect from 'react-native-picker-select';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 import _ from 'lodash';
+import { isValidAddress } from 'obyte/lib/utils';
 import Button from '../Button';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
+import { sendPaymentStart } from './../../actions/wallet';
 import { availableUnits, bytesToUnit, unitToBytes } from './../../lib/Wallet';
 
 
@@ -25,6 +27,8 @@ class PaymentScreen extends React.Component {
     this.pasteAddress = this.pasteAddress.bind(this);
     this.submitStep = this.submitStep.bind(this);
     this.goBack = this.goBack.bind(this);
+    this.sendPayment = this.sendPayment.bind(this);
+    this._validate = this._validate.bind(this);
     this.state = {
       step: 1,
       address: null,
@@ -45,7 +49,10 @@ class PaymentScreen extends React.Component {
   }
 
   changeValue(value, type) {
-    value = value;
+    if (isNaN(value) || !['primary', 'secondary'].includes(type)) {
+      return;
+    }
+
     let primaryValue, secondaryValue;
     const {
       primaryUnit,
@@ -53,6 +60,7 @@ class PaymentScreen extends React.Component {
     } = this.state;
     const { exchangeRates } = this.props;
 
+    // Calculate other value by exchange rate
     if (type === 'primary') {
       if (typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] != 'undefined') {
         secondaryValue = value * exchangeRates[`${primaryUnit}_${secondaryUnit}`];
@@ -61,8 +69,24 @@ class PaymentScreen extends React.Component {
       if (typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] != 'undefined') {
         primaryValue = value / exchangeRates[`${primaryUnit}_${secondaryUnit}`];
       }
-    } else {
-      return;
+    }
+    // Additional parsing
+    if (type === 'primary' && value > 0) {
+      if (secondaryUnit === 'USD') {
+        secondaryValue = _.round(secondaryValue, 2).toFixed(2);
+      } else if (secondaryUnit === 'BTC') {
+        secondaryValue = _.round(secondaryValue, 8).toFixed(8);
+      }
+    } else if (type === 'secondary' && value > 0) {
+      if (primaryUnit === 'BYTE') {
+        primaryValue = _.round(primaryValue);
+      } else if (primaryUnit === 'kBYTE') {
+        primaryValue = _.round(primaryValue, 3).toFixed(3);
+      } else if (primaryUnit === 'MBYTE') {
+        primaryValue = _.round(primaryValue, 6).toFixed(6);
+      } else if (primaryUnit === 'GBYTE') {
+        primaryValue = _.round(primaryValue, 9).toFixed(9);
+      }
     }
 
     this.setState({
@@ -95,11 +119,45 @@ class PaymentScreen extends React.Component {
   }
 
   submitStep() {
-    this.setState({ step: this.state.step + 1 })
+    if (this._validate()) {
+      if (this.state.step === 1) {
+        this.setState({ step: 2 });
+      } else if (this.state.step === 2) {
+        this.sendPayment();
+      }
+    }
   }
 
   goBack() {
     this.setState({ step: this.state.step - 1 })
+  }
+
+  sendPayment() {
+    const params = {
+      outputs: [
+        {
+          address: this.state.address,
+          amount: unitToBytes(this.state.primaryValue, this.state.primaryUnit),
+        }
+      ]
+    };
+    this.props.sendPayment(params);
+  }
+
+  _validate() {
+    if ([1, 2].includes(this.state.step) && !isValidAddress(this.state.address)) {
+      alert('Invalid address');
+      return false;
+    }
+
+    if ([2].includes(this.state.step)) {
+      if (isNaN(this.state.primaryValue)) {
+        alert('Invalid amount');
+        return false;
+      }
+    }
+
+    return true;
   }
 
   render() {
@@ -208,7 +266,9 @@ const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
 });
 
-mapDispatchToProps = () => ({});
+mapDispatchToProps = (dispatch) => ({
+  sendPayment: (data) => dispatch(sendPaymentStart(data)),
+});
 
 PaymentScreen = connect(mapStateToProps, mapDispatchToProps)(PaymentScreen);
 export default PaymentScreen;

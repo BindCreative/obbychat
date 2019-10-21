@@ -8,7 +8,7 @@ const initialState = {
   pubKey: null,
   path: null,
   wif: null,
-  address: 0, // index of current address
+  address: null, // index of current address
   addresses: [],
   witnesses: [],
 };
@@ -19,16 +19,14 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         ...action.payload.wallet,
-        addresses: ['UH2PYPG3LYLA2TAX4U2YEAMB665R3LFQ'], // DEV PURPOSES ONLY
-        address: 0,
       };
 
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {
         ...state,
         ...action.payload,
-        addresses: [...state.addresses, action.payload.address],
-        address: state.addresses.length ? state.addresses.length - 1 : 0,
+        addresses: [action.payload.address],
+        address: 0,
       };
 
     case actionTypes.WITNESSES_GET_SUCCESS:
@@ -44,7 +42,9 @@ function reducer(state = initialState, action) {
       }
 
     default:
-      return state;
+      return {
+        ...state,
+      };
   }
 }
 

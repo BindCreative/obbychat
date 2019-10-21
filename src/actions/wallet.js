@@ -15,7 +15,7 @@ export const initWalletFail = (payload) => ({
   payload,
 })
 
-export const createInitialWallet = () => ({
+export const createInitialWalletStart = () => ({
   type: actionTypes.INITIAL_WALLET_CREATE_START,
 })
 
@@ -36,4 +36,17 @@ export const getWitnessesSuccess = (payload) => ({
 
 export const resetWitnesses = () => ({
   type: actionTypes.WITNESSES_RESET,
+})
+
+export const sendPaymentStart = (payload) => ({
+  type: actionTypes.PAYMENT_SEND_START,
+  payload,
+})
+
+export const sendPaymentSuccess = () => ({
+  type: actionTypes.PAYMENT_SEND_SUCCESS,
+})
+
+export const sendPaymentFail = () => ({
+  type: actionTypes.PAYMENT_SEND_FAILED,
 })
