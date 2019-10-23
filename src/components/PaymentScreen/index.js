@@ -41,10 +41,13 @@ class PaymentScreen extends React.Component {
 
   componentDidMount() {
     if (_.get(this.props, 'navigation.state.params.walletAddress')) {
+      this.props.navigation.setParams({ title: 'Enter amount' });
       this.setState({
         address: this.props.navigation.state.params.walletAddress,
         step: 2,
       });
+    } else {
+      this.props.navigation.setParams({ title: 'Enter address' });
     }
   }
 
@@ -122,6 +125,7 @@ class PaymentScreen extends React.Component {
     if (this._validate()) {
       if (this.state.step === 1) {
         this.setState({ step: 2 });
+        this.props.navigation.setParams({ title: 'Enter amount' });
       } else if (this.state.step === 2) {
         this.sendPayment();
       }
@@ -129,6 +133,9 @@ class PaymentScreen extends React.Component {
   }
 
   goBack() {
+    if (this.state.step === 2) {
+      this.props.navigation.setParams({ title: 'Enter address' });
+    }
     this.setState({ step: this.state.step - 1 })
   }
 

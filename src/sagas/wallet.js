@@ -1,9 +1,10 @@
 import { takeLatest, takeEvery, call, put, select, delay } from '@redux-saga/core/effects';
-import NavigationService from './../navigation/service';
 import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
+import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/Wallet';
 import { actionTypes } from './../constants';
+import { setToastMessage } from './../actions/app';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -30,7 +31,6 @@ import { selectWallet } from './../selectors/wallet';
 export function* initWallet(action) {
   try {
     const walletData = yield select(selectWallet());
-    console.log(walletData.addresses);
     if (walletData.addresses.length < 1) {
       // New wallet
       yield put(createInitialWalletStart());
@@ -45,8 +45,8 @@ export function* initWallet(action) {
     yield call(fetchWalletHistory, action);
     yield put(initWalletSuccess({}));
   } catch (error) {
-    yield put(initWalletFail({
-      error,
+    yield put(initWalletFail());
+    yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to init wallet.',
     }));
@@ -81,8 +81,8 @@ export function* createInitialWallet(action) {
       seedWords: mnemonic.phrase,
     }));
   } catch (error) {
-    yield put(createInitialWalletFail({
-      error,
+    yield put(createInitialWalletFail());
+    yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to generate new wallet.',
     }));
@@ -96,8 +96,8 @@ export function* fetchBalances(action) {
     const balances = yield call(oClient.api.getBalances, walletData.addresses);
     yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
-    yield put(loadWalletBalancesFail({
-      error,
+    yield put(loadWalletBalancesFail());
+    yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to fetch balances.',
     }));
@@ -140,8 +140,8 @@ export function* fetchWalletHistory(action) {
     const history = yield historyPromise;
     yield put(loadWalletHistorySuccess(history));
   } catch (error) {
-    yield put(loadWalletHistoryFail({
-      error,
+    yield put(loadWalletHistoryFail());
+    yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to fetch transactions.',
     }));
@@ -169,6 +169,10 @@ export function* subscribeToHub(action) {
       //console.log('Unhandled WS message', message);
     }
   } catch (error) {
+    yield put(setToastMessage({
+      type: 'ERROR',
+      message: 'Connection to hub failed',
+    }));
     console.log(error);
   }
 }
@@ -179,16 +183,19 @@ export function* sendPayment(action) {
     const params = {
       ...action.payload
     };
-    console.log(params);
     
-    const result = yield call(oClient.post.payment, params, walletData.masterWif);
-    console.log('payment result', result);
+    yield call(oClient.post.payment, params, walletData.masterWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
+    yield call(NavigationService.back);
     yield put(sendPaymentSuccess());
+    yield put(setToastMessage({
+      type: 'SUCCESS',
+      message: 'Transaction completed'
+    }));
   } catch (error) {
-    yield put(sendPaymentFail({
-      error,
+    yield put(sendPaymentFail());
+    yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to send payment',
     }));

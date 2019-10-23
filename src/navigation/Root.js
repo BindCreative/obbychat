@@ -42,12 +42,12 @@ const RootNav = createStackNavigator({
   MakePayment: {
     screen: props => <PaymentScreen {...props} method='send' />,
     path: '/wallet/make-payment',
-    navigationOptions: {
-      title: 'Enter amount',
+    navigationOptions: ({ navigation }) => ({
+      title: typeof(navigation.state.params) === 'undefined' || typeof(navigation.state.params.title) === 'undefined' ? '': navigation.state.params.title,
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
       tabBarIcon: null,
       tabBarVisible: false,
-    }
+    })
   },
   RequestPayment: {
     screen: props => <PaymentScreen {...props} method='request' />,
