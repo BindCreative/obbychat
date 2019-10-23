@@ -1,40 +1,12 @@
 import { common } from './../constants';
-import Mnemonic from 'bitcore-mnemonic';
 import obyte from 'obyte';
-import { toWif, getChash160 } from 'obyte/lib/utils';
 
+
+export const testnet = common.network === 'testnet';
 
 export const oClient = common.network === 'testnet'
   ? new obyte.Client('wss://obyte.org/bb-test', { testnet })
   : new obyte.Client('wss://obyte.org/bb');
-
-/**
- * Creates new wallet address including path, keys, wif, seedwords
- * @returns {object}
- */
-export const createWallet = () => {
-  const testnet = common.network === 'testnet';
-  let mnemonic = new Mnemonic();
-  while (!Mnemonic.isValid(mnemonic.toString())) {
-    mnemonic = new Mnemonic();
-  }
-  const path = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
-  const xPrivKey = mnemonic.toHDPrivateKey('');
-  const { privateKey } = xPrivKey.derive(path);
-  const privKeyBuf = privateKey.bn.toBuffer({ size: 32 });
-  const wif = toWif(privKeyBuf, testnet);
-  const publicKey = privateKey.publicKey.toBuffer().toString('base64');
-  const address = getChash160(['sig', { publicKey }]);
-
-  return {
-    path,
-    publicKey,
-    address,
-    wif,
-    privateKey: xPrivKey.toString(),
-    seedWords: mnemonic.phrase,
-  };
-}
 
 /**
  * Converts bytes to other sizes
@@ -46,7 +18,7 @@ export const bytesToUnit = (n, unit) => {
   switch (unit) {
     case 'BYTE':
     case 'B':
-      return n;
+      return Number(n);
     case 'kBYTE':
     case 'kB':
       return n / 1000;
@@ -57,7 +29,7 @@ export const bytesToUnit = (n, unit) => {
     case 'GB':
       return n / 1000000000;
     default:
-      return n;
+      return Number(n);
   }
 }
 
@@ -80,9 +52,9 @@ export const unitToBytes = (n, unit) => {
       return n * 1000;
     case 'BYTE':
     case 'B':
-      return n;
+      return Number(n);
     default:
-      return n;
+      return Number(n);
   }
 }
 

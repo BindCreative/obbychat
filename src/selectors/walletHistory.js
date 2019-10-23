@@ -18,11 +18,16 @@ export const selectTransactions = () => createSelector(
     if (!walletHistory.history || !walletHistory.history.joints) {
       return [];
     }
-
     let transactions = [];
     for (let [ij, joint] of walletHistory.history.joints.entries()) {
       let amount = 0;
       let type;
+      let toAddress = [];
+      let fromAddress =  joint.unit.authors.reduce((combinedValue, value) => {
+        combinedValue.push(value.address);
+        return combinedValue;
+      }, []);
+
 
       for (let [ia, author] of joint.unit.authors.entries()) {
         type = wallet.addresses.includes(author.address) ? 'SENT' : 'RECEIVED';
@@ -30,19 +35,18 @@ export const selectTransactions = () => createSelector(
 
       for (let [im, message] of joint.unit.messages.entries()) {
         for (let [io, output] of message.payload.outputs.entries()) {
-          if (wallet.addresses.includes(output.address)) {
+          if (type === 'RECEIVED' && wallet.addresses.includes(output.address)) {
             amount += output.amount;
+          } else if (type === 'SENT' && !wallet.addresses.includes(output.address)) {
+            amount += output.amount;
+            toAddress.push(output.address);
           }
         }
       }
-
-      let address  = joint.unit.authors.reduce((combinedValue, value) => {
-        combinedValue.push(value.address);
-        return combinedValue;
-      }, []);
       
       transactions.push({
-        address,
+        toAddress,
+        fromAddress,
         amount,
         type,
         timestamp: joint.unit.timestamp,

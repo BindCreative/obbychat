@@ -1,13 +1,15 @@
 import { takeLatest, takeEvery, call, put, select, delay } from '@redux-saga/core/effects';
 import NavigationService from './../navigation/service';
-import { createWallet, oClient } from './../lib/Wallet';
-import { actionTypes, common } from './../constants';
+import Mnemonic from 'bitcore-mnemonic';
+import { toWif, getChash160 } from 'obyte/lib/utils';
+import { oClient, testnet } from './../lib/Wallet';
+import { actionTypes } from './../constants';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
   createInitialWalletFail,
   getWitnessesSuccess,
-  initWalletFailed,
+  initWalletFail,
   initWalletSuccess,
   sendPaymentSuccess,
   sendPaymentFail,
@@ -28,52 +30,63 @@ import { selectWallet } from './../selectors/wallet';
 export function* initWallet(action) {
   try {
     const walletData = yield select(selectWallet());
-
+    console.log(walletData.addresses);
     if (walletData.addresses.length < 1) {
       // New wallet
       yield put(createInitialWalletStart());
     }
 
-    // Handle web socket traffic
+    // Handle websocket traffic
     yield call(subscribeToHub, action);
-    console.log('Subscribed to hub');
     yield call(heartbeatToHub, action);
-    console.log('Started heartbeating to hub');
     // Fetch wallet data from hub
     yield call(fetchBalances, action);
-    console.log('Loaded balances');
     yield call(fetchWitnesses, action);
-    console.log('Loaded witnesses');
     yield call(fetchWalletHistory, action);
-    console.log('Loaded wallet history');
-    yield put(initWalletSuccess());
+    yield put(initWalletSuccess({}));
   } catch (error) {
-    yield put(initWalletFailed({
+    yield put(initWalletFail({
       error,
       type: 'ERROR',
       message: 'Unable to init wallet.',
     }));
+    console.log(error);
   }
 }
 
 export function* createInitialWallet(action) {
   try {
-    const wallet = yield call(createWallet);
+    let mnemonic = new Mnemonic();
+    while (!Mnemonic.isValid(mnemonic.toString())) {
+      mnemonic = new Mnemonic();
+    }
+    const password = '';
+    const masterPath = testnet ? "m/44'/1'/0'" : "m/44'/0'/0'"; // test without wallet /0
+    const path = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+    // Private key generations
+    const xPrivateKey = mnemonic.toHDPrivateKey(password);
+    const { privateKey } = xPrivateKey.derive(path);
+    const { masterPivateKey = privateKey } = xPrivateKey.derive(masterPath);
+    const masterPrivKeyBuf = masterPivateKey.bn.toBuffer({ size: 32 });
+    // Wif generations
+    const masterWif = toWif(masterPrivKeyBuf, testnet);
+    // Public key generation & address definition
+    const publicKey = privateKey.publicKey.toBuffer().toString('base64');
+    const address = getChash160(['sig', { pubkey: publicKey }]);
+   
     yield put(createInitialWalletSuccess({
-      seedWords: wallet.seedWords,
-      privKey: wallet.privateKey,
-      pubKey: wallet.publicKey,
-      address: wallet.address,
-      path: wallet.path,
-      wif: wallet.wif,
+      address,
+      masterWif,
+      xPrivateKey,
+      seedWords: mnemonic.phrase,
     }));
-    yield call(NavigationService.navigate, 'SeedWords');
   } catch (error) {
     yield put(createInitialWalletFail({
       error,
       type: 'ERROR',
       message: 'Unable to generate new wallet.',
     }));
+    console.log(error);
   }
 }
 
@@ -88,7 +101,7 @@ export function* fetchBalances(action) {
       type: 'ERROR',
       message: 'Unable to fetch balances.',
     }));
-    console.error(error);
+    console.log(error);
   }
 }
 
@@ -104,7 +117,7 @@ export function* fetchWitnesses(action) {
     const witnesses = yield witnessesPromise;
     yield put(getWitnessesSuccess(witnesses));
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 }
 
@@ -132,7 +145,7 @@ export function* fetchWalletHistory(action) {
       type: 'ERROR',
       message: 'Unable to fetch transactions.',
     }));
-    console.error(error);
+    console.log(error);
   }
 }
 
@@ -150,13 +163,13 @@ export function* subscribeToHub(action) {
       if (message.subject === 'exchange_rates' && message.body && message.body.exchangeRates) {
         put(setExchangeRates(message.body));
       } else {
-        console.log('Unhandled WS message', message);
+        //console.log('Unhandled WS message', message);
       }
     } else {
-      console.log('Unhandled WS message', message);
+      //console.log('Unhandled WS message', message);
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 }
 
@@ -164,10 +177,12 @@ export function* sendPayment(action) {
   try {
     const walletData = yield select(selectWallet());
     const params = {
-      ...action.payload,
-      inputs: [walletData.addresses[walletData.address]]
+      ...action.payload
     };
-    const result = yield call(oClient.post.payment, params, walletData.wif);
+    console.log(params);
+    
+    const result = yield call(oClient.post.payment, params, walletData.masterWif);
+    console.log('payment result', result);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
     yield put(sendPaymentSuccess());
@@ -177,7 +192,7 @@ export function* sendPayment(action) {
       type: 'ERROR',
       message: 'Unable to send payment',
     }));
-    console.error(error);
+    console.log(error);
   }
 }
 

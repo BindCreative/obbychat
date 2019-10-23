@@ -4,12 +4,10 @@ import { actionTypes } from '../constants';
 
 const initialState = {
   seedWords: null,
-  privKey: null,
-  pubKey: null,
-  path: null,
-  wif: null,
+  xPrivateKey: null,
   address: null, // index of current address
   addresses: [],
+  masterWif: null,
   witnesses: [],
 };
 
@@ -24,9 +22,11 @@ function reducer(state = initialState, action) {
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {
         ...state,
-        ...action.payload,
-        addresses: [action.payload.address],
+        seedWords: action.payload.seedWords,
         address: 0,
+        addresses: [action.payload.address],
+        xPrivateKey: action.payload.xPrivateKey,
+        masterWif: action.payload.masterWif,
       };
 
     case actionTypes.WITNESSES_GET_SUCCESS:

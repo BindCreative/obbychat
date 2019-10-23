@@ -72,7 +72,7 @@ export default StyleSheet.create({
   txType: {
     fontSize: 16,
     color: colors.black,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   transactions: {},
   transaction: {

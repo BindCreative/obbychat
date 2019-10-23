@@ -42,7 +42,10 @@ class WalletScreen extends React.Component {
           >{tx.timestamp}</Moment>
         </View>
         <Text style={styles.txType}>{tx.type}</Text>
-        <Text style={styles.txAddress}>{tx.address.join(', ')}</Text>
+        <Text style={styles.txAddress}>
+          {tx.type === 'RECEIVED' && tx.fromAddress.join(', ')}
+          {tx.type === 'SENT' && tx.toAddress.join(', ')}
+        </Text>
       </TouchableOpacity>
     );
   }
