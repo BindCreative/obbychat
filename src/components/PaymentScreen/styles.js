@@ -54,5 +54,5 @@ export default StyleSheet.create({
   confirmButton: {
     alignSelf: 'center',
     marginTop: 40,
-  }
+  },
 });

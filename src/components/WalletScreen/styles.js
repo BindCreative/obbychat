@@ -44,10 +44,13 @@ export default StyleSheet.create({
     color: colors.cyan.main,
   },
   txHeaderBlock: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
     marginTop: 30,
     marginBottom: 15,
   },
   txHeaderText: {
+    fontSize: 16,
     color: colors.grey.main,
   },
   txBoxRow: {
