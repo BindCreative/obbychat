@@ -40,7 +40,7 @@ class WalletScreen extends React.Component {
         <TouchableOpacity
           key={i}
           style={styles.transaction}
-          onPress={() => NavigationService.navigate('TransactionInfo')}
+          onPress={() => NavigationService.navigate('TransactionInfo', { transaction: tx})}
         >
           <View style={styles.txBoxRow}>
             <Text style={styles.txAmount}>{bytesToUnit(tx.amount, this.state.unit)} {this.state.unit}</Text>

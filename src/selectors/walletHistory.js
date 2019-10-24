@@ -49,6 +49,7 @@ export const selectTransactions = () => createSelector(
         fromAddress,
         amount,
         type,
+        unitId: joint.unit.unit,
         timestamp: joint.unit.timestamp,
         headersCommission: joint.unit.headers_commission,
         payloadCommission: joint.unit.payload_commission,

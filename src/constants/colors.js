@@ -2,11 +2,11 @@ export default {
   black: '#000000',
   white: '#ffffff',
   cyan: {
-    main: '#40C7D2',
-    dark: '#179aa6',
+    main: '#25C7D1',
   },
   grey: {
-    main: '#b4b4b4',
+    dark: '#221F2B',
+    main: '#9F9F9F',
     light: '#cdcdcd',
     lightest: '#f7f7f7',
   },
