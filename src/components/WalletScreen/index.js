@@ -7,6 +7,7 @@ import { Container, View, Text, Content } from 'native-base';
 import { Entypo } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import Moment from 'react-moment';
+import NavigationService from './../../navigation/service';
 import { selectAddresses } from './../../selectors/wallet';
 import { selectWalletBalances } from './../../selectors/balances';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
@@ -36,7 +37,11 @@ class WalletScreen extends React.Component {
   _renderTx(tx, i) {
     if (this.state.txType === 'ALL' || this.state.txType === tx.type) {
       return (
-        <TouchableOpacity key={i} style={styles.transaction}>
+        <TouchableOpacity
+          key={i}
+          style={styles.transaction}
+          onPress={() => NavigationService.navigate('TransactionInfo')}
+        >
           <View style={styles.txBoxRow}>
             <Text style={styles.txAmount}>{bytesToUnit(tx.amount, this.state.unit)} {this.state.unit}</Text>
             <Moment

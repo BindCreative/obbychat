@@ -8,6 +8,7 @@ import QRScannerScreen from '../components/QRScannerScreen';
 import QRCodeScreen from '../components/QRCodeScreen';
 import PaymentScreen from './../components/PaymentScreen';
 import SeedWordsScreen from './../components/SeedWordsScreen';
+import TransactionInfoScreen from './../components/TransactionInfoScreen';
 import Header from './../components/Header';
 
 
@@ -65,6 +66,16 @@ const RootNav = createStackNavigator({
     navigationOptions: {
       title: 'Backup',
       header: null,
+      tabBarIcon: null,
+      tabBarVisible: false,
+    }
+  },
+  TransactionInfo: {
+    screen: props => <TransactionInfoScreen {...props} />,
+    path: '/wallet/transaction',
+    navigationOptions: {
+      title: 'Transaction',
+      header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
       tabBarIcon: null,
       tabBarVisible: false,
     }
