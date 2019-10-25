@@ -23,6 +23,11 @@ export const selectAddresses = () => createSelector(
   state => state.addresses,
 );
 
+export const selectCurrentAddress = () => createSelector(
+  getWalletState,
+  state => state.addresses[state.address],
+);
+
 export const selectWitnesses = () => createSelector(
   getWalletState,
   state => state.witnesses,

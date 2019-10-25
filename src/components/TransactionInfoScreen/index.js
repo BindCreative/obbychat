@@ -12,10 +12,10 @@ import styles from './styles';
 class TransactionInfoScreen extends React.Component {
 
   render() {
-    if (!_.get(this.props, 'navigation.state.params.transaction')) {
+    const transaction = _.get(this.props, 'navigation.state.params.transaction');
+    if (!transaction) {
       alert('Invalid transaction data');
     }
-    const { transaction } = this.props.navigation.state.params;
     const amountInDollars = (bytesToUnit(transaction.amount, 'GB') * this.props.exchangeRates.GBYTE_USD).toFixed(2);
 
     return (

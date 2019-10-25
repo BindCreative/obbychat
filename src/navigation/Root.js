@@ -21,7 +21,7 @@ const RootNav = createStackNavigator({
     path: '/chat/scan',
   },
   MyQR: {
-    screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} qrData={{ foo: 'bar' }} backRoute='ChatStack' />,
+    screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} backRoute='ChatStack' />,
     path: '/chat/my-qr',
     navigationOptions: {
       header: props => <Header {...props} size='compact' titlePosition='center' hasBackButton />,
@@ -33,7 +33,7 @@ const RootNav = createStackNavigator({
     path: '/wallet/scan',
   },
   MyWalletQR: {
-    screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} qrData={{ foo: 'bar' }} backRoute='WalletStack' />,
+    screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} backRoute='WalletStack' />,
     path: '/wallet/my-qr',
     navigationOptions: {
       title: 'My wallet address',

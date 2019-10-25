@@ -1,7 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity } from 'react-native';
 import { View } from 'native-base';
 import { withNavigation } from 'react-navigation';
+import { selectCurrentAddress } from './../../selectors/wallet';
 import SendIcon from './../../assets/images/icon-send.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
@@ -24,7 +27,9 @@ class ActionsBar extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.iconButton}
-          onPress={() =>  this.props.navigation.navigate('MyWalletQR')}
+          onPress={() =>  this.props.navigation.navigate('MyWalletQR', {
+            qrData: `obbychat:${this.props.currentAddress}`,
+          })}
         >
           <QRIcon
             style={styles.icon}
@@ -47,4 +52,12 @@ class ActionsBar extends React.Component {
   }
 }
 
+
+const mapStateToProps = createStructuredSelector({
+  currentAddress: selectCurrentAddress(),
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+ActionsBar = connect(mapStateToProps, mapDispatchToProps)(ActionsBar);
 export default withNavigation(ActionsBar);
