@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity } from 'react-native';
@@ -62,7 +61,7 @@ class WalletScreen extends React.Component {
   }
 
   render() {
-    const balanceInDollars = ((this.props.walletBalance / 1000000000) * this.props.exchangeRates.GBYTE_USD).toFixed(2);
+    const balanceInDollars = (bytesToUnit(this.props.walletBalance, 'GB') * this.props.exchangeRates.GBYTE_USD).toFixed(2);
     const txTypes = [
       { label: 'Received', value: 'RECEIVED' },
       { label: 'Sent', value: 'SENT' },
