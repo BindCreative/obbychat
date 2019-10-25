@@ -17,7 +17,7 @@ const RootNav = createStackNavigator({
     screen: MainStack,
   },
   ContactScanner: {
-    screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} backRoute='ChatStack' />,
+    screen: props => <QRScannerScreen {...props} type='DEVICE_ADDRESS' backRoute='ChatStack' />,
     path: '/chat/scan',
   },
   MyQR: {
@@ -29,7 +29,7 @@ const RootNav = createStackNavigator({
     },
   },
   WalletScanner: {
-    screen: props => <QRScannerScreen {...props} onScanned={({ type, data }) => console.log(type, data)} backRoute='WalletStack' />,
+    screen: props => <QRScannerScreen {...props} type='WALLET_ADDRESS' backRoute='WalletStack' />,
     path: '/wallet/scan',
   },
   MyWalletQR: {

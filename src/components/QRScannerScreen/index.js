@@ -12,6 +12,7 @@ import styles from './styles';
 class QRScannerScreen extends React.Component {
   constructor(props) {
     super(props);
+    this.handleBarCodeScanned = this.handleBarCodeScanned.bind(this);
     this.state = {
       hasCameraPermission: null,
       scanned: false,
@@ -29,10 +30,17 @@ class QRScannerScreen extends React.Component {
       hasCameraPermission: status === 'granted',
     });
   };
-
+  
   handleBarCodeScanned = ({ type, data }) => {
     this.setState({ scanned: true });
-    this.props.onScanned({ type, data });
+    switch(this.props.type) {
+      case 'WALLET_ADDRESS':
+        return this.props.navigation.navigate('MakePayment', { walletAddress: data.replace(/^.*:/, '') });
+      case 'DEVICE_ADDRESS':
+        return this.props.navigation.navigate('ChatList');
+      default:
+        return console.log('Invalid qr code type provided');
+    }
   };
 
   componentWillUnmount() {
@@ -77,14 +85,15 @@ class QRScannerScreen extends React.Component {
 }
 
 QRScannerScreen.defaultProps = {
+  type: 'WALLET_ADDRESS',
   tint: 'dark',
   intensity: 80,
 };
 
 QRScannerScreen.propTypes = {
+  type: PropTypes.string.isRequired,
   tint: PropTypes.string.isRequired,
   intensity: PropTypes.number.isRequired,
-  onScanned: PropTypes.func.isRequired,
 };
 
 export default QRScannerScreen;
