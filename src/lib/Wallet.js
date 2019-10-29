@@ -1,5 +1,5 @@
-import { common } from './../constants';
 import obyte from 'obyte';
+import { common } from './../constants';
 
 
 export const testnet = common.network === 'testnet';
