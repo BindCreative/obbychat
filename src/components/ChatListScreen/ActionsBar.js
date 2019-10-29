@@ -1,7 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity } from 'react-native';
 import { View } from 'native-base';
 import { withNavigation } from 'react-navigation';
+import { selectDeviceAddress } from './../../selectors/wallet';
 import AddContactIcon from './../../assets/images/icon-person-add.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
@@ -17,7 +20,12 @@ class ActionsBar extends React.Component {
           <AddContactIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
         */}
-        <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('MyQR')}>
+        <TouchableOpacity 
+          style={styles.iconButton}
+          onPress={() =>  this.props.navigation.navigate('MyQR', {
+            qrData: `obyte-tn:${this.props.deviceAddress}`,
+          })}
+        >
           <QRIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconButton} onPress={() => this.props.navigation.navigate('ContactScanner')}>
@@ -28,4 +36,11 @@ class ActionsBar extends React.Component {
   }
 }
 
+const mapStateToProps = createStructuredSelector({
+  deviceAddress: selectDeviceAddress(),
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+ActionsBar = connect(mapStateToProps, mapDispatchToProps)(ActionsBar);
 export default withNavigation(ActionsBar);

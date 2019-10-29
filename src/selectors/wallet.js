@@ -1,4 +1,7 @@
 import { createSelector } from 'reselect';
+import { toWif, getChash160 } from 'obyte/lib/utils';
+import Mnemonic from 'bitcore-mnemonic';
+import { testnet } from './../lib/Wallet';
 
 
 export const getWalletState = (state) => state.secure.wallet;
@@ -13,19 +16,35 @@ export const selectSeedWordsArray = () => createSelector(
   state => state.seedWords.split(' '),
 );
 
-export const selectInitialAddress = () => createSelector(
+export const selectWalletAddress = () => createSelector(
   getWalletState,
-  state => state.addresses.length ? state.addresses[0] : null,
+  state => {
+    const mnemonic = new Mnemonic(state.seedWords);
+    const xPrivKey = mnemonic.toHDPrivateKey();
+    const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+    const { privateKey } = xPrivKey.derive(addressPath);
+    const publicKey = privateKey.publicKey.toBuffer().toString('base64');
+    const address = getChash160(['sig', { pubkey: publicKey }]);
+    return address;
+  },
 );
 
-export const selectAddresses = () => createSelector(
+export const selectDeviceAddress = () => createSelector(
   getWalletState,
-  state => state.addresses,
+  state => state.deviceAddress,
 );
 
-export const selectCurrentAddress = () => createSelector(
+export const selectWalletWif = () => createSelector(
   getWalletState,
-  state => state.addresses[state.address],
+  state => {
+    const mnemonic = new Mnemonic(state.seedWords);
+    const xPrivKey = mnemonic.toHDPrivateKey();
+    const walletPath = testnet ? "m/44'/1'0'" : "m/44'/0'0'";
+    const { privateKey } = xPrivKey.derive(walletPath);
+    const walletPrivKeyBuf = privateKey.bn.toBuffer({ size: 32 });
+    const walletWif = toWif(walletPrivKeyBuf, testnet);
+    return walletWif;
+  }
 );
 
 export const selectWitnesses = () => createSelector(

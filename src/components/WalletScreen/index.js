@@ -7,7 +7,6 @@ import { Entypo } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
 import Moment from 'react-moment';
 import NavigationService from './../../navigation/service';
-import { selectAddresses } from './../../selectors/wallet';
 import { selectWalletBalances } from './../../selectors/balances';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { selectTransactions } from './../../selectors/walletHistory';
@@ -121,7 +120,6 @@ class WalletScreen extends React.Component {
 
 const mapStateToProps = createStructuredSelector({
   walletBalance: selectWalletBalances(),
-  walletAddresses: selectAddresses(),
   exchangeRates: selectExchangeRates(),
   transactions: selectTransactions(),
 });

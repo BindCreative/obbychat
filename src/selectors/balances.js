@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { getWalletState } from './wallet';
+import { selectWalletAddress } from './wallet';
 
 
 export const getBalancesState = (state) => state.main.balances;
@@ -7,10 +7,10 @@ export const getBalancesState = (state) => state.main.balances;
 export const selectWalletBalances = (walletAddress = null, includePending = false) => createSelector(
   [
     getBalancesState, 
-    getWalletState,
+    selectWalletAddress(),
   ],
-  (balancesState, walletState) => {
-    const wallet = walletAddress ? walletAddress : walletState.addresses[walletState.address];
+  (balancesState, currentWalletAddress) => {
+    const wallet = walletAddress ? walletAddress : currentWalletAddress;
     if (balancesState[wallet]) {
       let total = 0;
       for (let [key, value] of Object.entries(balancesState[wallet])) {

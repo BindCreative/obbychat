@@ -1,6 +1,7 @@
-import { takeLatest, takeEvery, call, put, select, delay } from '@redux-saga/core/effects';
+import { takeLatest, takeEvery, call, put, select } from '@redux-saga/core/effects';
+import { } from '@redux-saga/core';
 import Mnemonic from 'bitcore-mnemonic';
-import { toWif, getChash160 } from 'obyte/lib/utils';
+import { sign } from 'obyte/lib/internal';
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/Wallet';
 import { actionTypes } from './../constants';
@@ -25,20 +26,23 @@ import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
 } from './../actions/balances';
-import { selectWallet } from './../selectors/wallet';
+import {
+  selectWallet,
+  selectWalletAddress,
+  selectWalletWif,
+  selectWitnesses,
+} from './../selectors/wallet';
 
 
 export function* initWallet(action) {
   try {
     const walletData = yield select(selectWallet());
-    if (walletData.addresses.length < 1) {
-      // New wallet
+    if (walletData.password === null || walletData.seedWords === null) {
       yield put(createInitialWalletStart());
     }
 
     // Handle websocket traffic
     yield call(subscribeToHub, action);
-    yield call(heartbeatToHub, action);
     // Fetch wallet data from hub
     yield call(fetchBalances, action);
     yield call(fetchWitnesses, action);
@@ -56,44 +60,30 @@ export function* initWallet(action) {
 
 export function* createInitialWallet(action) {
   try {
+    const password = '';
     let mnemonic = new Mnemonic();
     while (!Mnemonic.isValid(mnemonic.toString())) {
       mnemonic = new Mnemonic();
     }
-    const password = '';
-    const masterPath = testnet ? "m/44'/1'/0'" : "m/44'/0'/0'"; // test without wallet /0
-    const path = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
-    // Private key generations
-    const xPrivateKey = mnemonic.toHDPrivateKey(password);
-    const { privateKey } = xPrivateKey.derive(path);
-    const { masterPivateKey = privateKey } = xPrivateKey.derive(masterPath);
-    const masterPrivKeyBuf = masterPivateKey.bn.toBuffer({ size: 32 });
-    // Wif generations
-    const masterWif = toWif(masterPrivKeyBuf, testnet);
-    // Public key generation & address definition
-    const publicKey = privateKey.publicKey.toBuffer().toString('base64');
-    const address = getChash160(['sig', { pubkey: publicKey }]);
-   
+
     yield put(createInitialWalletSuccess({
-      address,
-      masterWif,
-      xPrivateKey,
+      password,
       seedWords: mnemonic.phrase,
     }));
   } catch (error) {
+    console.log(error);
     yield put(createInitialWalletFail());
     yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to generate new wallet.',
     }));
-    console.log(error);
   }
 }
 
 export function* fetchBalances(action) {
   try {
-    const walletData = yield select(selectWallet());
-    const balances = yield call(oClient.api.getBalances, walletData.addresses);
+    const walletAddress = yield select(selectWalletAddress());
+    const balances = yield call(oClient.api.getBalances, [walletAddress]);
     yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
     yield put(loadWalletBalancesFail());
@@ -123,11 +113,11 @@ export function* fetchWitnesses(action) {
 
 export function* fetchWalletHistory(action) {
   try {
-    yield put(loadWalletHistory());
-    const walletData = yield select(selectWallet());
+    const witnesses = yield select(selectWitnesses());
+    const walletAddress = yield select(selectWalletAddress());
     const params = {
-      witnesses: walletData.witnesses,
-      addresses: walletData.addresses
+      witnesses: witnesses,
+      addresses: [walletAddress],
     };
 
     const historyPromise = new Promise((resolve, reject) => oClient.api.getHistory(params, (err, history) => {
@@ -151,23 +141,12 @@ export function* fetchWalletHistory(action) {
 
 export function* subscribeToHub(action) {
   try {
-    const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ messageType, message });
-      }
-    }));
-    const { messageType, message } = yield wsPromise;
-    if (messageType === 'justsaying' && message.subject && message.body) {
-      if (message.subject === 'exchange_rates' && message.body && message.body.exchangeRates) {
-        put(setExchangeRates(message.body));
-      } else {
-        //console.log('Unhandled WS message', message);
-      }
-    } else {
-      //console.log('Unhandled WS message', message);
-    }
+    oClient.client.ws.addEventListener('message', data => {
+      const message = JSON.parse(data.data);
+      const error = message[1].response ? message[1].response.error || null : null;
+      const result = error ? null : message[1].response || null;
+    });
+    yield call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
   } catch (error) {
     yield put(setToastMessage({
       type: 'ERROR',
@@ -179,12 +158,12 @@ export function* subscribeToHub(action) {
 
 export function* sendPayment(action) {
   try {
-    const walletData = yield select(selectWallet());
+    const walletWif = yield select(selectWalletWif());
     const params = {
       ...action.payload
     };
-    
-    yield call(oClient.post.payment, params, walletData.masterWif);
+
+    yield call(oClient.post.payment, params, walletWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
     yield call(NavigationService.back);
@@ -201,10 +180,6 @@ export function* sendPayment(action) {
     }));
     console.log(error);
   }
-}
-
-export function* heartbeatToHub(action) {
-  call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
 }
 
 export default function* walletSagas() {
