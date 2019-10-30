@@ -1,13 +1,10 @@
-import { takeLatest, takeEvery, call, put, take, select } from '@redux-saga/core/effects';
-import { channel } from '@redux-saga/core';
+import { takeLatest, takeEvery, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
-import Crypto from 'crypto';
-import { sign } from 'obyte/lib/internal';
 import NavigationService from './../navigation/service';
-import { oClient, testnet } from './../lib/Wallet';
-import { getDeviceMessageHashToSign } from './../lib/OCustom';
+import { oClient } from './../lib/OCustom';
 import { actionTypes } from './../constants';
 import { setToastMessage } from './../actions/app';
+import { subscribeToHub } from './device';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -23,7 +20,6 @@ import {
   loadWalletHistorySuccess,
   loadWalletHistoryFail,
 } from '../actions/walletHistory';
-import { setExchangeRates } from './../actions/exchangeRates';
 import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
@@ -33,11 +29,8 @@ import {
   selectWalletAddress,
   selectWalletWif,
   selectWitnesses,
-  selectPermanentDeviceKeyObj,
 } from './../selectors/wallet';
 
-
-export const oChannel = channel();
 
 export function* initWallet(action) {
   try {
@@ -51,8 +44,8 @@ export function* initWallet(action) {
     // Fetch wallet data from hub
     yield call(fetchBalances, action);
     yield call(fetchWitnesses, action);
-    yield call(fetchWalletHistory, action);
-    yield put(initWalletSuccess({}));
+    yield put(loadWalletHistory());
+    yield put(initWalletSuccess());
   } catch (error) {
     yield put(initWalletFail());
     yield put(setToastMessage({
@@ -170,60 +163,9 @@ export function* sendPayment(action) {
   }
 }
 
-export function* subscribeToHub(action) {
-  try {
-    oClient.subscribe((err, result) => {
-      if (err) {
-        throw new Error('Hub socket error');
-      } else {
-        const [messageType, message] = result;
-        oChannel.put({ type: messageType, payload: message });
-      }
-    });
-    yield call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
-  } catch (error) {
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Hub connection error',
-    }));
-    console.log(error);
-  }
-}
-
-export function* watchHubMessages() {
-  while (true) {
-    const { type, payload } = yield take(oChannel)
-
-    if (type === 'justsaying') {
-      switch (payload.subject) {
-        case 'hub/challenge':
-          yield call(loginToHub, payload.body);
-          return;
-        default:
-          console.log(payload.body);
-      }
-    }
-  }
-}
-
-export function* loginToHub(challenge) {
-  const permanentDeviceKey = yield select(selectPermanentDeviceKeyObj());
-  const deviceTempPrivKey = Crypto.randomBytes(32);
-  const devicePrevTempPrivKey = Crypto.randomBytes(32);
-
-  const objLogin = { challenge, pubkey: permanentDeviceKey.pub_b64 };
-  objLogin.signature = sign(
-    getDeviceMessageHashToSign(objLogin),
-    permanentDeviceKey.priv,
-  );
-  oClient.justsaying('hub/login', objLogin);
-
-}
-
-export default function* walletSagas() {
+export default function* watch() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
   yield takeEvery(actionTypes.PAYMENT_SEND_START, sendPayment);
-  yield watchHubMessages();
 }

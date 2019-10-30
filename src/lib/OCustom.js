@@ -1,6 +1,22 @@
 import _ from 'lodash';
 import Crypto from 'crypto';
+import obyte from 'obyte';
+import { common } from './../constants';
 
+
+export const testnet = common.network === 'testnet';
+
+export const hubAddress = common.network === 'testnet'
+  ? 'obyte.org/bb-test'
+  : 'obyte.org/bb';
+
+export const oClient = common.network === 'testnet'
+  ? new obyte.Client('wss://obyte.org/bb-test', { testnet })
+  : new obyte.Client('wss://obyte.org/bb');
+
+export const urlHost = common.network === 'testnet'
+  ? 'obyte-tn:'
+  : 'obyte:';
 
 export const getDeviceMessageHashToSign = (objDeviceMessage) => {
   var objNakedDeviceMessage = _.clone(objDeviceMessage);
