@@ -1,13 +1,3 @@
-import { common } from './../constants';
-import obyte from 'obyte';
-
-
-export const testnet = common.network === 'testnet';
-
-export const oClient = common.network === 'testnet'
-  ? new obyte.Client('wss://obyte.org/bb-test', { testnet })
-  : new obyte.Client('wss://obyte.org/bb');
-
 /**
  * Converts bytes to other sizes
  * @param {int} n - in bytes (B)

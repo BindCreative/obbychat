@@ -6,7 +6,7 @@ import { Container, View, Content, List, ListItem, Text, Left, Body, Right, Icon
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
 import Header from './../Header';
-import { selectInitialAddress } from './../../selectors/wallet';
+import { selectWalletAddress } from './../../selectors/wallet';
 import styles from './styles';
 
 
@@ -19,13 +19,13 @@ class SettingsScreen extends React.Component {
   render() {
     const {
       navigation,
-      initialWalletAddress
+      walletAddress,
     } = this.props;
     
     return (
       <Container style={styles.content}>
         <View style={styles.userInfo}>
-          <UserAvatar size={64} name={initialWalletAddress} src={makeBlockie(initialWalletAddress)} />
+          <UserAvatar size={64} name={walletAddress} src={makeBlockie(walletAddress)} />
         </View>
         <Content>
           <List style={styles.list}>
@@ -46,11 +46,11 @@ class SettingsScreen extends React.Component {
 }
 
 SettingsScreen.propTypes = {
-  initialWalletAddress: PropTypes.string,
+  walletAddress: PropTypes.string,
 };
 
 const mapStateToProps = createStructuredSelector({
-  initialWalletAddress: selectInitialAddress(),
+  walletAddress: selectWalletAddress(),
 });
 
 SettingsScreen = connect(mapStateToProps)(SettingsScreen);

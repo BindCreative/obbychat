@@ -1,5 +1,5 @@
 import { createSelector } from 'reselect';
-import { getWalletState } from './wallet';
+import { getWalletState, selectWalletAddress } from './wallet';
 
 
 export const getWalletHistoryState = (state) => state.main.walletHistory;
@@ -13,8 +13,9 @@ export const selectTransactions = () => createSelector(
   [
     getWalletHistoryState,
     getWalletState,
+    selectWalletAddress(),
   ],
-  (walletHistory, wallet) => {
+  (walletHistory, wallet, walletAddress) => {
     if (!walletHistory.history || !walletHistory.history.joints) {
       return [];
     }
@@ -30,14 +31,14 @@ export const selectTransactions = () => createSelector(
 
 
       for (let [ia, author] of joint.unit.authors.entries()) {
-        type = wallet.addresses.includes(author.address) ? 'SENT' : 'RECEIVED';
+        type = walletAddress === author.address ? 'SENT' : 'RECEIVED';
       }
 
       for (let [im, message] of joint.unit.messages.entries()) {
         for (let [io, output] of message.payload.outputs.entries()) {
-          if (type === 'RECEIVED' && wallet.addresses.includes(output.address)) {
+          if (type === 'RECEIVED' && walletAddress === output.address) {
             amount += output.amount;
-          } else if (type === 'SENT' && !wallet.addresses.includes(output.address)) {
+          } else if (type === 'SENT' && !walletAddress === output.address) {
             amount += output.amount;
             toAddress.push(output.address);
           }

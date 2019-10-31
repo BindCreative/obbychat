@@ -76,6 +76,7 @@
     "redux-persist": "^6.0.0",
     "redux-persist-expo-securestore": "^2.0.0",
     "reselect": "^4.0.0",
+    "secp256k1": "^3.7.1",
     "stream-browserify": "^1.0.0",
     "string_decoder": "^0.10.31",
     "timers-browserify": "^1.4.2",

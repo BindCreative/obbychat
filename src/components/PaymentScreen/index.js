@@ -14,7 +14,7 @@ import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { sendPaymentStart } from './../../actions/wallet';
-import { availableUnits, bytesToUnit, unitToBytes } from './../../lib/Wallet';
+import { availableUnits, unitToBytes } from './../../lib/Wallet';
 
 
 class PaymentScreen extends React.Component {

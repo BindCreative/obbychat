@@ -1,10 +1,10 @@
-import { takeLatest, takeEvery, call, put, select, delay } from '@redux-saga/core/effects';
+import { takeLatest, takeEvery, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
-import { toWif, getChash160 } from 'obyte/lib/utils';
 import NavigationService from './../navigation/service';
-import { oClient, testnet } from './../lib/Wallet';
+import { oClient } from './../lib/OCustom';
 import { actionTypes } from './../constants';
 import { setToastMessage } from './../actions/app';
+import { subscribeToHub } from './device';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -20,30 +20,32 @@ import {
   loadWalletHistorySuccess,
   loadWalletHistoryFail,
 } from '../actions/walletHistory';
-import { setExchangeRates } from './../actions/exchangeRates';
 import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
 } from './../actions/balances';
-import { selectWallet } from './../selectors/wallet';
+import {
+  selectWallet,
+  selectWalletAddress,
+  selectWalletWif,
+  selectWitnesses,
+} from './../selectors/wallet';
 
 
-export function* initWallet(action) {
+export function* initWallet() {
   try {
     const walletData = yield select(selectWallet());
-    if (walletData.addresses.length < 1) {
-      // New wallet
+    if (walletData.password === null || walletData.seedWords === null) {
       yield put(createInitialWalletStart());
     }
 
     // Handle websocket traffic
-    yield call(subscribeToHub, action);
-    yield call(heartbeatToHub, action);
+    yield call(subscribeToHub);
     // Fetch wallet data from hub
-    yield call(fetchBalances, action);
-    yield call(fetchWitnesses, action);
-    yield call(fetchWalletHistory, action);
-    yield put(initWalletSuccess({}));
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
+    yield put(loadWalletHistory());
+    yield put(initWalletSuccess());
   } catch (error) {
     yield put(initWalletFail());
     yield put(setToastMessage({
@@ -56,44 +58,30 @@ export function* initWallet(action) {
 
 export function* createInitialWallet(action) {
   try {
+    const password = '';
     let mnemonic = new Mnemonic();
     while (!Mnemonic.isValid(mnemonic.toString())) {
       mnemonic = new Mnemonic();
     }
-    const password = '';
-    const masterPath = testnet ? "m/44'/1'/0'" : "m/44'/0'/0'"; // test without wallet /0
-    const path = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
-    // Private key generations
-    const xPrivateKey = mnemonic.toHDPrivateKey(password);
-    const { privateKey } = xPrivateKey.derive(path);
-    const { masterPivateKey = privateKey } = xPrivateKey.derive(masterPath);
-    const masterPrivKeyBuf = masterPivateKey.bn.toBuffer({ size: 32 });
-    // Wif generations
-    const masterWif = toWif(masterPrivKeyBuf, testnet);
-    // Public key generation & address definition
-    const publicKey = privateKey.publicKey.toBuffer().toString('base64');
-    const address = getChash160(['sig', { pubkey: publicKey }]);
-   
+
     yield put(createInitialWalletSuccess({
-      address,
-      masterWif,
-      xPrivateKey,
+      password,
       seedWords: mnemonic.phrase,
     }));
   } catch (error) {
+    console.log(error);
     yield put(createInitialWalletFail());
     yield put(setToastMessage({
       type: 'ERROR',
       message: 'Unable to generate new wallet.',
     }));
-    console.log(error);
   }
 }
 
 export function* fetchBalances(action) {
   try {
-    const walletData = yield select(selectWallet());
-    const balances = yield call(oClient.api.getBalances, walletData.addresses);
+    const walletAddress = yield select(selectWalletAddress());
+    const balances = yield call(oClient.api.getBalances, [walletAddress]);
     yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
     yield put(loadWalletBalancesFail());
@@ -123,11 +111,11 @@ export function* fetchWitnesses(action) {
 
 export function* fetchWalletHistory(action) {
   try {
-    yield put(loadWalletHistory());
-    const walletData = yield select(selectWallet());
+    const witnesses = yield select(selectWitnesses());
+    const walletAddress = yield select(selectWalletAddress());
     const params = {
-      witnesses: walletData.witnesses,
-      addresses: walletData.addresses
+      witnesses: witnesses,
+      addresses: [walletAddress],
     };
 
     const historyPromise = new Promise((resolve, reject) => oClient.api.getHistory(params, (err, history) => {
@@ -149,42 +137,14 @@ export function* fetchWalletHistory(action) {
   }
 }
 
-export function* subscribeToHub(action) {
-  try {
-    const wsPromise = new Promise((resolve, reject) => oClient.subscribe((err, [messageType, message]) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ messageType, message });
-      }
-    }));
-    const { messageType, message } = yield wsPromise;
-    if (messageType === 'justsaying' && message.subject && message.body) {
-      if (message.subject === 'exchange_rates' && message.body && message.body.exchangeRates) {
-        put(setExchangeRates(message.body));
-      } else {
-        //console.log('Unhandled WS message', message);
-      }
-    } else {
-      //console.log('Unhandled WS message', message);
-    }
-  } catch (error) {
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Connection to hub failed',
-    }));
-    console.log(error);
-  }
-}
-
 export function* sendPayment(action) {
   try {
-    const walletData = yield select(selectWallet());
+    const walletWif = yield select(selectWalletWif());
     const params = {
       ...action.payload
     };
-    
-    yield call(oClient.post.payment, params, walletData.masterWif);
+
+    yield call(oClient.post.payment, params, walletWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
     yield call(NavigationService.back);
@@ -203,11 +163,7 @@ export function* sendPayment(action) {
   }
 }
 
-export function* heartbeatToHub(action) {
-  call(setInterval, () => oClient.api.heartbeat(), 10 * 1000);
-}
-
-export default function* walletSagas() {
+export default function* watch() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
