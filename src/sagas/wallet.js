@@ -32,7 +32,7 @@ import {
 } from './../selectors/wallet';
 
 
-export function* initWallet(action) {
+export function* initWallet() {
   try {
     const walletData = yield select(selectWallet());
     if (walletData.password === null || walletData.seedWords === null) {
@@ -40,10 +40,10 @@ export function* initWallet(action) {
     }
 
     // Handle websocket traffic
-    yield call(subscribeToHub, action);
+    yield call(subscribeToHub);
     // Fetch wallet data from hub
-    yield call(fetchBalances, action);
-    yield call(fetchWitnesses, action);
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
     yield put(loadWalletHistory());
     yield put(initWalletSuccess());
   } catch (error) {
