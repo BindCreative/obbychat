@@ -1,12 +1,12 @@
 import Mnemonic from 'bitcore-mnemonic';
 import { createSelector } from 'reselect';
 import { publicKeyCreate } from 'secp256k1';
-import { toWif, fromWif } from 'obyte/lib/utils';
+import { toWif, fromWif, getChash160 } from 'obyte/lib/utils';
 import { testnet } from './../lib/OCustom';
 import { getWalletState } from './wallet';
 
 
-export const getAppState = (state) => state.main.app;
+export const getDeviceState = (state) => state.main.device;
 
 export const selectDeviceWif = () => createSelector(
   getWalletState,
@@ -21,6 +21,16 @@ export const selectDeviceWif = () => createSelector(
   }
 );
 
+export const selectDeviceAddress = () => createSelector(
+  getWalletState,
+  selectDeviceWif(),
+  (state, deviceWif) => {
+    const devicePrivKey = fromWif(deviceWif, testnet).privateKey;
+    const devicePubKey = publicKeyCreate(devicePrivKey, true).toString('base64');
+    const myDeviceAddress = `0${getChash160(devicePubKey)}`;
+    return myDeviceAddress;
+  },
+);
 export const selectDevicePrivKey = () => createSelector(
   selectDeviceWif(),
   wif => {
@@ -38,13 +48,17 @@ export const selectDevicePubKey = () => createSelector(
 export const selectPermanentDeviceKeyObj = () => createSelector(
   selectDevicePrivKey(),
   selectDevicePubKey(),
-  (priv, pub_b64) => {
-    return { priv, pub_b64 };
+  (priv, pubB64) => {
+    return { priv, pubB64 };
   }
 );
 
 
 export const selectDeviceTempKeyData = () => createSelector(
-  getAppState,
-  state => state.deviceTempKeys,
+  getDeviceState,
+  state => ({
+    ...state.deviceTempKeys,
+    pubB64: publicKeyCreate(state.deviceTempKeys.privKey, true).toString('base64'),
+    prevPubB64: publicKeyCreate(state.deviceTempKeys.prevPrivKey, true).toString('base64')
+  })
 );

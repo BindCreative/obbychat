@@ -5,8 +5,9 @@ import { oClient, getDeviceMessageHashToSign } from './../lib/OCustom';
 import { actionTypes } from './../constants';
 import { setExchangeRates } from './../actions/exchangeRates';
 import {
-  selectPermanentDeviceKeyObj,
   selectDeviceAddress,
+  selectPermanentDeviceKeyObj,
+  selectDeviceTempKeyData,
 } from './../selectors/device';
 
 
@@ -45,26 +46,34 @@ export function* watchHubMessages() {
           console.log(payload.body);
       }
     }
+    console.log(type, payload);
   }
 }
 
 export function* loginToHub(challenge) {
+  const deviceAddress = yield select(selectDeviceAddress());
   const permanentDeviceKey = yield select(selectPermanentDeviceKeyObj());
-
-  const objLogin = { challenge, pubkey: permanentDeviceKey.pub_b64 };
+  const tempDeviceKeyData = yield select(selectDeviceTempKeyData());
+  
+  const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
   objLogin.signature = sign(
     getDeviceMessageHashToSign(objLogin),
     permanentDeviceKey.priv,
   );
   oClient.justsaying('hub/login', objLogin);
 
-}
+  const objTempPubkey = {
+    temp_pubkey: tempDeviceKeyData.pubB64,
+    pubkey: permanentDeviceKey.pubB64,
+  };
+  objTempPubkey.signature = sign(getDeviceMessageHashToSign(objTempPubkey), permanentDeviceKey.priv);
+  oClient.api.tempPubkey(objTempPubkey)
+    .then(result => console.log('Temp pubkey result', result))
+    .catch(e => console.log('Temp pubkey error', e));
 
-export function* rotateDeviceTempKey() {
-  const ROTATION_PERIOD = 3600 * 1000;
+  oClient.justsaying('hub/refresh', null);
 }
 
 export default function* watch() {
-  yield takeEvery(actionTypes.DEVICE_TEMP_KEY_ROTATE, rotateDeviceTempKey);
   yield watchHubMessages();
 }

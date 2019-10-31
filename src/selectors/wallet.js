@@ -31,17 +31,6 @@ export const selectWalletAddress = () => createSelector(
   },
 );
 
-export const selectDeviceAddress = () => createSelector(
-  getWalletState,
-  selectDeviceWif(),
-  (state, deviceWif) => {
-    const devicePrivKey = fromWif(deviceWif, testnet).privateKey;
-    const devicePubKey = publicKeyCreate(devicePrivKey, true).toString('base64');
-    const myDeviceAddress = `0${devicePubKey}`;
-    return myDeviceAddress;
-  },
-);
-
 export const selectWalletWif = () => createSelector(
   getWalletState,
   state => {
