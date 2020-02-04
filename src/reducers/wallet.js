@@ -1,20 +1,22 @@
+import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
 
-
 const initialState = {
-  password: null,
-  seedWords: null,
+  password: '',
+  seedWords:
+    'wise pulp cruise wrap sunset run clap car budget key meadow diagram',
   witnesses: [],
 };
 
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-      return {
-        ...state,
-        ...action.payload.wallet,
-      };
+      if (action.payload?.wallet) {
+        return action.payload.wallet;
+      } else {
+        return state;
+      }
 
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {
@@ -27,18 +29,16 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         witnesses: action.payload,
-      }
+      };
 
     case actionTypes.WITNESSES_RESET:
       return {
         ...state,
         witnesses: initialState.witnesses,
-      }
+      };
 
     default:
-      return {
-        ...state,
-      };
+      return state;
   }
 }
 

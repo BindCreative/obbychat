@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
-
 
 const initialState = {
   BTC_USD: null,
@@ -17,10 +17,7 @@ const initialState = {
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-        return {
-          ...state,
-          ...action.payload.exchangeRates,
-        };
+      return _.get(action, 'payload.exchangeRates', state);
 
     case actionTypes.EXCHANGE_RATES_SET:
       return {

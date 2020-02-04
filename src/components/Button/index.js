@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TouchableOpacity } from 'react-native';
-import { Text } from 'native-base';
+import { TouchableOpacity, Text } from 'react-native';
 import styles from './styles';
 
-
-let Button = props => {
-  const { text, style, textStyle, ...restProps } = props;
+let Button = ({ text, style, disabled, textStyle, ...restProps }) => {
   return (
     <TouchableOpacity
       rounded
@@ -16,7 +13,7 @@ let Button = props => {
       <Text style={{ ...styles.buttonText, ...textStyle }}>{text}</Text>
     </TouchableOpacity>
   );
-}
+};
 
 Button.defaultProps = {
   style: {},

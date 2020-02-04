@@ -1,28 +1,21 @@
 import React from 'react';
-import {
-  createStackNavigator,
-} from 'react-navigation';
-import ChatListScreen from '../components/ChatListScreen';
-import ChatScreen from '../components/ChatScreen';
+import { createStackNavigator } from 'react-navigation-stack';
+import ChatListScreen from '../screens/ChatListScreen';
 
-
-const ChatStack = createStackNavigator({
-  ChatList: {
-    screen: ChatListScreen,
-    path: '/chat/list',
+const ChatStack = createStackNavigator(
+  {
+    ChatList: {
+      screen: ChatListScreen,
+      path: '/chat/list',
+    },
   },
-  Chat: {
-    screen: ChatScreen,
-    path: '/chat/contact',
+  {
+    initialRouteName: 'ChatList',
+    defaultNavigationOptions: {
+      headerShown: false,
+      tabBarVisible: false,
+    },
   },
-},{
-  initialRouteName: 'ChatList',
-  defaultNavigationOptions: {
-    header: null,
-  },
-  navigationOptions: ({ navigation }) => ({
-    tabBarVisible: ![1, 2].includes(navigation.state.index),
-  })
-});
+);
 
 export default ChatStack;

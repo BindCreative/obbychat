@@ -1,6 +1,6 @@
+import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
-
 
 const initialState = {
   unitSize: 'MB', // B | kB | MB | GB
@@ -9,10 +9,7 @@ const initialState = {
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-        return {
-          ...state,
-          ...action.payload.settings,
-        };
+      return _.get(action, 'payload.settings', state);
 
     case actionTypes.SETTINGS_SET:
       return {

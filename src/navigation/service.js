@@ -11,14 +11,12 @@ function navigate(routeName, params) {
     NavigationActions.navigate({
       routeName,
       params,
-    })
+    }),
   );
 }
 
 function back() {
-  _navigator.dispatch(
-    NavigationActions.back()
-  );
+  _navigator.dispatch(NavigationActions.back());
 }
 
 // add other navigation functions that you need and export them

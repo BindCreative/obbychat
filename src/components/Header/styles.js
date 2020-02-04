@@ -1,47 +1,58 @@
-import { StyleSheet, Platform } from 'react-native';
-import { getStatusBarHeight } from 'react-native-status-bar-height';
+import { StyleSheet } from 'react-native';
 import { colors } from './../../constants';
-
 
 export default StyleSheet.create({
   headerNormal: {
-    paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
-    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 140 : 140,
+    paddingTop: 30,
+    paddingBottom: 5,
     backgroundColor: colors.white,
-    alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 15,
+    alignItems: 'stretch',
   },
   headerCompact: {
-    paddingTop: Platform.OS === 'ios' ? getStatusBarHeight() : 0,
-    minHeight: Platform.OS === 'ios' ? getStatusBarHeight() + 60 : 60,
+    paddingTop: 30,
+    paddingBottom: 5,
     backgroundColor: colors.white,
-    alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingBottom: 15,
+    alignItems: 'stretch',
+  },
+  headerBordered: {
+    borderBottomColor: colors.grey.lightest,
+    borderBottomWidth: 2,
   },
   headerLeft: {
     flexDirection: 'row',
+    marginLeft: 15,
+    flexWrap: 'wrap',
     alignItems: 'center',
-    marginLeft: 20,
+    justifyContent: 'flex-start',
+    flex: 1,
   },
   headerCenter: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
   },
   headerRight: {
     flexDirection: 'row',
-    marginRight: 20,
-    alignItems: 'flex-end',
+    marginRight: 15,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    flex: 1,
   },
   headerTitle: {
-    fontWeight: 'bold',
+    fontFamily: 'Agenda-Medium',
     color: colors.black,
-    fontSize: 32,
+    fontSize: 28,
   },
   headerTitleSmall: {
     fontSize: 21,
+  },
+  backBtn: {
+    marginRight: 10,
   },
 });

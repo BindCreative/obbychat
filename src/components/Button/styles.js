@@ -11,7 +11,8 @@ export default StyleSheet.create({
     borderRadius: 30,
   },
   buttonText: {
+    fontFamily: 'Agenda-Medium',
     color: colors.white,
-    fontSize: 18
+    fontSize: 20,
   },
 });

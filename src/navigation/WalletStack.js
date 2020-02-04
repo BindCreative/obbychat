@@ -1,23 +1,20 @@
 import React from 'react';
-import {
-  createStackNavigator,
-} from 'react-navigation';
-import WalletScreen from '../components/WalletScreen';
+import { createStackNavigator } from 'react-navigation-stack';
+import WalletScreen from '../screens/WalletScreen';
 
-
-const WalletStack = createStackNavigator({
-  MyWallet: {
-    screen: WalletScreen,
-    path: '/wallet/main',
+const WalletStack = createStackNavigator(
+  {
+    MyWallet: {
+      screen: WalletScreen,
+      path: '/wallet/main',
+    },
   },
-},{
-  initialRouteName: 'MyWallet',
-  defaultNavigationOptions: {
-    header: null,
+  {
+    initialRouteName: 'MyWallet',
+    defaultNavigationOptions: {
+      headerShown: false,
+    },
   },
-  navigationOptions: ({ navigation }) => ({
-    tabBarVisible: ![1, 2].includes(navigation.state.index),
-  })
-});
+);
 
 export default WalletStack;

@@ -1,53 +1,68 @@
+console.disableYellowBox = true;
 import './shim.js';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { AppState, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
-import { AppLoading } from 'expo';
-import * as Font from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import { PersistGate } from 'redux-persist/integration/react';
 import configureStore from './src/store/configureStore';
 import Navigator from './src/navigation/Root';
 import NavigationService from './src/navigation/service';
 import { initWallet } from './src/actions/wallet';
+import { oClient } from './src/lib/oCustom';
 
+const App = () => {
+  const [store, setStore] = useState(undefined);
+  const [persistor, setPersistor] = useState(undefined);
+  const [appState, setAppState] = useState('active');
 
-class App extends React.Component {
-
-  constructor(props) {
-    super(props);
-    const { store, persistor } = configureStore();
-    this.store = store;
-    this.persistor = persistor;
-    this.state = { loading: true };
-  }
-
-  async componentDidMount() {
-    await Font.loadAsync({
-      Roboto: require('./node_modules/native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf')
-    });
-    this.setState({ loading: false });
-    this.store.dispatch(initWallet());
-  }
-
-  render() {
-    if (this.state.loading) {
-      return (
-        <AppLoading />
-      );
+  useEffect(() => {
+    const storeSetup = configureStore();
+    setStore(storeSetup.store);
+    setPersistor(storeSetup.persistor);
+  }, [configureStore, initWallet]);
+  useEffect(() => {
+    if (!!store) {
+      store.dispatch(initWallet());
     }
+  }, [store]);
+  useEffect(() => {
+    AppState.addEventListener('change', nextAppState =>
+      setAppState(nextAppState),
+    );
+    return () => {
+      AppState.removeEventListener('change', nextAppState =>
+        setAppState(nextAppState),
+      );
+    };
+  }, [setAppState]);
 
-    return (
-      <Provider store={this.store}>
-        <PersistGate loading={<AppLoading />} persistor={this.persistor}>
+  StatusBar.setBarStyle('dark-content');
+  // TODO: close and restart hub connection
+  // useEffect(() => {
+  //   if (appState !== 'active') {
+  //     oClient.close();
+  //   }
+  // }, [appState]);
+
+  if (!store | !persistor) {
+    return null;
+  }
+
+  return (
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <SafeAreaProvider>
           <Navigator
             ref={navigatorRef => {
               NavigationService.setTopLevelNavigator(navigatorRef);
             }}
           />
-        </PersistGate>
-      </Provider>
-    );
-  }
-}
+        </SafeAreaProvider>
+      </PersistGate>
+    </Provider>
+  );
+};
 
 export default App;

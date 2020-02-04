@@ -10,4 +10,4 @@ export default {
     light: '#cdcdcd',
     lightest: '#f7f7f7',
   },
-}
+};

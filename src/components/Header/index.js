@@ -1,50 +1,121 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { TouchableOpacity } from 'react-native';
-import { View, Text } from 'native-base';
+import { TouchableOpacity, View, Text } from 'react-native';
 import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
 import styles from './styles';
+import { colors } from '../../constants';
 
+const Header = ({
+  title,
+  titlePosition,
+  left,
+  right,
+  center,
+  navigation,
+  size,
+  hasBackButton,
+  hasBorder,
+}) => {
+  const headerBorderStyle = hasBorder ? styles.headerBordered : {};
+  const hasCenter = center !== undefined || titlePosition === 'center';
 
-class Header extends React.Component {
-  
-  render() {
-    const title = this.props.scene ? this.props.scene.descriptor.options.title : '';
+  if (size === 'compact') {
     return (
-      <View style={this.props.size === 'compact' ? styles.headerCompact : styles.headerNormal }>
+      <View style={{ ...styles.headerCompact, ...headerBorderStyle }}>
         <View style={styles.headerLeft}>
-          {this.props.hasBackButton === true &&
+          {hasBackButton === true && (
             <TouchableOpacity
               style={styles.backBtn}
-              onPress={() => this.props.navigation.pop()}
+              onPress={() => navigation.pop()}
             >
-              <ArrowLeftIcon color='#000000' height={24} width={24} />
+              <ArrowLeftIcon color={colors.black} height={18} width={18} />
             </TouchableOpacity>
-          }
-          {this.props.left !== undefined && this.props.left}
-          {this.props.left === undefined && this.props.titlePosition === 'left' &&
-            <Text style={styles.headerTitle}>{title}</Text>
-          }
+          )}
+          {left !== undefined && left}
+          {left === undefined && titlePosition === 'left' && (
+            <Text
+              numberOfLines={1}
+              style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+            >
+              {title}
+            </Text>
+          )}
         </View>
-        <View style={styles.headerCenter}>
-          {this.props.center !== undefined && this.props.center}
-          {this.props.center === undefined && this.props.titlePosition === 'center' &&
-            <Text style={{ ...styles.headerTitle, ...styles.headerTitleSmall }} > {title}</Text>
-          }
-        </View>
+
+        {hasCenter && (
+          <View style={styles.headerCenter}>
+            {center !== undefined && center}
+            {center === undefined && titlePosition === 'center' && (
+              <Text
+                numberOfLines={1}
+                style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+              >
+                {title}
+              </Text>
+            )}
+          </View>
+        )}
+
         <View style={styles.headerRight}>
-          {this.props.right !== undefined && this.props.right}
-          {this.props.right === undefined && this.props.titlePosition === 'right' &&
-            <Text style={styles.headerTitle}>{title}</Text>
-          }
+          {right !== undefined && right}
+          {right === undefined && titlePosition === 'right' && (
+            <Text
+              numberOfLines={1}
+              style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+            >
+              {title}
+            </Text>
+          )}
+        </View>
+      </View>
+    );
+  } else if (size === 'normal') {
+    return (
+      <View style={{ ...styles.headerNormal, ...headerBorderStyle }}>
+        <View style={styles.headerLeft}>
+          {hasBackButton === true && (
+            <TouchableOpacity
+              style={styles.backBtn}
+              onPress={() => navigation.pop()}
+            >
+              <ArrowLeftIcon color={colors.black} height={18} width={18} />
+            </TouchableOpacity>
+          )}
+          {left !== undefined && left}
+          {left === undefined && titlePosition === 'left' && (
+            <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
+              {title}
+            </Text>
+          )}
+        </View>
+
+        {hasCenter && (
+          <View style={styles.headerCenter}>
+            {center !== undefined && center}
+            {center === undefined && titlePosition === 'center' && (
+              <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
+                {title}
+              </Text>
+            )}
+          </View>
+        )}
+
+        <View style={styles.headerRight}>
+          {right !== undefined && right}
+          {right === undefined && titlePosition === 'right' && (
+            <Text numberOfLines={1} style={styles.headerTitle}>
+              {title}
+            </Text>
+          )}
         </View>
       </View>
     );
   }
-}
+};
 
 Header.defaultProps = {
   hasBackButton: false,
+  hasBorder: false,
   size: 'normal', // normal | compact
   titlePosition: 'left',
 };
@@ -54,6 +125,7 @@ Header.propTypes = {
   center: PropTypes.element,
   right: PropTypes.element,
   hasBackButton: PropTypes.bool,
+  hasBorder: PropTypes.bool,
   titlePosition: PropTypes.string.isRequired,
   size: PropTypes.string.isRequired,
 };

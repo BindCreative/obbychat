@@ -27,7 +27,7 @@ Common.UNITS = {
     value: 1000000000,
     maxDecimals: 0,
     minDecimals: 0,
-  }
+  },
 };
 
 export default Common;

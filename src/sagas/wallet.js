@@ -1,10 +1,10 @@
-import { takeLatest, takeEvery, call, put, select } from '@redux-saga/core/effects';
+import { takeLatest, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
 import NavigationService from './../navigation/service';
-import { oClient } from './../lib/OCustom';
+import { oClient } from './../lib/oCustom';
 import { actionTypes } from './../constants';
-import { setToastMessage } from './../actions/app';
 import { subscribeToHub } from './device';
+import { setToastMessage } from './../actions/app';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -27,31 +27,38 @@ import {
 import {
   selectWallet,
   selectWalletAddress,
-  selectWalletWif,
   selectWitnesses,
+  selectAddressWif,
 } from './../selectors/wallet';
 
+let initiated = false;
 
 export function* initWallet() {
   try {
-    const walletData = yield select(selectWallet());
-    if (walletData.password === null || walletData.seedWords === null) {
-      yield put(createInitialWalletStart());
-    }
+    console.log('reload', initiated);
+    if (!initiated) {
+      const walletData = yield select(selectWallet());
+      if (walletData.password === null || walletData.seedWords === null) {
+        yield put(createInitialWalletStart());
+      }
 
-    // Handle websocket traffic
-    yield call(subscribeToHub);
-    // Fetch wallet data from hub
-    yield call(fetchBalances);
-    yield call(fetchWitnesses);
-    yield put(loadWalletHistory());
-    yield put(initWalletSuccess());
+      // Handle websocket traffic
+      yield call(subscribeToHub);
+      // Fetch wallet data from hub
+      yield call(fetchBalances);
+      yield call(fetchWitnesses);
+      yield put(loadWalletHistory());
+      yield put(initWalletSuccess());
+      initiated = true;
+    }
   } catch (error) {
     yield put(initWalletFail());
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Unable to init wallet.',
-    }));
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to init wallet.',
+      }),
+    );
     console.log(error);
   }
 }
@@ -64,48 +71,57 @@ export function* createInitialWallet(action) {
       mnemonic = new Mnemonic();
     }
 
-    yield put(createInitialWalletSuccess({
-      password,
-      seedWords: mnemonic.phrase,
-    }));
+    yield put(
+      createInitialWalletSuccess({
+        password,
+        seedWords: mnemonic.phrase,
+      }),
+    );
   } catch (error) {
     console.log(error);
     yield put(createInitialWalletFail());
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Unable to generate new wallet.',
-    }));
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to generate new wallet.',
+      }),
+    );
   }
 }
 
 export function* fetchBalances(action) {
   try {
     const walletAddress = yield select(selectWalletAddress());
+    console.log('WALLET ADDRESS: ', walletAddress);
     const balances = yield call(oClient.api.getBalances, [walletAddress]);
     yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
     yield put(loadWalletBalancesFail());
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Unable to fetch balances.',
-    }));
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to fetch balances.',
+      }),
+    );
     console.log(error);
   }
 }
 
 export function* fetchWitnesses(action) {
   try {
-    const witnessesPromise = new Promise((resolve, reject) => oClient.api.getWitnesses((err, witnesses) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(witnesses);
-      }
-    }));
+    const witnessesPromise = new Promise((resolve, reject) =>
+      oClient.api.getWitnesses((err, witnesses) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(witnesses);
+        }
+      }),
+    );
     const witnesses = yield witnessesPromise;
     yield put(getWitnessesSuccess(witnesses));
   } catch (error) {
-    console.log(error);
+    console.log({ error });
   }
 }
 
@@ -118,30 +134,34 @@ export function* fetchWalletHistory(action) {
       addresses: [walletAddress],
     };
 
-    const historyPromise = new Promise((resolve, reject) => oClient.api.getHistory(params, (err, history) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(history);
-      }
-    }));
+    const historyPromise = new Promise((resolve, reject) =>
+      oClient.api.getHistory(params, (err, history) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(history);
+        }
+      }),
+    );
     const history = yield historyPromise;
     yield put(loadWalletHistorySuccess(history));
   } catch (error) {
     yield put(loadWalletHistoryFail());
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Unable to fetch transactions.',
-    }));
-    console.log(error);
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to fetch transactions.',
+      }),
+    );
+    console.log({ error });
   }
 }
 
 export function* sendPayment(action) {
   try {
-    const walletWif = yield select(selectWalletWif());
+    const walletWif = yield select(selectAddressWif());
     const params = {
-      ...action.payload
+      ...action.payload,
     };
 
     yield call(oClient.post.payment, params, walletWif);
@@ -149,23 +169,31 @@ export function* sendPayment(action) {
     yield call(fetchWalletHistory, action);
     yield call(NavigationService.back);
     yield put(sendPaymentSuccess());
-    yield put(setToastMessage({
-      type: 'SUCCESS',
-      message: 'Transaction completed'
-    }));
+    yield put(
+      setToastMessage({
+        type: 'SUCCESS',
+        message: 'Transaction completed',
+      }),
+    );
   } catch (error) {
     yield put(sendPaymentFail());
-    yield put(setToastMessage({
-      type: 'ERROR',
-      message: 'Unable to send payment',
-    }));
-    console.log(error);
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to send payment',
+      }),
+    );
+    console.log({ error });
   }
 }
 
 export default function* watch() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
-  yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
+  yield takeLatest(
+    actionTypes.INITIAL_WALLET_CREATE_START,
+    createInitialWallet,
+  );
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
-  yield takeEvery(actionTypes.PAYMENT_SEND_START, sendPayment);
+  yield takeLatest(actionTypes.WALLET_HISTORY_GET_START, fetchWalletHistory);
+  yield takeLatest(actionTypes.PAYMENT_SEND_START, sendPayment);
 }
