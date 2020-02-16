@@ -239,7 +239,6 @@ export const createEncryptedPackage = (json, recipient_device_pubkey) => {
   var arrChunks = [];
   var CHUNK_LENGTH = 2003;
   for (var offset = 0; offset < text.length; offset += CHUNK_LENGTH) {
-    //	console.log('offset '+offset);
     arrChunks.push(
       cipher.update(
         text.slice(offset, Math.min(offset + CHUNK_LENGTH, text.length)),
@@ -250,10 +249,7 @@ export const createEncryptedPackage = (json, recipient_device_pubkey) => {
   arrChunks.push(cipher.final());
   var encrypted_message_buf = Buffer.concat(arrChunks);
   arrChunks = null;
-  //	var encrypted_message_buf = Buffer.concat([cipher.update(text, "utf8"), cipher.final()]);
-  //console.log(encrypted_message_buf);
   var encrypted_message = encrypted_message_buf.toString('base64');
-  //console.log(encrypted_message);
   var authtag = cipher.getAuthTag();
   // this is visible and verifiable by the hub
   var encrypted_package = {

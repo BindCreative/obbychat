@@ -10,10 +10,10 @@ import {
   Dimensions,
 } from 'react-native';
 import ContentLoader, { Rect } from 'react-content-loader/native';
-import RNPickerSelect from 'react-native-picker-select';
 import Moment from 'react-moment';
 import SafeAreaView from 'react-native-safe-area-view';
 
+import Picker from '../../components/Picker';
 import NavigationService from './../../navigation/service';
 import { loadWalletBalances } from './../../actions/balances';
 import {
@@ -27,6 +27,12 @@ import styles from './styles';
 import Header from '../../components/Header';
 import ActionsBar from './ActionsBar';
 import { colors } from '../../constants';
+
+const TX_TYPES = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Received', value: 'RECEIVED' },
+  { label: 'Sent', value: 'SENT' },
+];
 
 class WalletScreen extends React.Component {
   constructor(props) {
@@ -127,10 +133,6 @@ class WalletScreen extends React.Component {
       bytesToUnit(this.props.walletBalance, 'GB') *
       this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
-    const txTypes = [
-      { label: 'Received', value: 'RECEIVED' },
-      { label: 'Sent', value: 'SENT' },
-    ];
 
     return (
       <SafeAreaView
@@ -165,38 +167,11 @@ class WalletScreen extends React.Component {
               </View>
               <View style={styles.txHeaderBlock}>
                 <Text style={styles.txHeaderText}>Transactions</Text>
-                <RNPickerSelect
-                  value={this.state.txType}
+                <Picker
+                  onPress={() => alert(1)}
+                  currentValue={this.state.txType}
                   onValueChange={txType => this.setState({ txType })}
-                  items={txTypes.map(txType => ({
-                    label: txType.label,
-                    value: txType.value,
-                  }))}
-                  placeholder={{ label: 'All', value: 'ALL' }}
-                  //Icon={() => <Entypo name='chevron-small-down' size={16} color={colors.grey.main} />}
-                  style={{
-                    inputIOSContainer: {
-                      flexDirection: 'row',
-                    },
-                    inputAndroidContainer: {
-                      flexDirection: 'row',
-                    },
-                    inputIOS: {
-                      fontFamily: 'Agenda-Light',
-                      fontSize: 16,
-                      color: colors.grey.main,
-                    },
-                    inputAndroid: {
-                      fontFamily: 'Agenda-Light',
-                      fontSize: 16,
-                      color: colors.grey.main,
-                    },
-                    iconContainer: {
-                      position: 'relative',
-                      marginLeft: 15,
-                      justifyContent: 'center',
-                    },
-                  }}
+                  items={TX_TYPES}
                 />
               </View>
               {this.props.transactions.length > 0 && (

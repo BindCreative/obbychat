@@ -5,6 +5,7 @@ import { oClient } from './../lib/oCustom';
 import { actionTypes } from './../constants';
 import { subscribeToHub } from './device';
 import { setToastMessage } from './../actions/app';
+import { rotateDeviceTempKey } from '../actions/device';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -35,7 +36,8 @@ let initiated = false;
 
 export function* initWallet() {
   try {
-    console.log('reload', initiated);
+    console.log('initiated', initiated);
+    // yield put(rotateDeviceTempKey());
     if (!initiated) {
       const walletData = yield select(selectWallet());
       if (walletData.password === null || walletData.seedWords === null) {

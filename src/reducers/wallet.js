@@ -3,9 +3,8 @@ import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
 
 const initialState = {
-  password: '',
-  seedWords:
-    'wise pulp cruise wrap sunset run clap car budget key meadow diagram',
+  password: null,
+  seedWords: null,
   witnesses: [],
 };
 

@@ -9,7 +9,6 @@ import {
   View,
   Text,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
@@ -17,13 +16,14 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
+import Picker from '../../components/Picker';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { selectWalletAddress } from './../../selectors/wallet';
 import { sendPaymentStart } from './../../actions/wallet';
-import { availableUnits, unitToBytes } from './../../lib/utils';
+import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
 
 export const Methods = {
@@ -179,7 +179,6 @@ class PaymentScreen extends React.Component {
       'navigation.state.params.callback',
       false,
     );
-    // TODO: finish the string
     const requestString = `[${this.state.primaryValue} ${
       this.state.primaryUnit
     }](${urlHost}${this.props.myWalletAddress}?amount=${unitToBytes(
@@ -290,14 +289,10 @@ class PaymentScreen extends React.Component {
                   keyboardType='decimal-pad'
                   autoFocus={true}
                 />
-                <RNPickerSelect
-                  style={{ color: 'red' }}
-                  value={primaryUnit}
+                <Picker
+                  currentValue={primaryUnit}
                   onValueChange={value => this.changePrimaryUnit(value)}
-                  items={availableUnits.map(unit => ({
-                    label: unit.label,
-                    value: unit.altValue,
-                  }))}
+                  items={PRIMARY_UNITS}
                 />
               </View>
               <View style={styles.field}>
@@ -307,13 +302,10 @@ class PaymentScreen extends React.Component {
                   value={!secondaryValue ? '' : String(secondaryValue)}
                   keyboardType='decimal-pad'
                 />
-                <RNPickerSelect
-                  value={secondaryUnit}
+                <Picker
+                  currentValue={secondaryUnit}
                   onValueChange={value => this.changeSecondaryUnit(value)}
-                  items={[
-                    { label: 'USD', value: 'USD' },
-                    { label: 'BTC', value: 'BTC' },
-                  ]}
+                  items={SECONDARY_UNITS}
                 />
               </View>
               <Button

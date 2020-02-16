@@ -76,7 +76,6 @@ export function* loginToHub(challenge) {
 
 export function* subscribeToHub() {
   try {
-    console.log('subscribe');
     yield oClient.subscribe((err, result) => {
       if (err) {
         throw new Error('Hub socket error');
@@ -85,16 +84,14 @@ export function* subscribeToHub() {
         oChannel.put({ type, payload });
       }
     });
-    const hb = yield call(
+    yield call(
       setInterval,
       () => {
         oClient.api.heartbeat();
-        console.log('Heartbeat');
       },
       10000,
     );
   } catch (error) {
-    yield setTimeout(() => subscribeToHub(), 5000);
     yield put(
       setToastMessage({
         type: 'ERROR',
@@ -115,7 +112,7 @@ export function* watchHubMessages() {
         } else if (payload.subject === 'hub/message') {
           yield receiveMessage(payload);
         } else if (payload.subject === 'exchange_rates') {
-          yield put(setExchangeRates(payload));
+          yield put(setExchangeRates(payload.body));
         } else if (
           payload.subject === 'info' &&
           /^(\d+) messages? sent$/.test(payload?.body)
@@ -148,8 +145,6 @@ export function* receiveMessage(message) {
       permDeviceKey,
       tempDeviceKey,
     );
-    console.log('ENCRYPTED MESSAGE: ', message);
-    console.log('DECRYPTED MESSAGE: ', decryptedMessage);
 
     if (decryptedMessage.subject === 'removed_paired_device') {
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
@@ -187,7 +182,6 @@ export function* receiveMessage(message) {
     }
   } catch (error) {
     console.log('MESSAGE PARSING ERROR:', {
-      error,
       message: message.body.message,
     });
     if (error === 'INVALID_DECRYPTION_KEY') {

@@ -48,9 +48,14 @@ export const unitToBytes = (n, unit) => {
   }
 };
 
-export const availableUnits = [
+export const PRIMARY_UNITS = [
   { label: 'bytes', value: 'B', altValue: 'BYTE' },
   { label: 'kB', value: 'kB', altValue: 'kBYTE' },
   { label: 'MB', value: 'MB', altValue: 'MBYTE' },
   { label: 'GB', value: 'GB', altValue: 'GBYTE' },
+];
+
+export const SECONDARY_UNITS = [
+  { label: 'USD', value: 'USD' },
+  { label: 'BTC', value: 'BTC' },
 ];

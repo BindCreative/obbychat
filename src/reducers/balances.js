@@ -7,7 +7,6 @@ const initialState = {
 };
 
 function reducer(state = initialState, action) {
-  console.log(action.type); // TODO: remove
   switch (action.type) {
     case REHYDRATE:
       return _.get(action, 'payload.balances', state);
