@@ -89,6 +89,7 @@ export function* subscribeToHub() {
       setInterval,
       () => {
         oClient.api.heartbeat();
+        console.log('Heartbeat');
       },
       10000,
     );

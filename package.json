@@ -59,7 +59,7 @@
     "react-native-tcp": "^3.3.2",
     "react-native-timeago": "^0.5.0",
     "react-native-udp": "^2.6.1",
-    "react-native-unimodules": "^0.6.0",
+    "react-native-unimodules": "^0.7.0",
     "react-native-user-avatar": "^1.0.4",
     "react-native-webview": "^7.5.2",
     "react-navigation": "^4.1.0",

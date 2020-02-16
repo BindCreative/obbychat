@@ -45,4 +45,17 @@ export default StyleSheet.create({
   actionsBar: {
     flexDirection: 'row',
   },
+  noContactsContainer: {
+    flex: 1,
+    padding: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  noContactsText: {
+    color: colors.grey.main,
+    justifyContent: 'center',
+    textAlign: 'center',
+    fontFamily: 'Agenda-Light',
+    fontSize: 16,
+  },
 });

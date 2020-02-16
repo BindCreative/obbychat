@@ -233,7 +233,7 @@ class PaymentScreen extends React.Component {
     return (
       <SafeAreaView
         style={styles.container}
-        forceInset={{ top: 'never', bottom: 'always' }}
+        forceInset={{ top: 'always', bottom: 'always' }}
       >
         <KeyboardAvoidingView style={styles.content}>
           <Header

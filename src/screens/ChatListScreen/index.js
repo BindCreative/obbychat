@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
@@ -28,48 +28,58 @@ class ChatListScreen extends React.Component {
           titlePosition='left'
           right={<ActionsBar />}
         />
-        <ScrollView>
-          <List style={styles.list}>
-            {correspondents.map((correspondent, i) => (
-              <ListItem
-                avatar
-                style={styles.listItem}
-                key={i}
-                onPress={() =>
-                  this.props.navigation.navigate('Chat', {
-                    correspondent,
-                  })
-                }
-              >
-                <Left style={styles.listItemAvatar}>
-                  <UserAvatar
-                    size={42}
-                    name={correspondent.name}
-                    src={makeBlockie(correspondent.address)}
-                  />
-                </Left>
-                <Body style={styles.listItemBody}>
-                  <Text numberOfLines={1} style={styles.listItemTitle}>
-                    {correspondent.name}
-                  </Text>
-                  <Text numberOfLines={1} note style={styles.listItemPreview}>
-                    {correspondent.lastMessagePreview}
-                  </Text>
-                </Body>
-                <Right style={styles.listItemBody}>
-                  <Text numberOfLines={1} note style={styles.listItemTime}>
-                    {correspondent.lastMessageTimestamp !== undefined && (
-                      <TimeAgo
-                        time={correspondent.lastMessageTimestamp}
-                        interval={60000}
-                      />
-                    )}
-                  </Text>
-                </Right>
-              </ListItem>
-            ))}
-          </List>
-        </ScrollView>
+        {!correspondents.length && (
+          <View style={styles.noContactsContainer}>
+            <Text style={styles.noContactsText}>
+              Start adding contacts by sharing your QR code or scanning someone
+              else's!
+            </Text>
+          </View>
+        )}
+        {!!correspondents.length && (
+          <ScrollView>
+            <List style={styles.list}>
+              {correspondents.map((correspondent, i) => (
+                <ListItem
+                  avatar
+                  style={styles.listItem}
+                  key={i}
+                  onPress={() =>
+                    this.props.navigation.navigate('Chat', {
+                      correspondent,
+                    })
+                  }
+                >
+                  <Left style={styles.listItemAvatar}>
+                    <UserAvatar
+                      size={42}
+                      name={correspondent.name}
+                      src={makeBlockie(correspondent.address)}
+                    />
+                  </Left>
+                  <Body style={styles.listItemBody}>
+                    <Text numberOfLines={1} style={styles.listItemTitle}>
+                      {correspondent.name}
+                    </Text>
+                    <Text numberOfLines={1} note style={styles.listItemPreview}>
+                      {correspondent.lastMessagePreview}
+                    </Text>
+                  </Body>
+                  <Right style={styles.listItemBody}>
+                    <Text numberOfLines={1} note style={styles.listItemTime}>
+                      {correspondent.lastMessageTimestamp !== undefined && (
+                        <TimeAgo
+                          time={correspondent.lastMessageTimestamp}
+                          interval={60000}
+                        />
+                      )}
+                    </Text>
+                  </Right>
+                </ListItem>
+              ))}
+            </List>
+          </ScrollView>
+        )}
       </SafeAreaView>
     );
   }
