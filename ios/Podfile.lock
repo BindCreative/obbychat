@@ -1,14 +1,14 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAppLoaderProvider (7.0.0)
-  - EXConstants (7.0.1):
+  - EXAppLoaderProvider (8.0.0)
+  - EXConstants (8.0.0):
     - UMConstantsInterface
     - UMCore
-  - EXFileSystem (7.0.0):
+  - EXFileSystem (8.0.0):
     - UMCore
     - UMFileSystemInterface
-  - EXPermissions (7.0.0):
+  - EXPermissions (8.0.0):
     - UMCore
     - UMPermissionsInterface
   - EXSecureStore (8.0.0):
@@ -265,21 +265,21 @@ PODS:
     - React
   - TcpSockets (3.3.2):
     - React
-  - UMBarCodeScannerInterface (4.0.0)
-  - UMCameraInterface (4.0.0)
-  - UMConstantsInterface (4.0.0)
-  - UMCore (4.0.0)
-  - UMFaceDetectorInterface (4.0.0)
-  - UMFileSystemInterface (4.0.0)
-  - UMFontInterface (4.0.0)
-  - UMImageLoaderInterface (4.0.0)
-  - UMPermissionsInterface (4.0.0)
-  - UMReactNativeAdapter (4.0.0):
-    - React
+  - UMBarCodeScannerInterface (5.0.0)
+  - UMCameraInterface (5.0.0)
+  - UMConstantsInterface (5.0.0)
+  - UMCore (5.0.0)
+  - UMFaceDetectorInterface (5.0.0)
+  - UMFileSystemInterface (5.0.0)
+  - UMFontInterface (5.0.0)
+  - UMImageLoaderInterface (5.0.0)
+  - UMPermissionsInterface (5.0.0)
+  - UMReactNativeAdapter (5.0.0):
+    - React-Core
     - UMCore
     - UMFontInterface
-  - UMSensorsInterface (4.0.0)
-  - UMTaskManagerInterface (4.0.0)
+  - UMSensorsInterface (5.0.0)
+  - UMTaskManagerInterface (5.0.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -484,10 +484,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
-  EXAppLoaderProvider: 5d348813a9cf09b03bbe5b8b55437bc1bfbddbd1
-  EXConstants: 857aa7b1c84e2878f8402d712061860bca16a697
-  EXFileSystem: 7e53a2c30a2eb6987ba6d5158ab908f947523228
-  EXPermissions: df10ad83df2f6b647aec304619354f8ab48d5f63
+  EXAppLoaderProvider: ebdb6bc2632c1ccadbe49f5e4104d8d690969c49
+  EXConstants: 4051b16c17ef3defa03c541d42811dc92b249146
+  EXFileSystem: 6e0d9bb6cc4ea404dbb8f583c1a8a2dcdf4b83b6
+  EXPermissions: 9bc08859a675d291e89be9a0870155c27c16ac35
   EXSecureStore: 1448b90d665c9400aaaf6655fccb464da14698f6
   FBLazyVector: aaeaf388755e4f29cd74acbc9e3b8da6d807c37f
   FBReactNativeSpec: 118d0d177724c2d67f08a59136eb29ef5943ec75
@@ -527,18 +527,18 @@ SPEC CHECKSUMS:
   RNScreens: a55364dc1833101f836cee70975ce1fea615a12f
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
-  UMBarCodeScannerInterface: d5a6fdc98ed6241225b0a8432a7f4e2b397668bc
-  UMCameraInterface: 68870a3197fee85bd5afca5609ba4a5b7257d19d
-  UMConstantsInterface: d25b8e8887ca7aaf568c06caf08f4d40734ee4ef
-  UMCore: 402cee150324974974f5c32b5404d8af65e4cff5
-  UMFaceDetectorInterface: 7b4f1a92f0c726b58b086296048efe193b570678
-  UMFileSystemInterface: aadb9a67aa6470d7ebc06cf04dc54fee6781ac48
-  UMFontInterface: 2d3c128285086bbed3d2a650f1d698323ef3b25a
-  UMImageLoaderInterface: 2829a7571a12d2e754c73c55ffe7e327d8402c7d
-  UMPermissionsInterface: b6a6e96db0f4011a25aaca14e6022529dd3d6e4e
-  UMReactNativeAdapter: 93c2f520a1cdb6ef3058a7b6a95275a804e0923b
-  UMSensorsInterface: cf59dd7602764a2419e00167429be3e4be39c61d
-  UMTaskManagerInterface: 1e70fe58b872355f0ecb44fb81bb1a16484047f0
+  UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
+  UMCameraInterface: 985d301f688ed392f815728f0dd906ca34b7ccb1
+  UMConstantsInterface: bda5f8bd3403ad99e663eb3c4da685d063c5653c
+  UMCore: 7ab08669a8bb2e61f557c1fe9784521cb5aa28e3
+  UMFaceDetectorInterface: ce14e8e597f6a52aa66e4ab956cb5bff4fa8acf8
+  UMFileSystemInterface: 2ed004c9620f43f0b36b33c42ce668500850d6a4
+  UMFontInterface: 24fbc0a02ade6c60ad3ee3e2b5d597c8dcfc3208
+  UMImageLoaderInterface: 3976a14c588341228881ff75970fbabf122efca4
+  UMPermissionsInterface: 2abf9f7f4aa7110e27beaf634a7deda2d50ff3d7
+  UMReactNativeAdapter: 230406e3335a8dbd4c9c0e654488a1cf3b44552f
+  UMSensorsInterface: d708a892ef1500bdd9fc3ff03f7836c66d1634d3
+  UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
 PODFILE CHECKSUM: d07be5907163bb32cfbd6ec771b7ecefe0f04f56
