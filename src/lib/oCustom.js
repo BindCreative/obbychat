@@ -303,3 +303,26 @@ export const deliverMessage = async objDeviceMessage => {
   });
   return accepted;
 };
+
+// TODO
+export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
+  var signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString(
+    'utf8',
+  );
+  try {
+    var objSignedMessage = JSON.parse(signedMessageJson);
+  } catch (e) {
+    return null;
+  }
+
+  var info = {
+    objSignedMessage: objSignedMessage,
+    bValid: undefined,
+  };
+
+  // validation.validateSignedMessage(objSignedMessage, function(err) {
+  //   info.bValid = !err;
+  //   if (err) console.log('validateSignedMessage: ' + err);
+  // });
+  return info;
+};

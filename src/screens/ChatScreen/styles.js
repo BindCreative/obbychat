@@ -107,13 +107,13 @@ export default StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     fontFamily: 'Lato-Regular',
-    fontSize: 16,
+    fontSize: 13,
     color: colors.black,
+  },
+  actionMessage: {
+    fontStyle: 'italic',
   },
   textMessageSent: {
     color: colors.white,
-  },
-  textMessageActionable: {
-    color: colors.cyan.main,
   },
 });

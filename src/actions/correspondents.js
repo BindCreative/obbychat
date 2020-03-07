@@ -1,6 +1,26 @@
 import { actionTypes } from './../constants';
 
-export const setCorrespondentDevice = payload => ({
+export const addCorrespondent = ({
+  address,
+  name,
+  hub,
+  pubKey,
+  pairingSecret,
+  reversePairingSecret,
+}) => ({
   type: actionTypes.CORRESPONDENT_DEVICE_ADD,
-  payload,
+  payload: { address, name, hub, pubKey, pairingSecret, reversePairingSecret },
+});
+
+export const removeCorrespondent = ({ address }) => ({
+  type: actionTypes.CORRESPONDENT_DEVICE_REMOVE,
+  payload: { address },
+});
+
+export const updateCorrespondentWalletAddress = ({
+  address,
+  walletAddress,
+}) => ({
+  type: actionTypes.CORRESPONDENT_WALLET_ADDRESS_UPDATE,
+  payload: { address, walletAddress },
 });

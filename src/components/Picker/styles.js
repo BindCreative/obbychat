@@ -3,11 +3,11 @@ import { colors } from './../../constants';
 
 export default StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'flex-end',
     flexDirection: 'row',
   },
   picker: {
+    backgroundColor: 'red',
     width: 30,
     height: 22,
     padding: 0,

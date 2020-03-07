@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { Alert, View, TouchableOpacity } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
@@ -11,11 +11,10 @@ import styles from './styles';
 
 const ActionsBar = ({
   navigation,
-  onRequestPayment,
-  onSendPayment,
   onSend,
   address,
   myWalletAddress,
+  correspondentWalletAddress,
 }) => {
   const actionSheet = useRef();
 
@@ -37,22 +36,50 @@ const ActionsBar = ({
     }
   }, []);
 
+  const handleRequestPayment = useCallback(() => {
+    navigation.navigate('RequestPayment', {
+      walletAddress: myWalletAddress,
+      callback: text => {
+        onSend([{ text }]);
+      },
+    });
+  }, [myWalletAddress, navigation]);
+
+  const handleSendPayment = useCallback(() => {
+    // TODO: check if we have their wallet address or request it by sign message
+    Alert.alert(
+      '',
+      "You don't know their wallet address yet. Do you want to ask for it?",
+      [
+        {
+          text: 'Yes',
+          onPress: () => onSend([{ text: 'TODO: sign message request' }]),
+        },
+        {
+          text: 'No',
+          onPress: () =>
+            navigation.navigate('SendPayment', {
+              walletAddress: correspondentWalletAddress,
+            }),
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [Alert]);
+
   return (
     <View style={styles.actionsBar}>
       <TouchableOpacity
         style={styles.iconButtonSmall}
-        onPress={() =>
-          navigation.navigate('RequestPayment', {
-            walletAddress: myWalletAddress,
-            callback: text => {
-              onRequestPayment([{ text }]);
-            },
-          })
-        }
+        onPress={handleRequestPayment}
       >
         <ReceiveIcon style={styles.icon} width={10} height={10} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconButtonSmall} onPress={onSendPayment}>
+      <TouchableOpacity
+        style={styles.iconButtonSmall}
+        onPress={handleSendPayment}
+      >
         <SendIcon style={styles.icon} width={10} height={10} />
       </TouchableOpacity>
       <TouchableOpacity

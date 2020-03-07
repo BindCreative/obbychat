@@ -33,6 +33,11 @@ export const selectCorrespondent = address =>
     return state.correspondents[address];
   });
 
+export const selectCorrespondentWalletAddress = address =>
+  createSelector(getMessagesState, state => {
+    return state.correspondents[address]?.walletAddress;
+  });
+
 export const selectCorrespondentMessages = ({ address }) =>
   createSelector(getMessagesState, state => {
     let allMessages = _.clone(

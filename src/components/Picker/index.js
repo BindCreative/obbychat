@@ -4,7 +4,6 @@ import { Picker as RNPicker, View, Text } from 'react-native';
 import styles from './styles';
 
 export default Picker = ({
-  style,
   onChange,
   currentValue,
   items = [],
@@ -23,13 +22,12 @@ export default Picker = ({
     <View style={styles.container}>
       <Text style={styles.label}>{currentValue}</Text>
       <RNPicker
-        mode='dropdown'
+        mode='dialog'
         selectedValue={currentValue}
         itemStyle={styles.itemStyle}
         onValueChange={onValueChanged}
         style={{
           ...styles.picker,
-          ...style,
         }}
         {...restProps}
       >

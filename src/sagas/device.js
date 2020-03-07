@@ -24,14 +24,16 @@ import {
 } from './../lib/oCustom';
 import { setToastMessage } from './../actions/app';
 import {
+  addCorrespondent,
+  removeCorrespondent,
+} from '../actions/correspondents';
+import {
   addMessageSuccess,
   addMessageFail,
   receiveMessageStart,
   receiveMessageSuccess,
   receiveMessageFail,
   setUnreadMessages,
-  addCorrespondent,
-  removeCorrespondent,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
 import {
