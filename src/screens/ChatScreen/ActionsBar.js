@@ -53,7 +53,13 @@ const ActionsBar = ({
       [
         {
           text: 'Yes',
-          onPress: () => onSend([{ text: 'TODO: sign message request' }]),
+          onPress: () =>
+            onSend([
+              {
+                text:
+                  '[Data request](sign-message-request:Requesting wallet address to send payment)',
+              },
+            ]),
         },
         {
           text: 'No',

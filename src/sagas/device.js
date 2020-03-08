@@ -108,6 +108,7 @@ export function* watchHubMessages() {
   try {
     while (true) {
       const { type, payload } = yield take(oChannel);
+      // console.log('HUB MESSAGE', { type, payload });
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge') {
           yield call(loginToHub, payload.body);

@@ -314,7 +314,7 @@ export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
   } catch (e) {
     return null;
   }
-
+  console.log(objSignedMessage);
   var info = {
     objSignedMessage: objSignedMessage,
     bValid: undefined,
