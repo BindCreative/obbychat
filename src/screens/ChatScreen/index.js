@@ -1,18 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { TouchableOpacity, Text, Clipboard } from 'react-native';
+import { TouchableOpacity, Text, Clipboard, Alert } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 
 import _ from 'lodash';
 
 import styles from './styles';
+import { signMessage }  from '../../lib/oCustom';
+import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
 import { selectCorrespondentMessages } from '../../selectors/messages';
 import { selectWalletAddress } from '../../selectors/wallet';
 import { selectCorrespondentWalletAddress } from '../../selectors/messages';
-import { parseTextMessage } from '../../lib/messaging';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
 
@@ -20,6 +21,7 @@ class ChatScreen extends React.Component {
   constructor(props) {
     super(props);
     this.onSend = this.onSend.bind(this);
+    this.renderText = this.renderText.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.renderChat = this.renderChat.bind(this);
     this.state = {
@@ -48,19 +50,34 @@ class ChatScreen extends React.Component {
 
   renderText(props) {
     const { text, user } = props.currentMessage;
-    const { parsedText, type } = parseTextMessage(text);
+    const { parsedText, type, params } = parseTextMessage(text);
     let style = { ...styles.textMessage };
+    let pressAction = () => {};
+
     if (type) {
       style = { ...style, ...styles.actionMessage };
     }
 
     if (user._id === 1) {
       style = { ...style, ...styles.textMessageSent };
+    } else {
+      if (type === 'SIGN_MESSAGE_REQUEST') {
+        pressAction = () => {
+          Alert.alert('Do you want to sign this message?', '', [
+            { text: 'No', style: 'cancel' },
+            { text: 'Yes', onPress: () => {
+              const signedMessage = signMessage(params.messageToSign, this.props.myWalletAddress);
+              this.onSend([ { text: signedMessage } ]);
+            } },
+          ] );
+        };
+      }
     }
 
     if (type) {
       return (
         <TouchableOpacity
+          onPress={pressAction}
           onLongPress={() => {
             Clipboard.setString(parsedText);
           }}

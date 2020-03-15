@@ -10,6 +10,8 @@ export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:(.+?)\)/g;
 
 export const parseTextMessage = originalText => {
   let type = null;
+  let params = {};
+
   const parsedText = originalText
     .replace(REG_WALLET_ADDRESS, (str, address) => {
       type = 'WALLET_ADDRESS';
@@ -27,10 +29,14 @@ export const parseTextMessage = originalText => {
       type = 'DATA';
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_SIGN_MESSAGE_REQUEST, (str, description, messageToSign) => {
-      type = 'SIGN_MESSAGE_REQUEST';
-      return `Request to sign message: ${messageToSign}`;
-    })
+    .replace(
+      REGEX_SIGN_MESSAGE_REQUEST,
+      (str, description, networkAware, messageToSign) => {
+        type = 'SIGN_MESSAGE_REQUEST';
+        params = { messageToSign };
+        return `Request to sign message: ${messageToSign}`;
+      },
+    )
     .replace(REGEX_SIGNED_MESSAGE, (str, description, signedMessageBase64) => {
       type = 'SIGNED_MESSAGE';
       const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
@@ -40,15 +46,10 @@ export const parseTextMessage = originalText => {
           ? objSignedMessage.signed_message
           : JSON.stringify(objSignedMessage.signed_message, null, '\t');
 
-      if (info.bValid) {
-        text += ' (valid)';
-      } else if (info.bValid === false) text += ' (invalid)';
-      else {
-        text += ` TODO: verify signed message action ${signedMessageBase64}`;
-      }
+      // TODO: signed message validation
 
       return `Signed message: ${text}`;
     });
 
-  return { originalText, parsedText, type };
+  return { originalText, parsedText, type, params };
 };

@@ -46,33 +46,34 @@ const ActionsBar = ({
   }, [myWalletAddress, navigation]);
 
   const handleSendPayment = useCallback(() => {
-    // TODO: check if we have their wallet address or request it by sign message
-    Alert.alert(
-      '',
-      "You don't know their wallet address yet. Do you want to ask for it?",
-      [
-        {
-          text: 'Yes',
-          onPress: () =>
-            onSend([
-              {
-                text:
-                  '[Data request](sign-message-request:Requesting wallet address to send payment)',
-              },
-            ]),
-        },
-        {
-          text: 'No',
-          onPress: () =>
-            navigation.navigate('SendPayment', {
-              walletAddress: correspondentWalletAddress,
-            }),
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
-  }, [Alert]);
+    if (!correspondentWalletAddress) {
+      Alert.alert(
+        '',
+        "You don't know their wallet address yet. Do you want to ask for it?",
+        [
+          {
+            text: 'No',
+            style: 'cancel',
+          },
+          {
+            text: 'Yes',
+            onPress: () =>
+              onSend([
+                {
+                  text:
+                    '[Data request](sign-message-request:Requesting wallet address to send payment)',
+                },
+              ]),
+          },
+        ],
+        { cancelable: false },
+      );
+    } else {
+      navigation.navigate('MakePayment', {
+        walletAddress: correspondentWalletAddress,
+      });
+    }
+  }, [Alert, correspondentWalletAddress, navigation]);
 
   return (
     <View style={styles.actionsBar}>

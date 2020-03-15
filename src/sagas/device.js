@@ -8,9 +8,11 @@ import {
   all,
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
+import { isValidAddress } from 'obyte/lib/utils'
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
+import { REGEX_SIGNED_MESSAGE } from './../lib/messaging';
 import {
   sign,
   oClient,
@@ -21,11 +23,13 @@ import {
   createEncryptedPackage,
   getDeviceMessageHashToSign,
   deliverMessage,
+  getSignedMessageInfoFromJsonBase64,
 } from './../lib/oCustom';
 import { setToastMessage } from './../actions/app';
 import {
   addCorrespondent,
   removeCorrespondent,
+  updateCorrespondentWalletAddress,
 } from '../actions/correspondents';
 import {
   addMessageSuccess,
@@ -41,7 +45,6 @@ import {
   selectPermanentDeviceKeyObj,
   selectDeviceTempKeyData,
 } from './../selectors/device';
-import { selectCorrespondent } from '../selectors/messages';
 
 let oChannel;
 
@@ -169,6 +172,18 @@ export function* receiveMessage(message) {
       oClient.justsaying('hub/delete', body.message_hash);
       // Navigate
     } else if (decryptedMessage.subject === 'text') {
+      // Check if signed message with wallet address info
+      let walletAddress;
+      decryptedMessage.body.replace(REGEX_SIGNED_MESSAGE, (str, description, signedMessageBase64) => {
+        const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
+        walletAddress =  info.objSignedMessage.authors[0].address ?? null;
+      });
+      
+      if (isValidAddress(walletAddress)) {
+        yield put(updateCorrespondentWalletAddress({ address: decryptedMessage.from, walletAddress }));
+      }
+
+      // Persist the message
       yield put(
         receiveMessageStart({
           address: decryptedMessage.from,
