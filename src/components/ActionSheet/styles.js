@@ -3,15 +3,7 @@ import { colors } from './../../constants';
 
 export default StyleSheet.create({
   container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-  },
-  picker: {
-    backgroundColor: 'red',
-    width: 30,
-    height: 22,
-    padding: 0,
-    margin: 0,
+    alignContent: 'flex-end'
   },
   label: {
     fontFamily: 'Agenda-Light',

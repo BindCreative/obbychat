@@ -13,7 +13,7 @@ import ContentLoader, { Rect } from 'react-content-loader/native';
 import Moment from 'react-moment';
 import SafeAreaView from 'react-native-safe-area-view';
 
-import Picker from '../../components/Picker';
+import ActionSheet from '../../components/ActionSheet';
 import NavigationService from './../../navigation/service';
 import { loadWalletBalances } from './../../actions/balances';
 import {
@@ -167,10 +167,9 @@ class WalletScreen extends React.Component {
               </View>
               <View style={styles.txHeaderBlock}>
                 <Text style={styles.txHeaderText}>Transactions</Text>
-                <Picker
-                  onPress={() => alert(1)}
+                <ActionSheet
                   currentValue={this.state.txType}
-                  onValueChange={txType => this.setState({ txType })}
+                  onChange={txType => this.setState({ txType })}
                   items={TX_TYPES}
                 />
               </View>

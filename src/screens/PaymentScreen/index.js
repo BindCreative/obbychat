@@ -16,7 +16,7 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
-import Picker from '../../components/Picker';
+import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -110,8 +110,8 @@ class PaymentScreen extends React.Component {
     }
 
     this.setState({
-      primaryValue: type === 'primary' ? value : primaryValue,
-      secondaryValue: type === 'secondary' ? value : secondaryValue,
+      primaryValue: type === 'primary' ? value : !isNaN(primaryValue) ? primaryValue : 0,
+      secondaryValue: type === 'secondary' ? value : !isNaN(secondaryValue) ? secondaryValue : 0,
     });
   }
 
@@ -289,10 +289,10 @@ class PaymentScreen extends React.Component {
                   keyboardType='decimal-pad'
                   autoFocus={true}
                 />
-                <Picker
+                <ActionSheet
                   currentValue={primaryUnit}
-                  onValueChange={value => this.changePrimaryUnit(value)}
-                  items={PRIMARY_UNITS}
+                  onChange={value => this.changePrimaryUnit(value)}
+                  items={PRIMARY_UNITS.map(({label, altValue}) =>  ({ label, value: altValue }) )}
                 />
               </View>
               <View style={styles.field}>
@@ -302,10 +302,10 @@ class PaymentScreen extends React.Component {
                   value={!secondaryValue ? '' : String(secondaryValue)}
                   keyboardType='decimal-pad'
                 />
-                <Picker
+                <ActionSheet
                   currentValue={secondaryUnit}
-                  onValueChange={value => this.changeSecondaryUnit(value)}
-                  items={SECONDARY_UNITS}
+                  onChange={value => this.changeSecondaryUnit(value)}
+                  items={SECONDARY_UNITS.map(({label, altValue}) =>  ({ label, value: altValue }) )}
                 />
               </View>
               <Button
