@@ -7,7 +7,9 @@ export default StyleSheet.create({
     flex: 1,
   },
   content: {
-    padding: 15,
+    paddingTop: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   icon: {
     color: colors.black,

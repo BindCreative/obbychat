@@ -99,6 +99,17 @@ function reducer(state = initialState, action) {
         },
       };
 
+    case actionTypes.CORRESPONDENT_NAME_SET:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            name: action.payload.name,
+          },
+        },
+      };
     default:
       return state;
   }

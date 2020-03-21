@@ -24,3 +24,8 @@ export const updateCorrespondentWalletAddress = ({
   type: actionTypes.CORRESPONDENT_WALLET_ADDRESS_UPDATE,
   payload: { address, walletAddress },
 });
+
+export const setCorrespondentName = ({ name, address }) => ({
+  type: actionTypes.CORRESPONDENT_NAME_SET,
+  payload: { name, address },
+});

@@ -58,4 +58,15 @@ export default StyleSheet.create({
     fontFamily: 'Agenda-Light',
     fontSize: 16,
   },
+  changeNameDialogInput: {
+    width: '100%',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    color: colors.grey.dark,
+    height: 40,
+    fontSize: 15,
+    backgroundColor: colors.grey.lightest,
+    textAlign: 'center',
+  },
 });
