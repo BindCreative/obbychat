@@ -223,7 +223,11 @@ export const decryptPackage = (
   var decrypted_message = decrypted_message_buf.toString('utf8');
   var json = JSON.parse(decrypted_message);
   if (json.encrypted_package) {
-    return decryptPackage(json.encrypted_package);
+    return decryptPackage(
+      json.encrypted_package,
+      myPermDeviceKey,
+      myTempDeviceKey,
+    );
   } else return json;
 };
 
@@ -321,17 +325,17 @@ export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
 };
 
 export const signMessage = (message, fromAddress) => {
-	const objAuthor = {
-		address: fromAddress,
-		authentifiers: {}
+  const objAuthor = {
+    address: fromAddress,
+    authentifiers: {},
   };
-  
-	const objUnit = {
-		signed_message: message,
-		authors: [objAuthor]
+
+  const objUnit = {
+    signed_message: message,
+    authors: [objAuthor],
   };
 
   const result = Buffer.from(JSON.stringify(objUnit)).toString('base64');
-  
+
   return `[Signed message](signed-message:${result})`;
-}
+};

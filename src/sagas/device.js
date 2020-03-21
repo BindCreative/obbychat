@@ -8,7 +8,7 @@ import {
   all,
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
-import { isValidAddress } from 'obyte/lib/utils'
+import { isValidAddress } from 'obyte/lib/utils';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -146,7 +146,8 @@ export function* receiveMessage(message) {
   const permDeviceKey = yield select(selectPermanentDeviceKeyObj());
 
   try {
-    const decryptedMessage = decryptPackage(
+    const decryptedMessage = yield call(
+      decryptPackage,
       body.message.encrypted_package,
       permDeviceKey,
       tempDeviceKey,
@@ -174,13 +175,21 @@ export function* receiveMessage(message) {
     } else if (decryptedMessage.subject === 'text') {
       // Check if signed message with wallet address info
       let walletAddress;
-      decryptedMessage.body.replace(REGEX_SIGNED_MESSAGE, (str, description, signedMessageBase64) => {
-        const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
-        walletAddress =  info.objSignedMessage.authors[0].address ?? null;
-      });
-      
+      decryptedMessage.body.replace(
+        REGEX_SIGNED_MESSAGE,
+        (str, description, signedMessageBase64) => {
+          const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
+          walletAddress = info.objSignedMessage.authors[0].address ?? null;
+        },
+      );
+
       if (isValidAddress(walletAddress)) {
-        yield put(updateCorrespondentWalletAddress({ address: decryptedMessage.from, walletAddress }));
+        yield put(
+          updateCorrespondentWalletAddress({
+            address: decryptedMessage.from,
+            walletAddress,
+          }),
+        );
       }
 
       // Persist the message
