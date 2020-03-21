@@ -25,7 +25,7 @@ export const selectCorrespondents = () =>
     );
     return correspondents.filter(correspondent => {
       return typeof correspondent === 'object' && correspondent.visible;
-    });
+    }).sort((c1, c2) => c2.messages[c2.messages.length - 1].timestamp - c1.messages[c1.messages.length - 1].timestamp );
   });
 
 export const selectCorrespondent = address =>
