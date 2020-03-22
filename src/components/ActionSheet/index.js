@@ -11,7 +11,7 @@ export default ActionSheet = ({
   ...restProps
 }) => {
   const actionSheet = useRef();
-  const options = [...items.map((item) => item.label), 'Cancel'];
+  const options = [...items.map(item => item.label), 'Cancel'];
 
   const handleOpenActionSheet = useCallback(() => {
     if (actionSheet) {
@@ -21,7 +21,6 @@ export default ActionSheet = ({
 
   const onValueChanged = useCallback(
     i => {
-      console.log(i);
       if (typeof onChange === 'function' && i !== options.length - 1) {
         onChange(items[i].value);
       }

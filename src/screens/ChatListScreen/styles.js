@@ -59,7 +59,7 @@ export default StyleSheet.create({
     fontSize: 16,
   },
   changeNameDialogInput: {
-    width: '100%',
+    alignSelf: 'stretch',
     padding: 10,
     marginTop: 10,
     marginBottom: 10,

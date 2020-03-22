@@ -29,7 +29,6 @@ class QRScannerScreen extends React.Component {
           walletAddress: data.replace(/^.*:/, ''),
         });
       case 'DEVICE_INVITATION':
-        console.log(123, data);
         this.props.acceptInvitation(data);
         return;
       default:
