@@ -29,3 +29,8 @@ export const setCorrespondentName = ({ name, address }) => ({
   type: actionTypes.CORRESPONDENT_NAME_SET,
   payload: { name, address },
 });
+
+export const acceptInvitation = ({ data }) => ({
+  type: actionTypes.CORRESPONDENT_INVITATION_ACCEPT,
+  payload: { data },
+});

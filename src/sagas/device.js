@@ -12,7 +12,7 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
-import { REGEX_SIGNED_MESSAGE } from './../lib/messaging';
+import { REGEX_SIGNED_MESSAGE, REGEX_PAIRING } from './../lib/messaging';
 import {
   sign,
   oClient,
@@ -24,6 +24,7 @@ import {
   getDeviceMessageHashToSign,
   deliverMessage,
   getSignedMessageInfoFromJsonBase64,
+  getDeviceAddress,
 } from './../lib/oCustom';
 import { setToastMessage } from './../actions/app';
 import {
@@ -40,6 +41,7 @@ import {
   setUnreadMessages,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
+import { selectCorrespondent } from './../selectors/messages';
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
@@ -284,10 +286,48 @@ export function* handleReceivedMessage(action) {
   }
 }
 
+export function* acceptInvitation(action) {
+  let address, pubKey, hub, pairingSecret;
+
+  const { data } = action.payload;
+  const pairingData = data.replace(
+    REGEX_PAIRING,
+    (str, protocol, cPubKey, cHub, cPairingSecret) => {
+      address = getDeviceAddress(cPubKey);
+      pubKey = cPubKey;
+      hub = cHub;
+      pairingSecret = cPairingSecret;
+    },
+  );
+
+  if (address) {
+    yield put(
+      addCorrespondent({
+        address,
+        pubKey,
+        hub,
+        pairingSecret,
+        name: 'New',
+      }),
+    );
+    const correspondent = yield select(selectCorrespondent(address));
+    yield call(NavigationService.navigate, 'Chat', { correspondent });
+  } else {
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to accept invitation',
+      }),
+    );
+    yield call(NavigationService.back, 'ChatList');
+  }
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
+    takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
   ]);
 }

@@ -1,10 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { StatusBar, TouchableOpacity, View, Linking } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { BlurView } from 'react-native-unimodules';
 import * as Permissions from 'expo-permissions';
+
+import { acceptInvitation } from './../../actions/correspondents';
 import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
 import styles from './styles';
 
@@ -25,7 +29,8 @@ class QRScannerScreen extends React.Component {
           walletAddress: data.replace(/^.*:/, ''),
         });
       case 'DEVICE_INVITATION':
-        this.props.navigation.navigate('ChatList');
+        console.log(123, data);
+        this.props.acceptInvitation(data);
         return;
       default:
     }
@@ -50,7 +55,7 @@ class QRScannerScreen extends React.Component {
               style={styles.backBtn}
               onPress={() => this.props.navigation.pop()}
             >
-              <ArrowLeftIcon color="#ffffff" height={18} width={18} />
+              <ArrowLeftIcon color='#ffffff' height={18} width={18} />
             </TouchableOpacity>
           </BlurView>
           <View style={styles.layerCenter}>
@@ -89,4 +94,11 @@ QRScannerScreen.propTypes = {
   intensity: PropTypes.number.isRequired,
 };
 
+const mapStateToProps = createStructuredSelector({});
+
+const mapDispatchToProps = dispatch => ({
+  acceptInvitation: data => dispatch(acceptInvitation({ data })),
+});
+
+QRScannerScreen = connect(mapStateToProps, mapDispatchToProps)(QRScannerScreen);
 export default QRScannerScreen;
