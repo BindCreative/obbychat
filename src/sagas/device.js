@@ -286,6 +286,7 @@ export function* handleReceivedMessage(action) {
   }
 }
 
+// TODO: send pairing message
 export function* acceptInvitation(action) {
   let address, pubKey, hub, pairingSecret;
 
