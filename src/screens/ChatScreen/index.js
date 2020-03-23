@@ -8,9 +8,10 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
 
 import styles from './styles';
-import { signMessage }  from '../../lib/oCustom';
+import { signMessage } from '../../lib/oCustom';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
+import { clearChatHistory } from '../../actions/correspondents';
 import { selectCorrespondentMessages } from '../../selectors/messages';
 import { selectWalletAddress } from '../../selectors/wallet';
 import { selectCorrespondentWalletAddress } from '../../selectors/messages';
@@ -65,11 +66,17 @@ class ChatScreen extends React.Component {
         pressAction = () => {
           Alert.alert('Do you want to sign this message?', '', [
             { text: 'No', style: 'cancel' },
-            { text: 'Yes', onPress: () => {
-              const signedMessage = signMessage(params.messageToSign, this.props.myWalletAddress);
-              this.onSend([ { text: signedMessage } ]);
-            } },
-          ] );
+            {
+              text: 'Yes',
+              onPress: () => {
+                const signedMessage = signMessage(
+                  params.messageToSign,
+                  this.props.myWalletAddress,
+                );
+                this.onSend([{ text: signedMessage }]);
+              },
+            },
+          ]);
         };
       }
     }
@@ -121,7 +128,10 @@ class ChatScreen extends React.Component {
 
   render() {
     const { navigation } = this.props;
-    const { name } = _.get(this.props.navigation, 'state.params.correspondent');
+    const correspondent = _.get(
+      this.props.navigation,
+      'state.params.correspondent',
+    );
 
     return (
       <SafeAreaView
@@ -133,8 +143,14 @@ class ChatScreen extends React.Component {
           hasBorder
           size='compact'
           titlePosition='left'
-          title={name}
-          right={<ActionsBar {...this.props} onSend={this.onSend} />}
+          title={correspondent.name}
+          right={
+            <ActionsBar
+              {...this.props}
+              onSend={this.onSend}
+              correspondentWalletAddress={correspondent.address}
+            />
+          }
           navigation={navigation}
         />
         {this.renderChat()}
@@ -157,6 +173,7 @@ const mapStateToProps = (state, props) =>
 const mapDispatchToProps = dispatch => ({
   addMessageStart: payload => dispatch(addMessageStart(payload)),
   removeMessage: payload => dispatch(removeMessage(payload)),
+  clearChatHistory: address => dispatch(clearChatHistory({ address })),
 });
 
 ChatScreen = connect(mapStateToProps, mapDispatchToProps)(ChatScreen);

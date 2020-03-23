@@ -110,6 +110,19 @@ function reducer(state = initialState, action) {
           },
         },
       };
+
+    case actionTypes.CORRESPONDENT_CHAT_CLEAR:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: [],
+          },
+        },
+      };
+
     default:
       return state;
   }

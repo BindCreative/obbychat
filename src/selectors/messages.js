@@ -15,7 +15,7 @@ export const selectCorrespondents = () =>
             typeof correspondent?.messages[lastMessageIndex]?.message ===
             'string'
               ? correspondent.messages[lastMessageIndex].message
-              : 'This message type is not yet supported.';
+              : '';
           correspondent.lastMessageTimestamp = correspondent?.messages?.length
             ? correspondent.messages[lastMessageIndex].timestamp
             : undefined;
@@ -23,19 +23,28 @@ export const selectCorrespondents = () =>
         }
       },
     );
-    return correspondents.filter(correspondent => {
-      return typeof correspondent === 'object' && correspondent.visible;
-    }).sort((c1, c2) => c2.messages[c2.messages.length - 1].timestamp - c1.messages[c1.messages.length - 1].timestamp );
+    return correspondents
+      .filter(correspondent => {
+        return typeof correspondent === 'object' && correspondent.visible;
+      })
+      .sort(
+        (c1, c2) =>
+          c2.messages[c2.messages.length - 1]?.timestamp ??
+          0 - c1.messages[c1.messages.length - 1]?.timestamp ??
+          0,
+      );
   });
 
 export const selectCorrespondent = address =>
   createSelector(getMessagesState, state => {
-    return state.correspondents[address];
+    const correspondent = _.clone(state.correspondents[address]);
+    return correspondent;
   });
 
 export const selectCorrespondentWalletAddress = address =>
   createSelector(getMessagesState, state => {
-    return state.correspondents[address]?.walletAddress;
+    const walletAddress = _.clone(state.correspondents[address]?.walletAddress);
+    return walletAddress;
   });
 
 export const selectCorrespondentMessages = ({ address }) =>
@@ -43,10 +52,8 @@ export const selectCorrespondentMessages = ({ address }) =>
     let allMessages = _.clone(
       _.get(state, `correspondents[${address}].messages`, []),
     );
-    const correspondentName = _.get(
-      state,
-      `correspondents[${address}].name`,
-      'Correspondent',
+    const correspondentName = _.clone(
+      _.get(state, `correspondents[${address}].name`, 'New'),
     );
     allMessages = allMessages.map(message => {
       const unhandled =

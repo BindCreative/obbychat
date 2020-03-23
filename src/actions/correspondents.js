@@ -34,3 +34,8 @@ export const acceptInvitation = ({ data }) => ({
   type: actionTypes.CORRESPONDENT_INVITATION_ACCEPT,
   payload: { data },
 });
+
+export const clearChatHistory = ({ address }) => ({
+  type: actionTypes.CORRESPONDENT_CHAT_CLEAR,
+  payload: { address },
+});

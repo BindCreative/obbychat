@@ -12,11 +12,29 @@ import styles from './styles';
 const ActionsBar = ({
   navigation,
   onSend,
-  address,
+  clearChatHistory,
   myWalletAddress,
   correspondentWalletAddress,
 }) => {
   const actionSheet = useRef();
+
+  const handleClearChat = useCallback(() => {
+    Alert.alert(
+      'Clear chat history',
+      'Are you sure?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => clearChatHistory(correspondentWalletAddress),
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [clearChatHistory, correspondentWalletAddress]);
 
   const handleActionPress = useCallback(
     index => {
@@ -24,6 +42,8 @@ const ActionsBar = ({
         case 0:
           onSend([{ text: myWalletAddress }]);
           break;
+        case 1:
+          handleClearChat();
         default:
       }
     },
@@ -97,15 +117,9 @@ const ActionsBar = ({
       </TouchableOpacity>
       <ActionSheet
         ref={actionSheet}
-        options={[
-          'Insert my address',
-          //'Insert private profile',
-          //'Sign a message',
-          //'Offer a smart contract',
-          'Cancel',
-        ]}
-        cancelButtonIndex={1}
-        destructiveButtonIndex={1}
+        options={['Insert my address', 'Clear chat history', 'Cancel']}
+        cancelButtonIndex={2}
+        destructiveButtonIndex={2}
         onPress={handleActionPress}
       />
     </View>
