@@ -347,6 +347,7 @@ export function* sendPairingMessage({
     const myPermKeys = yield select(selectPermanentDeviceKeyObj());
     const myDeviceAddress = yield select(selectDeviceAddress());
 
+    // TODO: get device name
     let body = { pairing_secret: pairingSecret, device_name: 'New obby' };
     if (reversePairingSecret) {
       body.reverse_pairing_secret = reversePairingSecret;
