@@ -71,20 +71,20 @@ class ChatListScreen extends React.Component {
                   avatar
                   style={styles.listItem}
                   key={i}
-                  onLongPress={() =>
-                    this.setState({
-                      changeNameDialog: {
-                        ...changeNameDialog,
-                        correspondent,
-                        visible: true,
-                      },
-                    })
-                  }
                   onPress={() =>
                     this.props.navigation.navigate('Chat', {
                       correspondent,
                     })
                   }
+                  // onLongPress={() => {
+                  //   this.setState({
+                  //     changeNameDialog: {
+                  //       ...changeNameDialog,
+                  //       correspondent,
+                  //       visible: true,
+                  //     },
+                  //   })
+                  // }}
                 >
                   <Left style={styles.listItemAvatar}>
                     <UserAvatar

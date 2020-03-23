@@ -49,32 +49,18 @@ class QRScannerScreen extends React.Component {
           onRead={this.handleBarCodeScanned}
           style={styles.scanner}
         >
-          <BlurView intensity={intensity} tint={tint} style={styles.layerTop}>
+          <View intensity={intensity} tint={tint} style={styles.layerTop}>
             <TouchableOpacity
               style={styles.backBtn}
               onPress={() => this.props.navigation.pop()}
-            >
-              <ArrowLeftIcon color='#ffffff' height={18} width={18} />
-            </TouchableOpacity>
-          </BlurView>
-          <View style={styles.layerCenter}>
-            <BlurView
-              style={styles.layerLeft}
-              intensity={intensity}
-              tint={tint}
-            />
-            <View style={styles.focused} />
-            <BlurView
-              style={styles.layerRight}
-              intensity={intensity}
-              tint={tint}
-            />
+            ></TouchableOpacity>
           </View>
-          <BlurView
-            intensity={intensity}
-            tint={tint}
-            style={styles.layerBottom}
-          />
+          <View style={styles.layerCenter}>
+            <View style={styles.layerLeft} intensity={intensity} tint={tint} />
+            <View style={styles.focused} />
+            <View style={styles.layerRight} intensity={intensity} tint={tint} />
+          </View>
+          <View intensity={intensity} tint={tint} style={styles.layerBottom} />
         </QRCodeScanner>
       </View>
     );

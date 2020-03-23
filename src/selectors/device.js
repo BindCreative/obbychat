@@ -25,6 +25,7 @@ export const selectDeviceAddress = () =>
       'base64',
     );
     const myDeviceAddress = `0${getChash160(devicePubKey)}`;
+    console.log('DEVICE ADDRESS:', myDeviceAddress);
     return myDeviceAddress;
   });
 

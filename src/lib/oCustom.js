@@ -123,37 +123,6 @@ export const verify = function(hash, b64_sig, b64_pub_key) {
   }
 };
 
-// Pairing
-export const startWaitingForPairing = handlePairingInfo => {
-  var pairing_secret = Crypto.randomBytes(9).toString('base64');
-  var pairingInfo = {
-    pairing_secret: pairing_secret,
-    device_pubkey: myPermDeviceKey.pub_b64,
-    device_address: my_device_address,
-    hub: my_device_hub,
-  };
-  return pairingInfo;
-};
-
-export const sendPairingMessage = (
-  hub_host,
-  recipient_device_pubkey,
-  pairing_secret,
-  reverse_pairing_secret,
-  callbacks,
-) => {
-  var body = { pairing_secret: pairing_secret, device_name: my_device_name };
-  if (reverse_pairing_secret)
-    body.reverse_pairing_secret = reverse_pairing_secret;
-  sendMessageToHub(
-    hub_host,
-    recipient_device_pubkey,
-    'pairing',
-    body,
-    callbacks,
-  );
-};
-
 // Messaging
 export const decryptPackage = (
   objEncryptedPackage,
@@ -300,6 +269,7 @@ export const getTempPubKey = async recipientPubKey => {
 export const deliverMessage = async objDeviceMessage => {
   let accepted = false;
   await oClient.api.deliver(objDeviceMessage, (error, response) => {
+    console.log('deliverMessage response', response);
     if (error || response !== 'accepted') {
       throw new Error('unhandled error' + JSON.stringify(error));
     }

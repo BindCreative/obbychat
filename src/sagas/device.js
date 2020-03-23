@@ -33,6 +33,7 @@ import {
   updateCorrespondentWalletAddress,
 } from '../actions/correspondents';
 import {
+  addMessageStart,
   addMessageSuccess,
   addMessageFail,
   receiveMessageStart,
@@ -159,6 +160,7 @@ export function* receiveMessage(message) {
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
+      // TODO: send pairing message back if reverse_pairing secret is set
       const correspondent = {
         address: decryptedMessage.from,
         name: decryptedMessage.body.device_name,
@@ -176,24 +178,7 @@ export function* receiveMessage(message) {
       // Navigate
     } else if (decryptedMessage.subject === 'text') {
       // Check if signed message with wallet address info
-      let walletAddress;
-      decryptedMessage.body.replace(
-        REGEX_SIGNED_MESSAGE,
-        (str, description, signedMessageBase64) => {
-          const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
-          walletAddress = info.objSignedMessage.authors[0].address ?? null;
-        },
-      );
-
-      if (isValidAddress(walletAddress)) {
-        yield put(
-          updateCorrespondentWalletAddress({
-            address: decryptedMessage.from,
-            walletAddress,
-          }),
-        );
-      }
-
+      yield call(checkForSigning, decryptedMessage);
       // Persist the message
       yield put(
         receiveMessageStart({
@@ -289,9 +274,10 @@ export function* handleReceivedMessage(action) {
 // TODO: send pairing message
 export function* acceptInvitation(action) {
   let address, pubKey, hub, pairingSecret;
+  console.log(434343, action.payload);
 
   const { data } = action.payload;
-  const pairingData = data.replace(
+  data.replace(
     REGEX_PAIRING,
     (str, protocol, cPubKey, cHub, cPairingSecret) => {
       address = getDeviceAddress(cPubKey);
@@ -312,6 +298,12 @@ export function* acceptInvitation(action) {
       }),
     );
     const correspondent = yield select(selectCorrespondent(address));
+    yield call(sendPairingMessage, {
+      hub,
+      address,
+      pairingSecret,
+      recipientDevicePubkey: pubKey,
+    });
     yield call(NavigationService.navigate, 'Chat', { correspondent });
   } else {
     yield put(
@@ -321,6 +313,76 @@ export function* acceptInvitation(action) {
       }),
     );
     yield call(NavigationService.back, 'ChatList');
+  }
+}
+
+export function* checkForSigning(decryptedMessage) {
+  let walletAddress;
+  decryptedMessage.body.replace(
+    REGEX_SIGNED_MESSAGE,
+    (str, description, signedMessageBase64) => {
+      const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
+      walletAddress = info.objSignedMessage.authors[0].address ?? null;
+    },
+  );
+
+  if (isValidAddress(walletAddress)) {
+    yield put(
+      updateCorrespondentWalletAddress({
+        address: decryptedMessage.from,
+        walletAddress,
+      }),
+    );
+  }
+}
+
+export function* sendPairingMessage({
+  address,
+  hub,
+  pairingSecret,
+  reversePairingSecret,
+  recipientDevicePubkey,
+}) {
+  try {
+    const myPermKeys = yield select(selectPermanentDeviceKeyObj());
+    const myDeviceAddress = yield select(selectDeviceAddress());
+
+    let body = { pairing_secret: pairingSecret, device_name: 'xXxTestxXx' };
+    if (reversePairingSecret) {
+      body.reverse_pairing_secret = reversePairingSecret;
+    }
+    const packageObj = {
+      from: myDeviceAddress,
+      device_hub: hub,
+      subject: 'pairing',
+      body: body,
+    };
+    const encryptedPackage = createEncryptedPackage(
+      packageObj,
+      recipientDevicePubkey,
+    );
+    const deviceMessage = {
+      encrypted_package: encryptedPackage,
+    };
+    const messageHash = getBase64Hash(deviceMessage);
+    const tempPubKeyData = yield getTempPubKey(recipientDevicePubkey);
+
+    const objEncryptedPackage = createEncryptedPackage(
+      packageObj,
+      tempPubKeyData.temp_pubkey,
+    );
+    const objDeviceMessage = {
+      encrypted_package: objEncryptedPackage,
+      to: address,
+      pubkey: myPermKeys.pubB64,
+    };
+    objDeviceMessage.signature = sign(
+      getDeviceMessageHashToSign(objDeviceMessage),
+      myPermKeys.priv,
+    );
+    yield deliverMessage(objDeviceMessage);
+  } catch (e) {
+    console.log('sendPairingMessage failed', JSON.stringify(e));
   }
 }
 
