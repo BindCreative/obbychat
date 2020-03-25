@@ -37,7 +37,7 @@ let initiated = false;
 export function* initWallet() {
   try {
     console.log('initiated', initiated);
-    // yield put(rotateDeviceTempKey());
+    yield put(rotateDeviceTempKey());
     if (!initiated) {
       const walletData = yield select(selectWallet());
       if (walletData.password === null || walletData.seedWords === null) {
@@ -169,7 +169,7 @@ export function* sendPayment(action) {
     yield call(oClient.post.payment, params, walletWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
-    yield call(NavigationService.back);
+    yield call(NavigationService.navigate('Wallet'));
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({

@@ -148,7 +148,7 @@ class ChatScreen extends React.Component {
             <ActionsBar
               {...this.props}
               onSend={this.onSend}
-              correspondentWalletAddress={correspondent.address}
+              correspondentWalletAddress={correspondent.walletAddress}
             />
           }
           navigation={navigation}

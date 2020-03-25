@@ -9,6 +9,8 @@ import {
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
 import { isValidAddress } from 'obyte/lib/utils';
+import DeviceInfo from 'react-native-device-info';
+import Crypto from 'crypto';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -42,11 +44,13 @@ import {
   setUnreadMessages,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
+import { rotateDeviceTempKey } from '../actions/device';
 import { selectCorrespondent } from './../selectors/messages';
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
   selectDeviceTempKeyData,
+  selectDevicePubKey,
 } from './../selectors/device';
 
 let oChannel;
@@ -96,6 +100,7 @@ export function* subscribeToHub() {
       setInterval,
       () => {
         oClient.api.heartbeat();
+        console.log('HB to hub');
       },
       10000,
     );
@@ -114,7 +119,7 @@ export function* watchHubMessages() {
   try {
     while (true) {
       const { type, payload } = yield take(oChannel);
-      // console.log('HUB MESSAGE', { type, payload });
+      console.log('HUB MESSAGE', { type, payload });
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge') {
           yield call(loginToHub, payload.body);
@@ -157,23 +162,37 @@ export function* receiveMessage(message) {
     );
 
     if (decryptedMessage.subject === 'removed_paired_device') {
+      console.log('REMOVE CORRESPONDENT', decryptedMessage.from);
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
-      // TODO: send pairing message back if reverse_pairing secret is set
+      const myDeviceAddress = yield select(selectDeviceAddress());
+      const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
       const correspondent = {
         address: decryptedMessage.from,
         name: decryptedMessage.body.device_name,
         hub: decryptedMessage.device_hub,
         pubKey: body.message.pubkey,
         pairingSecret: decryptedMessage.body.pairing_secret,
-        reversePairingSecret: decryptedMessage.body.reverse_pairing_secret,
+        reversePairingSecret:
+          decryptedMessage.body.reverse_pairing_secret ?? reversePairingSecret,
       };
       yield put(addCorrespondent(correspondent));
-      yield call(NavigationService.back);
-      yield call(NavigationService.navigate, 'Chat', {
-        correspondent,
+      console.log({
+        reversePairingSecret,
+        hub: hubAddress,
+        address: myDeviceAddress,
+        pairingSecret: correspondent.reversePairingSecret,
+        devicePubkey: permDeviceKey.pubB64,
       });
+      yield call(sendPairingMessage, {
+        reversePairingSecret,
+        hub: hubAddress,
+        address: myDeviceAddress,
+        pairingSecret: correspondent.reversePairingSecret,
+        devicePubkey: permDeviceKey.pubB64,
+      });
+
       oClient.justsaying('hub/delete', body.message_hash);
       // Navigate
     } else if (decryptedMessage.subject === 'text') {
@@ -271,40 +290,46 @@ export function* handleReceivedMessage(action) {
   }
 }
 
-// TODO: send pairing message
 export function* acceptInvitation(action) {
-  let address, pubKey, hub, pairingSecret;
-  console.log(434343, action.payload);
+  let correspondentDeviceAddress, pubKey, hub, pairingSecret;
 
   const { data } = action.payload;
   data.replace(
     REGEX_PAIRING,
-    (str, protocol, cPubKey, cHub, cPairingSecret) => {
-      address = getDeviceAddress(cPubKey);
-      pubKey = cPubKey;
-      hub = cHub;
-      pairingSecret = cPairingSecret;
+    (
+      str,
+      protocol,
+      correspondentPubKey,
+      correspondentHub,
+      correspondentPairingSecret,
+    ) => {
+      correspondentDeviceAddress = getDeviceAddress(correspondentPubKey);
+      pubKey = correspondentPubKey;
+      hub = correspondentHub;
+      pairingSecret = correspondentPairingSecret;
     },
   );
 
-  if (address) {
+  if (correspondentDeviceAddress) {
     yield put(
       addCorrespondent({
-        address,
+        address: correspondentDeviceAddress,
         pubKey,
         hub,
         pairingSecret,
         name: 'New',
       }),
     );
-    const correspondent = yield select(selectCorrespondent(address));
+
     yield call(sendPairingMessage, {
       hub,
-      address,
+      address: correspondentDeviceAddress,
       pairingSecret,
-      recipientDevicePubkey: pubKey,
+      reversePairingSecret: Crypto.randomBytes(9).toString('base64'),
+      devicePubkey: pubKey,
     });
-    yield call(NavigationService.navigate, 'Chat', { correspondent });
+    yield put(rotateDeviceTempKey());
+    yield call(NavigationService.navigate, 'ChatList');
   } else {
     yield put(
       setToastMessage({
@@ -341,14 +366,15 @@ export function* sendPairingMessage({
   hub,
   pairingSecret,
   reversePairingSecret,
-  recipientDevicePubkey,
+  devicePubkey,
 }) {
   try {
+    console.log('SEND PAIRING MESSAGE', address);
     const myPermKeys = yield select(selectPermanentDeviceKeyObj());
     const myDeviceAddress = yield select(selectDeviceAddress());
-
+    const myDeviceName = yield call(DeviceInfo.getDeviceName);
     // TODO: get device name
-    let body = { pairing_secret: pairingSecret, device_name: 'New obby' };
+    let body = { pairing_secret: pairingSecret, device_name: myDeviceName };
     if (reversePairingSecret) {
       body.reverse_pairing_secret = reversePairingSecret;
     }
@@ -358,15 +384,12 @@ export function* sendPairingMessage({
       subject: 'pairing',
       body: body,
     };
-    const encryptedPackage = createEncryptedPackage(
-      packageObj,
-      recipientDevicePubkey,
-    );
+    const encryptedPackage = createEncryptedPackage(packageObj, devicePubkey);
     const deviceMessage = {
       encrypted_package: encryptedPackage,
     };
     const messageHash = getBase64Hash(deviceMessage);
-    const tempPubKeyData = yield getTempPubKey(recipientDevicePubkey);
+    const tempPubKeyData = yield getTempPubKey(devicePubkey);
 
     const objEncryptedPackage = createEncryptedPackage(
       packageObj,

@@ -82,6 +82,7 @@ function reducer(state = initialState, action) {
           ...state.correspondents,
           [action.payload.address]: {
             ...state.correspondents[action.payload.address],
+            walletAddress: null,
             visible: false,
           },
         },
