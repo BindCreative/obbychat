@@ -8,7 +8,7 @@ export const selectCorrespondents = () =>
     const correspondents = Object.keys(state.correspondents).map(
       (address, i) => {
         let correspondent = _.clone(state.correspondents[address]);
-        if (address?.length === 33) {
+        if (correspondent && address?.length === 33) {
           const lastMessageIndex = correspondent.messages.length - 1;
           correspondent.address = address;
           correspondent.lastMessagePreview =
@@ -39,6 +39,18 @@ export const selectCorrespondent = address =>
   createSelector(getMessagesState, state => {
     const correspondent = _.clone(state.correspondents[address]);
     return correspondent;
+  });
+
+export const selectCorrespondentByPairingSecret = pairingSecret =>
+  createSelector(getMessagesState, state => {
+    const correspondents = _.clone(state.correspondents);
+
+    for (let key in correspondents) {
+      if (correspondents[key].pairingSecret === pairingSecret) {
+        return correspondents[key];
+      }
+    }
+    return null;
   });
 
 export const selectCorrespondentWalletAddress = address =>

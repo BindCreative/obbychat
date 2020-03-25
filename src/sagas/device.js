@@ -33,9 +33,9 @@ import {
   addCorrespondent,
   removeCorrespondent,
   updateCorrespondentWalletAddress,
+  setCorrespondentName,
 } from '../actions/correspondents';
 import {
-  addMessageStart,
   addMessageSuccess,
   addMessageFail,
   receiveMessageStart,
@@ -45,12 +45,11 @@ import {
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
 import { rotateDeviceTempKey } from '../actions/device';
-import { selectCorrespondent } from './../selectors/messages';
+import { selectCorrespondentByPairingSecret } from './../selectors/messages';
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
   selectDeviceTempKeyData,
-  selectDevicePubKey,
 } from './../selectors/device';
 
 let oChannel;
@@ -96,14 +95,11 @@ export function* subscribeToHub() {
         oChannel.put({ type, payload });
       }
     });
-    yield call(
-      setInterval,
-      () => {
-        oClient.api.heartbeat();
-        console.log('HB to hub');
-      },
-      10000,
-    );
+
+    setInterval(() => {
+      oClient.api.heartbeat();
+      console.log('HB to hub');
+    }, 10000);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -165,26 +161,61 @@ export function* receiveMessage(message) {
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
-      const myDeviceAddress = yield select(selectDeviceAddress());
-      const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
-      const correspondent = {
-        address: decryptedMessage.from,
-        name: decryptedMessage.body.device_name,
-        hub: decryptedMessage.device_hub,
-        pubKey: body.message.pubkey,
-        pairingSecret: decryptedMessage.body.pairing_secret,
-        reversePairingSecret:
-          decryptedMessage.body.reverse_pairing_secret ?? reversePairingSecret,
-      };
-      yield put(addCorrespondent(correspondent));
-      yield call(sendPairingMessage, {
-        reversePairingSecret,
-        hub: hubAddress,
-        address: myDeviceAddress,
-        pairingSecret: correspondent.reversePairingSecret,
-        devicePubkey: permDeviceKey.pubB64,
-      });
-
+      const existingCorrespondent = yield select(
+        selectCorrespondentByPairingSecret(
+          decryptedMessage.body.pairing_secret,
+        ),
+      );
+      const reversePairingSecret =
+        decryptedMessage.body?.reverse_pairing_secret;
+      if (!reversePairingSecret && !existingCorrespondent) {
+        // Correspondent started adding you
+        const correspondent = {
+          address: decryptedMessage.from,
+          name: decryptedMessage.body.device_name,
+          hub: decryptedMessage.device_hub,
+          pubKey: body.message.pubkey,
+          pairingSecret: decryptedMessage.body.pairing_secret,
+        };
+        yield put(addCorrespondent(correspondent));
+        yield call(sendPairingMessage, {
+          reversePairingSecret,
+          hub: correspondent.hub,
+          address: correspondent.address,
+          pairingSecret: correspondent.pairingSecret,
+          recipientPubKey: body.message.pubkey,
+        });
+      } else if (!existingCorrespondent && reversePairingSecret) {
+        // I send pairing confirmation
+        const correspondent = {
+          address: decryptedMessage.from,
+          name: decryptedMessage.body.device_name,
+          hub: decryptedMessage.device_hub,
+          pubKey: body.message.pubkey,
+          pairingSecret: decryptedMessage.body.pairing_secret,
+          reversePairingSecret,
+        };
+        yield put(addCorrespondent(correspondent));
+        yield call(sendPairingMessage, {
+          reversePairingSecret,
+          hub: correspondent.hub,
+          address: correspondent.address,
+          pairingSecret: reversePairingSecret,
+          recipientPubKey: body.message.pubkey,
+        });
+      } else if (
+        !reversePairingSecret &&
+        existingCorrespondent?.reversePairingSecret ===
+          decryptedMessage.body.pairing_secret
+      ) {
+        // Correspondent sends pairing confirmation
+        yield put(
+          setCorrespondentName({
+            address: decryptedMessage.from,
+            name: decryptedMessage.body.device_name ?? 'New',
+          }),
+        );
+      }
       oClient.justsaying('hub/delete', body.message_hash);
       // Navigate
     } else if (decryptedMessage.subject === 'text') {
@@ -282,8 +313,7 @@ export function* handleReceivedMessage(action) {
 }
 
 export function* acceptInvitation(action) {
-  let correspondentDeviceAddress, pubKey, hub, pairingSecret;
-
+  let cDeviceAddress, cPubKey, cHub, pairingSecret;
   const { data } = action.payload;
   data.replace(
     REGEX_PAIRING,
@@ -294,32 +324,34 @@ export function* acceptInvitation(action) {
       correspondentHub,
       correspondentPairingSecret,
     ) => {
-      correspondentDeviceAddress = getDeviceAddress(correspondentPubKey);
-      pubKey = correspondentPubKey;
-      hub = correspondentHub;
+      cDeviceAddress = getDeviceAddress(correspondentPubKey);
+      cPubKey = correspondentPubKey;
+      cHub = correspondentHub;
       pairingSecret = correspondentPairingSecret;
     },
   );
 
-  if (correspondentDeviceAddress) {
+  if (cDeviceAddress) {
+    const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
     yield put(
       addCorrespondent({
-        address: correspondentDeviceAddress,
-        pubKey,
-        hub,
+        hub: cHub,
+        pubKey: cPubKey,
         pairingSecret,
+        reversePairingSecret,
+        address: cDeviceAddress,
         name: 'New',
       }),
     );
 
     yield call(sendPairingMessage, {
-      hub,
-      address: correspondentDeviceAddress,
       pairingSecret,
-      reversePairingSecret: Crypto.randomBytes(9).toString('base64'),
-      devicePubkey: pubKey,
+      reversePairingSecret,
+      address: cDeviceAddress,
+      recipientPubKey: cPubKey,
+      hub: cHub,
     });
-    yield put(rotateDeviceTempKey());
+    // yield put(rotateDeviceTempKey());
     yield call(NavigationService.navigate, 'ChatList');
   } else {
     yield put(
@@ -328,7 +360,7 @@ export function* acceptInvitation(action) {
         message: 'Unable to accept invitation',
       }),
     );
-    yield call(NavigationService.back, 'ChatList');
+    yield call(NavigationService.navifate, 'ChatList');
   }
 }
 
@@ -353,33 +385,35 @@ export function* checkForSigning(decryptedMessage) {
 }
 
 export function* sendPairingMessage({
-  address,
   hub,
+  address,
   pairingSecret,
   reversePairingSecret,
-  devicePubkey,
+  recipientPubKey,
 }) {
   try {
     const myPermKeys = yield select(selectPermanentDeviceKeyObj());
     const myDeviceAddress = yield select(selectDeviceAddress());
     const myDeviceName = yield call(DeviceInfo.getDeviceName);
-    // TODO: get device name
+
     let body = { pairing_secret: pairingSecret, device_name: myDeviceName };
     if (reversePairingSecret) {
       body.reverse_pairing_secret = reversePairingSecret;
     }
+
     const packageObj = {
       from: myDeviceAddress,
       device_hub: hub,
       subject: 'pairing',
       body: body,
     };
-    const encryptedPackage = createEncryptedPackage(packageObj, devicePubkey);
-    const deviceMessage = {
-      encrypted_package: encryptedPackage,
-    };
-    const messageHash = getBase64Hash(deviceMessage);
-    const tempPubKeyData = yield getTempPubKey(devicePubkey);
+
+    const encryptedPackage = createEncryptedPackage(
+      packageObj,
+      recipientPubKey,
+    );
+
+    const tempPubKeyData = yield getTempPubKey(recipientPubKey);
 
     const objEncryptedPackage = createEncryptedPackage(
       packageObj,
