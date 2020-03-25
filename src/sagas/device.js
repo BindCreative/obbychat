@@ -162,7 +162,6 @@ export function* receiveMessage(message) {
     );
 
     if (decryptedMessage.subject === 'removed_paired_device') {
-      console.log('REMOVE CORRESPONDENT', decryptedMessage.from);
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
@@ -178,13 +177,6 @@ export function* receiveMessage(message) {
           decryptedMessage.body.reverse_pairing_secret ?? reversePairingSecret,
       };
       yield put(addCorrespondent(correspondent));
-      console.log({
-        reversePairingSecret,
-        hub: hubAddress,
-        address: myDeviceAddress,
-        pairingSecret: correspondent.reversePairingSecret,
-        devicePubkey: permDeviceKey.pubB64,
-      });
       yield call(sendPairingMessage, {
         reversePairingSecret,
         hub: hubAddress,
@@ -286,7 +278,6 @@ export function* handleReceivedMessage(action) {
     oClient.justsaying('hub/delete', action.payload.messageHash);
   } catch (error) {
     yield put(receiveMessageFail());
-    console.log('UNHANDLED ERROR: ', error);
   }
 }
 
@@ -369,7 +360,6 @@ export function* sendPairingMessage({
   devicePubkey,
 }) {
   try {
-    console.log('SEND PAIRING MESSAGE', address);
     const myPermKeys = yield select(selectPermanentDeviceKeyObj());
     const myDeviceAddress = yield select(selectDeviceAddress());
     const myDeviceName = yield call(DeviceInfo.getDeviceName);

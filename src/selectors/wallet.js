@@ -19,6 +19,7 @@ export const selectWalletAddress = () =>
     const { privateKey } = xPrivKey.derive(addressPath);
     const publicKey = privateKey.publicKey.toBuffer().toString('base64');
     const address = getChash160(['sig', { pubkey: publicKey }]);
+    console.log('WALLET ADDRESS:', address);
     return address;
   });
 

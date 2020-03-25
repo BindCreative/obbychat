@@ -118,7 +118,6 @@ export const verify = function(hash, b64_sig, b64_pub_key) {
       new Buffer.from(b64_pub_key, 'base64'),
     );
   } catch (e) {
-    console.log('signature verification exception: ' + e.toString());
     return false;
   }
 };
@@ -269,7 +268,6 @@ export const getTempPubKey = async recipientPubKey => {
 export const deliverMessage = async objDeviceMessage => {
   let accepted = false;
   await oClient.api.deliver(objDeviceMessage, (error, response) => {
-    console.log('deliverMessage response', response);
     if (error || response !== 'accepted') {
       throw new Error('unhandled error' + JSON.stringify(error));
     }

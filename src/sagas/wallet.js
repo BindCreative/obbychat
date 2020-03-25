@@ -32,27 +32,21 @@ import {
   selectAddressWif,
 } from './../selectors/wallet';
 
-let initiated = false;
-
 export function* initWallet() {
   try {
-    console.log('initiated', initiated);
     yield put(rotateDeviceTempKey());
-    if (!initiated) {
-      const walletData = yield select(selectWallet());
-      if (walletData.password === null || walletData.seedWords === null) {
-        yield put(createInitialWalletStart());
-      }
-
-      // Handle websocket traffic
-      yield call(subscribeToHub);
-      // Fetch wallet data from hub
-      yield call(fetchBalances);
-      yield call(fetchWitnesses);
-      yield put(loadWalletHistory());
-      yield put(initWalletSuccess());
-      initiated = true;
+    const walletData = yield select(selectWallet());
+    if (walletData.password === null || walletData.seedWords === null) {
+      yield put(createInitialWalletStart());
     }
+
+    // Handle websocket traffic
+    yield call(subscribeToHub);
+    // Fetch wallet data from hub
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
+    yield put(loadWalletHistory());
+    yield put(initWalletSuccess());
   } catch (error) {
     yield put(initWalletFail());
     yield put(
@@ -61,7 +55,6 @@ export function* initWallet() {
         message: 'Unable to init wallet.',
       }),
     );
-    console.log(error);
   }
 }
 
