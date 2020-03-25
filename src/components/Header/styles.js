@@ -8,7 +8,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'stretch',
   },
   headerCompact: {
     paddingTop: 30,
@@ -16,7 +15,6 @@ export default StyleSheet.create({
     backgroundColor: colors.white,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'stretch',
   },
   headerBordered: {
     borderBottomColor: colors.grey.lightest,
@@ -25,24 +23,21 @@ export default StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     marginLeft: 15,
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    flex: 1,
   },
   headerCenter: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   headerRight: {
     flexDirection: 'row',
     marginRight: 15,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    flex: 1,
   },
   headerTitle: {
     fontFamily: 'Agenda-Medium',
