@@ -38,7 +38,6 @@ const App = () => {
     };
   }, [setAppState]);
 
-  StatusBar.setBarStyle('dark-content');
   // TODO: close and restart hub connection
   // useEffect(() => {
   //   if (appState !== 'active') {
@@ -54,6 +53,7 @@ const App = () => {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <SafeAreaProvider>
+          <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
           <Navigator
             ref={navigatorRef => {
               NavigationService.setTopLevelNavigator(navigatorRef);
