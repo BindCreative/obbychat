@@ -32,26 +32,22 @@ import {
   selectAddressWif,
 } from './../selectors/wallet';
 
-let walletInitiated = false;
-
 export function* initWallet() {
   try {
-    if (!walletInitiated) {
-      yield put(rotateDeviceTempKey());
-      const walletData = yield select(selectWallet());
-      if (walletData.password === null || walletData.seedWords === null) {
-        yield put(createInitialWalletStart());
-      }
-
-      // Handle websocket traffic
-      yield call(subscribeToHub);
-      // Fetch wallet data from hub
-      yield call(fetchBalances);
-      yield call(fetchWitnesses);
-      yield put(loadWalletHistory());
-      yield put(initWalletSuccess());
-      walletInitiated = true;
+    yield put(rotateDeviceTempKey());
+    const walletData = yield select(selectWallet());
+    if (walletData.password === null || walletData.seedWords === null) {
+      yield put(createInitialWalletStart());
     }
+
+    // Handle websocket traffic
+    yield call(subscribeToHub);
+    // Fetch wallet data from hub
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
+    yield put(loadWalletHistory());
+    yield put(initWalletSuccess());
+    walletInitiated = true;
   } catch (error) {
     yield put(initWalletFail());
     yield put(
