@@ -2,14 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
-import { StatusBar, TouchableOpacity, View, Linking } from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
+import { StatusBar, TouchableOpacity, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { BlurView } from 'react-native-unimodules';
-import * as Permissions from 'expo-permissions';
+import SafeAreaView from 'react-native-safe-area-view';
 
 import { acceptInvitation } from './../../actions/correspondents';
-import ArrowLeftIcon from './../../assets/images/icon-arrow-left.svg';
+import Button from './../../components/Button';
 import styles from './styles';
 
 class QRScannerScreen extends React.Component {
@@ -40,43 +38,31 @@ class QRScannerScreen extends React.Component {
   }
 
   render() {
-    const { tint, intensity } = this.props;
-
-    // TODO: implement qr scanner component
     return (
-      <View style={styles.container}>
-        <QRCodeScanner
-          onRead={this.handleBarCodeScanned}
-          style={styles.scanner}
-        >
-          <View intensity={intensity} tint={tint} style={styles.layerTop}>
-            <TouchableOpacity
+      <QRCodeScanner
+        containerStyle={styles.container}
+        cameraStyle={styles.scanner}
+        onRead={this.handleBarCodeScanned}
+        bottomContent={
+          <SafeAreaView style={styles.bottomContent}>
+            <Button
+              text='Cancel'
               style={styles.backBtn}
               onPress={() => this.props.navigation.pop()}
-            ></TouchableOpacity>
-          </View>
-          <View style={styles.layerCenter}>
-            <View style={styles.layerLeft} intensity={intensity} tint={tint} />
-            <View style={styles.focused} />
-            <View style={styles.layerRight} intensity={intensity} tint={tint} />
-          </View>
-          <View intensity={intensity} tint={tint} style={styles.layerBottom} />
-        </QRCodeScanner>
-      </View>
+            />
+          </SafeAreaView>
+        }
+      />
     );
   }
 }
 
 QRScannerScreen.defaultProps = {
   type: 'WALLET_ADDRESS',
-  tint: 'dark',
-  intensity: 80,
 };
 
 QRScannerScreen.propTypes = {
   type: PropTypes.string.isRequired,
-  tint: PropTypes.string.isRequired,
-  intensity: PropTypes.number.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({});

@@ -6,6 +6,7 @@ import {
   put,
   select,
   all,
+  delay,
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
 import { isValidAddress } from 'obyte/lib/utils';
@@ -95,11 +96,6 @@ export function* subscribeToHub() {
         oChannel.put({ type, payload });
       }
     });
-
-    setInterval(() => {
-      oClient.api.heartbeat();
-      console.log('HB to hub');
-    }, 10000);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -107,7 +103,7 @@ export function* subscribeToHub() {
         message: 'Hub connection error',
       }),
     );
-    console.log(error);
+    console.log('subscribeToHub error', error);
   }
 }
 
@@ -434,11 +430,20 @@ export function* sendPairingMessage({
   }
 }
 
+export function* startHubHeartbeat() {
+  while (true) {
+    yield delay(10000);
+    yield call(oClient.api.heartbeat);
+    console.log('HB to hub');
+  }
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
+    takeEvery(actionTypes.WALLET_INIT_SUCCESS, startHubHeartbeat),
   ]);
 }
