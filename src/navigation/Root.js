@@ -35,6 +35,7 @@ const RootNav = createStackNavigator(
           {...props}
           {...compProps}
           title='Pairing QR code'
+          type='PAIRING_CODE'
           backRoute='ChatStack'
         />
       ),
@@ -56,6 +57,7 @@ const RootNav = createStackNavigator(
           {...props}
           {...compProps}
           title='Wallet QR code'
+          type='WALLET_ADDRESS'
           backRoute='WalletStack'
         />
       ),

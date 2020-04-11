@@ -261,6 +261,8 @@ PODS:
     - React
   - RNScreens (2.0.0-alpha.32):
     - React
+  - RNShare (3.2.0):
+    - React
   - RNSVG (9.13.6):
     - React
   - TcpSockets (3.3.2):
@@ -328,6 +330,7 @@ DEPENDENCIES:
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - UMBarCodeScannerInterface (from `../node_modules/unimodules-barcode-scanner-interface/ios`)
@@ -438,6 +441,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   TcpSockets:
@@ -525,6 +530,7 @@ SPEC CHECKSUMS:
   RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
   RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
   RNScreens: a55364dc1833101f836cee70975ce1fea615a12f
+  RNShare: 13f1b72aab353c3092b30dce99d212871bb2a8a1
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
   UMBarCodeScannerInterface: 3802c8574ef119c150701d679ab386e2266d6a54
