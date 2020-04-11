@@ -29,23 +29,19 @@ export const selectCorrespondents = () =>
       })
       .sort(
         (c1, c2) =>
-          c2.messages[c2.messages.length - 1]?.timestamp ??
-          0 - c1.messages[c1.messages.length - 1]?.timestamp ??
-          0,
+          c2.messages[c2.messages.length - 1]?.timestamp -
+          c1.messages[c1.messages.length - 1]?.timestamp,
       );
   });
 
 export const selectCorrespondent = address =>
   createSelector(getMessagesState, state => {
-    const correspondent = _.clone(state.correspondents[address]);
-    return correspondent;
+    return state.correspondents[address];
   });
 
 export const selectCorrespondentByPairingSecret = pairingSecret =>
   createSelector(getMessagesState, state => {
-    const correspondents = _.clone(state.correspondents);
-
-    for (let key in correspondents) {
+    for (let key in state.correspondents) {
       if (correspondents[key].pairingSecret === pairingSecret) {
         return correspondents[key];
       }
@@ -55,17 +51,16 @@ export const selectCorrespondentByPairingSecret = pairingSecret =>
 
 export const selectCorrespondentWalletAddress = address =>
   createSelector(getMessagesState, state => {
-    const walletAddress = _.clone(state.correspondents[address]?.walletAddress);
-    return walletAddress;
+    return state.correspondents[address]?.walletAddress;
   });
 
 export const selectCorrespondentMessages = ({ address }) =>
   createSelector(getMessagesState, state => {
-    let allMessages = _.clone(
-      _.get(state, `correspondents[${address}].messages`, []),
-    );
-    const correspondentName = _.clone(
-      _.get(state, `correspondents[${address}].name`, 'New'),
+    let allMessages = _.get(state, `correspondents[${address}].messages`, []);
+    const correspondentName = _.get(
+      state,
+      `correspondents[${address}].name`,
+      'New',
     );
     allMessages = allMessages.map(message => {
       const unhandled =

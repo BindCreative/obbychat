@@ -15,6 +15,7 @@ const ActionsBar = ({
   clearChatHistory,
   myWalletAddress,
   correspondentWalletAddress,
+  correspondentAddress,
 }) => {
   const actionSheet = useRef();
 
@@ -29,12 +30,12 @@ const ActionsBar = ({
         },
         {
           text: 'Yes',
-          onPress: () => clearChatHistory(correspondentWalletAddress),
+          onPress: () => clearChatHistory(correspondentAddress),
         },
       ],
       { cancelable: false },
     );
-  }, [clearChatHistory, correspondentWalletAddress]);
+  }, [clearChatHistory, correspondentAddress]);
 
   const handleActionPress = useCallback(
     index => {

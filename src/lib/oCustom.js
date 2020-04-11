@@ -13,8 +13,8 @@ export const hubAddress =
 
 export const oClient =
   common.network === 'testnet'
-    ? new obyte.Client('wss://obyte.org/bb-test', { testnet })
-    : new obyte.Client('wss://obyte.org/bb');
+    ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: true })
+    : new obyte.Client('wss://obyte.org/bb', { reconnect: true });
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
