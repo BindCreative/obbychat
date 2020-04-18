@@ -74,7 +74,6 @@ export function* createInitialWallet(action) {
       }),
     );
   } catch (error) {
-    console.log(error);
     yield put(createInitialWalletFail());
     yield put(
       setToastMessage({
@@ -88,7 +87,6 @@ export function* createInitialWallet(action) {
 export function* fetchBalances(action) {
   try {
     const walletAddress = yield select(selectWalletAddress());
-    console.log('WALLET ADDRESS: ', walletAddress);
     const balances = yield call(oClient.api.getBalances, [walletAddress]);
     yield put(loadWalletBalancesSuccess(balances));
   } catch (error) {
@@ -99,7 +97,6 @@ export function* fetchBalances(action) {
         message: 'Unable to fetch balances.',
       }),
     );
-    console.log(error);
   }
 }
 
@@ -117,7 +114,7 @@ export function* fetchWitnesses(action) {
     const witnesses = yield witnessesPromise;
     yield put(getWitnessesSuccess(witnesses));
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
   }
 }
 
@@ -149,7 +146,6 @@ export function* fetchWalletHistory(action) {
         message: 'Unable to fetch transactions.',
       }),
     );
-    console.log({ error });
   }
 }
 
@@ -179,7 +175,6 @@ export function* sendPayment(action) {
         message: 'Unable to send payment',
       }),
     );
-    console.log({ error });
   }
 }
 

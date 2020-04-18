@@ -103,7 +103,6 @@ export function* subscribeToHub() {
         message: 'Hub connection error',
       }),
     );
-    console.log('subscribeToHub error', error);
   }
 }
 
@@ -111,7 +110,6 @@ export function* watchHubMessages() {
   try {
     while (true) {
       const { type, payload } = yield take(oChannel);
-      console.log('HUB MESSAGE', { type, payload });
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge') {
           yield call(loginToHub, payload.body);
@@ -130,13 +128,13 @@ export function* watchHubMessages() {
           );
         }
       } else if (type === 'request') {
-        console.log('UNHANDLED REQUEST FROM HUB: ', payload);
+        // console.log('UNHANDLED REQUEST FROM HUB: ', payload);
       } else {
-        console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
+        // console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
       }
     }
   } catch (error) {
-    console.log(error);
+    // (error);
   }
 }
 
@@ -233,9 +231,9 @@ export function* receiveMessage(message) {
       oClient.justsaying('hub/delete', body.message_hash);
     }
   } catch (error) {
-    console.log('MESSAGE PARSING ERROR:', {
-      message: message.body.message,
-    });
+    // console.log('MESSAGE PARSING ERROR:', {
+    //   message: message.body.message,
+    // });
     if (error === 'INVALID_DECRYPTION_KEY') {
       oClient.justsaying('hub/delete', message.body.message_hash);
     }
@@ -434,7 +432,6 @@ export function* startHubHeartbeat() {
   while (true) {
     yield delay(10000);
     yield call(oClient.api.heartbeat);
-    console.log('HB to hub');
   }
 }
 

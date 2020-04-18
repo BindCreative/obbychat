@@ -13,8 +13,6 @@ import styles from './styles';
 
 const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
   const qrData = _.get(navigation, 'state.params.qrData');
-  console.log('MY QR: ', qrData);
-
   const shareOptions = Platform.select({
     ios: {
       activityItemSources: [

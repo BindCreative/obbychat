@@ -65,6 +65,7 @@ export const selectCorrespondentMessages = ({ address }) =>
     allMessages = allMessages.map(message => {
       const unhandled =
         message.type !== 'text' || typeof message.message !== 'string';
+
       return {
         _id: message.hash,
         type: 'text',
