@@ -155,7 +155,7 @@ export function* sendPayment(action) {
     yield call(oClient.post.payment, params, walletWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
-    yield call(NavigationService.navigate('Wallet'));
+    yield call(NavigationService.navigate, 'Wallet');
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
