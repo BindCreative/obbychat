@@ -42,8 +42,8 @@ export const selectCorrespondent = address =>
 export const selectCorrespondentByPairingSecret = pairingSecret =>
   createSelector(getMessagesState, state => {
     for (let key in state.correspondents) {
-      if (correspondents[key].pairingSecret === pairingSecret) {
-        return correspondents[key];
+      if (state.correspondents[key].pairingSecret === pairingSecret) {
+        return state.correspondents[key];
       }
     }
     return null;

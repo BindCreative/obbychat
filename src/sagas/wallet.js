@@ -5,7 +5,6 @@ import { oClient } from './../lib/oCustom';
 import { actionTypes } from './../constants';
 import { subscribeToHub } from './device';
 import { setToastMessage } from './../actions/app';
-import { rotateDeviceTempKey } from '../actions/device';
 import {
   createInitialWalletStart,
   createInitialWalletSuccess,
@@ -34,12 +33,10 @@ import {
 
 export function* initWallet() {
   try {
-    yield put(rotateDeviceTempKey());
     const walletData = yield select(selectWallet());
     if (walletData.password === null || walletData.seedWords === null) {
       yield put(createInitialWalletStart());
     }
-
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
@@ -47,7 +44,6 @@ export function* initWallet() {
     yield call(fetchWitnesses);
     yield put(loadWalletHistory());
     yield put(initWalletSuccess());
-    walletInitiated = true;
   } catch (error) {
     yield put(initWalletFail());
     yield put(

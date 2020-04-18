@@ -35,7 +35,7 @@ class ActionsBar extends React.Component {
           style={styles.iconButton}
           onPress={() =>
             this.props.navigation.navigate('MyQR', {
-              qrData: `${urlHost}${this._getPairingCode()}`,
+              qrData: this._getPairingCode(),
             })
           }
         >

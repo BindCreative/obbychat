@@ -45,7 +45,6 @@ import {
   setUnreadMessages,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
-import { rotateDeviceTempKey } from '../actions/device';
 import { selectCorrespondentByPairingSecret } from './../selectors/messages';
 import {
   selectDeviceAddress,
@@ -114,7 +113,7 @@ export function* watchHubMessages() {
         if (payload.subject === 'hub/challenge') {
           yield call(loginToHub, payload.body);
         } else if (payload.subject === 'hub/message') {
-          yield receiveMessage(payload);
+          yield call(receiveMessage, payload);
         } else if (payload.subject === 'exchange_rates') {
           yield put(setExchangeRates(payload.body));
         } else if (
@@ -162,6 +161,7 @@ export function* receiveMessage(message) {
       );
       const reversePairingSecret =
         decryptedMessage.body?.reverse_pairing_secret;
+      console.log('checks', existingCorrespondent, reversePairingSecret);
       if (!reversePairingSecret && !existingCorrespondent) {
         // Correspondent started adding you
         const correspondent = {
@@ -231,9 +231,10 @@ export function* receiveMessage(message) {
       oClient.justsaying('hub/delete', body.message_hash);
     }
   } catch (error) {
-    // console.log('MESSAGE PARSING ERROR:', {
-    //   message: message.body.message,
-    // });
+    console.log('MESSAGE PARSING ERROR:', {
+      error,
+      message: message.body.message,
+    });
     if (error === 'INVALID_DECRYPTION_KEY') {
       oClient.justsaying('hub/delete', message.body.message_hash);
     }
@@ -280,7 +281,7 @@ export function* sendMessage(action) {
       getDeviceMessageHashToSign(objDeviceMessage),
       myPermKeys.priv,
     );
-    yield deliverMessage(objDeviceMessage);
+    yield call(deliverMessage, objDeviceMessage);
     yield put(
       addMessageSuccess({
         message,
@@ -345,7 +346,6 @@ export function* acceptInvitation(action) {
       recipientPubKey: cPubKey,
       hub: cHub,
     });
-    // yield put(rotateDeviceTempKey());
     yield call(NavigationService.navigate, 'ChatList');
   } else {
     yield put(

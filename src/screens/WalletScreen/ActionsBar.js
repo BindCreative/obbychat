@@ -23,7 +23,7 @@ class ActionsBar extends React.Component {
           style={styles.iconButton}
           onPress={() =>
             this.props.navigation.navigate('MyWalletQR', {
-              qrData: `obyte-tn:${this.props.walletAddress}`,
+              qrData: this.props.walletAddress,
             })
           }
         >
