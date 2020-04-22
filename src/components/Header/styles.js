@@ -49,5 +49,8 @@ export default StyleSheet.create({
   },
   backBtn: {
     marginRight: 10,
+    paddingTop: 15,
+    paddingRight: 15,
+    paddingBottom: 15,
   },
 });
