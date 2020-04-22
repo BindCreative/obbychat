@@ -14,6 +14,7 @@ const Header = ({
   navigation,
   size,
   hasBackButton,
+  backRoute,
   hasBorder,
 }) => {
   const headerBorderStyle = hasBorder ? styles.headerBordered : {};
@@ -26,7 +27,9 @@ const Header = ({
           {hasBackButton === true && (
             <TouchableOpacity
               style={styles.backBtn}
-              onPress={() => navigation.pop()}
+              onPress={() =>
+                backRoute ? navigation.navigate(backRoute) : navigation.pop()
+              }
             >
               <ArrowLeftIcon color={colors.black} height={18} width={18} />
             </TouchableOpacity>

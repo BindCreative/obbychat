@@ -19,13 +19,23 @@ function back() {
   _navigator.dispatch(NavigationActions.back());
 }
 
-function replace({ routeName, params }) {
-  StackActions.replace({ routeName, params });
+function replace(routeName, params) {
+  _navigator.dispatch(
+    StackActions.replace({
+      routeName,
+      params,
+    }),
+  );
+}
+
+function popToTop() {
+  _navigator.dispatch(StackActions.popToTop());
 }
 
 export default {
   navigate,
   back,
   replace,
+  popToTop,
   setTopLevelNavigator,
 };

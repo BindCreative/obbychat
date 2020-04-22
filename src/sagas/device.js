@@ -45,7 +45,10 @@ import {
   setUnreadMessages,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
-import { selectCorrespondentByPairingSecret } from './../selectors/messages';
+import {
+  selectCorrespondentByPairingSecret,
+  selectCorrespondent,
+} from './../selectors/messages';
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
@@ -211,7 +214,14 @@ export function* receiveMessage(message) {
         );
       }
       oClient.justsaying('hub/delete', body.message_hash);
-      // Navigate
+      const correspondent = yield select(
+        selectCorrespondent(decryptedMessage.from),
+      );
+      if (correspondent) {
+        yield call(NavigationService.navigate, 'Chat', { correspondent });
+      } else {
+        console.error("Can't finis pairing, correspondent not stored");
+      }
     } else if (decryptedMessage.subject === 'text') {
       // Check if signed message with wallet address info
       yield call(checkForSigning, decryptedMessage);

@@ -127,11 +127,8 @@ class ChatScreen extends React.Component {
   }
 
   render() {
-    const { navigation } = this.props;
-    const correspondent = _.get(
-      this.props.navigation,
-      'state.params.correspondent',
-    );
+    const { navigation, backRoute } = this.props;
+    const correspondent = _.get(navigation, 'state.params.correspondent');
 
     return (
       <SafeAreaView
@@ -141,6 +138,7 @@ class ChatScreen extends React.Component {
         <Header
           hasBackButton
           hasBorder
+          backRoute={backRoute}
           size='compact'
           titlePosition='left'
           title={correspondent.name}

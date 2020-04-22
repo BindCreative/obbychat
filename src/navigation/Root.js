@@ -16,7 +16,7 @@ const RootNav = createStackNavigator(
       screen: MainStack,
     },
     Chat: {
-      screen: ChatScreen,
+      screen: props => <ChatScreen {...props} backRoute='ChatList' />,
       path: '/chat/contact',
     },
     ContactScanner: {
