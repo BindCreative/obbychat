@@ -6,22 +6,25 @@ const initialState = {
   password: null,
   seedWords: null,
   witnesses: [],
+  address: null,
+  addressPath: null,
+  walletWif: null,
+  addressWif: null,
+  xPrivKey: null,
+  publicKey: null,
+  privateKey: null,
+  walletPirvateKey: null,
 };
 
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-      if (action.payload?.wallet) {
-        return action.payload.wallet;
-      } else {
-        return state;
-      }
+      return _.get(action, 'payload.wallet', state);
 
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {
         ...state,
-        password: action.payload.password,
-        seedWords: action.payload.seedWords,
+        ...action.payload,
       };
 
     case actionTypes.WITNESSES_GET_SUCCESS:

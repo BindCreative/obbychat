@@ -1,7 +1,9 @@
-import { takeLatest, call, put, select } from '@redux-saga/core/effects';
+import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
+import { toWif, getChash160 } from 'obyte/lib/utils';
+import { REHYDRATE } from 'redux-persist';
 import NavigationService from './../navigation/service';
-import { oClient } from './../lib/oCustom';
+import { oClient, testnet } from './../lib/oCustom';
 import { actionTypes } from './../constants';
 import { subscribeToHub } from './device';
 import { setToastMessage } from './../actions/app';
@@ -33,10 +35,7 @@ import {
 
 export function* initWallet() {
   try {
-    const walletData = yield select(selectWallet());
-    if (walletData.password === null || walletData.seedWords === null) {
-      yield put(createInitialWalletStart());
-    }
+    yield put(createInitialWalletStart());
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
@@ -56,27 +55,67 @@ export function* initWallet() {
 }
 
 export function* createInitialWallet(action) {
-  try {
-    const password = '';
-    let mnemonic = new Mnemonic();
-    while (!Mnemonic.isValid(mnemonic.toString())) {
-      mnemonic = new Mnemonic();
-    }
+  while (true) {
+    const { payload } = yield take(REHYDRATE);
+    try {
+      if (payload.wallet && !payload.wallet.address) {
+        const password = '';
+        let mnemonic = new Mnemonic();
+        while (!Mnemonic.isValid(mnemonic.toString())) {
+          mnemonic = new Mnemonic();
+        }
+        const xPrivKey = mnemonic.toHDPrivateKey();
 
-    yield put(
-      createInitialWalletSuccess({
-        password,
-        seedWords: mnemonic.phrase,
-      }),
-    );
-  } catch (error) {
-    yield put(createInitialWalletFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to generate new wallet.',
-      }),
-    );
+        // Wallet wif
+        const walletPath = testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
+        const { privateKey: walletPirvateKey } = yield xPrivKey.derive(
+          walletPath,
+        );
+        const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({
+          size: 32,
+        });
+        const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
+
+        // Address and address wif
+        const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+        const { privateKey } = yield xPrivKey.derive(addressPath);
+        const publicKeyBuffer = yield privateKey.publicKey.toBuffer();
+        const publicKey = yield publicKeyBuffer.toString('base64');
+        const addressPrivKeyBuf = yield privateKey.bn.toBuffer({ size: 32 });
+        const addressWif = yield call(toWif, addressPrivKeyBuf, testnet);
+        const address = yield call(getChash160, ['sig', { pubkey: publicKey }]);
+
+        yield put(
+          createInitialWalletSuccess({
+            password,
+            address,
+            walletWif,
+            addressWif,
+            xPrivKey,
+            publicKey,
+            privateKey,
+            walletPirvateKey,
+            seedWords: mnemonic.phrase,
+          }),
+        );
+
+        yield put(
+          setToastMessage({
+            type: 'SUCCESS',
+            message: 'Your wallet is ready to use!',
+          }),
+        );
+      }
+    } catch (error) {
+      console.log('createInitialWallet ERROR: ', error);
+      yield put(createInitialWalletFail());
+      yield put(
+        setToastMessage({
+          type: 'ERROR',
+          message: 'Unable to generate new wallet.',
+        }),
+      );
+    }
   }
 }
 
