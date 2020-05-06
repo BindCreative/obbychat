@@ -2,8 +2,8 @@ platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 
-target 'Obby' do
-  # Pods for Obby
+target 'Obby Chat' do
+  # Pods for Obby Chat
   pod 'FBLazyVector', :path => "../node_modules/react-native/Libraries/FBLazyVector"
   pod 'FBReactNativeSpec', :path => "../node_modules/react-native/Libraries/FBReactNativeSpec"
   pod 'RCTRequired', :path => "../node_modules/react-native/Libraries/RCTRequired"
@@ -39,7 +39,7 @@ target 'Obby' do
   pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
   
 
-  target 'ObbyTests' do
+  target 'Obby ChatTests' do
     inherit! :search_paths
     # Pods for testing
   end
@@ -48,10 +48,10 @@ target 'Obby' do
   use_unimodules!
 end
 
-target 'Obby-tvOS' do
+target 'Obby Chat-tvOS' do
   # Pods for Obby-tvOS
 
-  target 'Obby-tvOSTests' do
+  target 'Obby Chat-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
   end

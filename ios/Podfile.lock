@@ -206,7 +206,7 @@ PODS:
     - React
   - react-native-randombytes (3.5.3):
     - React
-  - react-native-safe-area-context (0.6.4):
+  - react-native-safe-area-context (0.7.3):
     - React
   - react-native-udp (2.6.1):
     - React
@@ -247,19 +247,19 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.5)
   - RNCAsyncStorage (1.7.1):
     - React
-  - RNCMaskedView (0.1.6):
+  - RNCMaskedView (0.1.10):
     - React
   - RNDeviceInfo (5.5.3):
     - React
-  - RNGestureHandler (1.3.0):
+  - RNGestureHandler (1.6.1):
     - React
   - RNOS (1.2.6):
     - React
   - RNPermissions (2.0.9):
     - React
-  - RNReanimated (1.7.0):
+  - RNReanimated (1.8.0):
     - React
-  - RNScreens (2.0.0-alpha.32):
+  - RNScreens (2.7.0):
     - React
   - RNShare (3.2.0):
     - React
@@ -510,7 +510,7 @@ SPEC CHECKSUMS:
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-camera: 705c7e9412436957b4dc894a1af61f43830787e2
   react-native-randombytes: 3638d24759d67c68f6ccba60c52a7a8a8faa6a23
-  react-native-safe-area-context: 52342d2d80ea8faadd0ffa76d83b6051f20c5329
+  react-native-safe-area-context: e200d4433aba6b7e60b52da5f37af11f7a0b0392
   react-native-udp: 54a1aa9bf5c0824f930b1ba6dbfb3fd3e733bba9
   React-RCTActionSheet: 600b4d10e3aea0913b5a92256d2719c0cdd26d76
   React-RCTAnimation: 791a87558389c80908ed06cc5dfc5e7920dfa360
@@ -523,13 +523,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   RNCAsyncStorage: 44395cb9c7c1523104c2b499eb426ef7aff82bca
-  RNCMaskedView: a88953beefbd347a29072d9eba90e42945fe291e
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNDeviceInfo: 310c1f43d418d950a193c7650de2f9559c906048
-  RNGestureHandler: 5329a942fce3d41c68b84c2c2276ce06a696d8b0
+  RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
   RNPermissions: 2f74237e97b08beda01e914301e12524ddddf5b8
-  RNReanimated: 031fe8d9ea93c2bd689a40f05320ef9d96f74d7f
-  RNScreens: a55364dc1833101f836cee70975ce1fea615a12f
+  RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff
+  RNScreens: cf198f915f8a2bf163de94ca9f5bfc8d326c3706
   RNShare: 13f1b72aab353c3092b30dce99d212871bb2a8a1
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
   TcpSockets: 14306fb79f9750ea7d2ddd02d8bed182abb01797
@@ -547,6 +547,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: a98e37a576a5220bf43b8faf33cfdc129d2f441d
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: d07be5907163bb32cfbd6ec771b7ecefe0f04f56
+PODFILE CHECKSUM: 0dcc2d9daab1826f90f0ffabb8f852b54fa415b0
 
 COCOAPODS: 1.8.4

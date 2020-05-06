@@ -6,6 +6,7 @@ import _ from 'lodash';
 import SafeAreaView from 'react-native-safe-area-view';
 import Share from 'react-native-share';
 
+import { urlHost } from '../../lib/oCustom';
 import { colors } from './../../constants';
 import Header from '../../components/Header';
 import Button from './../../components/Button';
@@ -17,9 +18,9 @@ const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
     ios: {
       activityItemSources: [
         {
-          placeholderItem: { type: 'text', content: qrData },
+          placeholderItem: { type: 'text', content: `${urlHost}${qrData}` },
           item: {
-            default: { type: 'text', content: qrData },
+            default: { type: 'text', content: `${urlHost}${qrData}` },
             message: null,
           },
           linkMetadata: {
@@ -35,7 +36,7 @@ const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
       subject: `My Obby chat ${
         type === 'WALLET_ADDRESS' ? 'wallet address' : 'pairing code'
       }`,
-      message: `${qrData}`,
+      message: `${urlHost}${qrData}`,
     },
   });
 
@@ -55,7 +56,7 @@ const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
       <View style={styles.content}>
         <View style={styles.qrContainer}>
           <QRCode
-            value={qrData}
+            value={`${urlHost}${qrData}`}
             size={150}
             bgColor={colors.black}
             fgColor={colors.white}

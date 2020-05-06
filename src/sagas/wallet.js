@@ -58,7 +58,7 @@ export function* createInitialWallet(action) {
   while (true) {
     const { payload } = yield take(REHYDRATE);
     try {
-      if (payload.wallet && !payload.wallet.address) {
+      if (payload?.wallet && !payload.wallet.address) {
         const password = '';
         let mnemonic = new Mnemonic();
         while (!Mnemonic.isValid(mnemonic.toString())) {
@@ -120,18 +120,22 @@ export function* createInitialWallet(action) {
 }
 
 export function* fetchBalances(action) {
-  try {
+  while (true) {
     const walletAddress = yield select(selectWalletAddress());
-    const balances = yield call(oClient.api.getBalances, [walletAddress]);
-    yield put(loadWalletBalancesSuccess(balances));
-  } catch (error) {
-    yield put(loadWalletBalancesFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to fetch balances.',
-      }),
-    );
+    if (walletAddress) {
+      try {
+        const balances = yield call(oClient.api.getBalances, [walletAddress]);
+        yield put(loadWalletBalancesSuccess(balances));
+      } catch (error) {
+        yield put(loadWalletBalancesFail());
+        yield put(
+          setToastMessage({
+            type: 'ERROR',
+            message: 'Unable to fetch balances.',
+          }),
+        );
+      }
+    }
   }
 }
 
@@ -154,33 +158,38 @@ export function* fetchWitnesses(action) {
 }
 
 export function* fetchWalletHistory(action) {
-  try {
-    const witnesses = yield select(selectWitnesses());
+  while (true) {
     const walletAddress = yield select(selectWalletAddress());
-    const params = {
-      witnesses: witnesses,
-      addresses: [walletAddress],
-    };
+    if (walletAddress) {
+      try {
+        const witnesses = yield select(selectWitnesses());
+        console.log(walletAddress, witnesses);
+        const params = {
+          witnesses: witnesses,
+          addresses: [walletAddress],
+        };
 
-    const historyPromise = new Promise((resolve, reject) =>
-      oClient.api.getHistory(params, (err, history) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(history);
-        }
-      }),
-    );
-    const history = yield historyPromise;
-    yield put(loadWalletHistorySuccess(history));
-  } catch (error) {
-    yield put(loadWalletHistoryFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to fetch transactions.',
-      }),
-    );
+        const historyPromise = new Promise((resolve, reject) =>
+          oClient.api.getHistory(params, (err, history) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(history);
+            }
+          }),
+        );
+        const history = yield historyPromise;
+        yield put(loadWalletHistorySuccess(history));
+      } catch (error) {
+        yield put(loadWalletHistoryFail());
+        yield put(
+          setToastMessage({
+            type: 'ERROR',
+            message: 'Unable to fetch transactions.',
+          }),
+        );
+      }
+    }
   }
 }
 
