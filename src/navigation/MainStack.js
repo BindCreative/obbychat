@@ -38,6 +38,7 @@ const MainStack = createBottomTabNavigator(
   },
   {
     initialRouteName: 'ChatStack',
+    lazy: false,
     defaultNavigationOptions: {
       tabBarVisible: true,
     },
