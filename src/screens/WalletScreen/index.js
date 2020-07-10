@@ -16,6 +16,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import ActionSheet from '../../components/ActionSheet';
 import NavigationService from './../../navigation/service';
 import { loadWalletBalances } from './../../actions/balances';
+import { loadWalletHistory } from './../../actions/walletHistory';
 import {
   selectWalletBalances,
   selectBalancesLoading,
@@ -197,7 +198,10 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  loadBalances: () => dispatch(loadWalletBalances()),
+  loadBalances: () => {
+    dispatch(loadWalletBalances());
+    dispatch(loadWalletHistory());
+  },
 });
 
 WalletScreen = connect(mapStateToProps, mapDispatchToProps)(WalletScreen);

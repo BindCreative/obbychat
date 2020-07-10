@@ -8,6 +8,9 @@ export const selectCorrespondents = () =>
     const correspondents = Object.keys(state.correspondents).map(
       (address, i) => {
         let correspondent = _.clone(state.correspondents[address]);
+        if (!correspondent?.messages) {
+          return [];
+        }
         if (correspondent && address?.length === 33) {
           const lastMessageIndex = correspondent.messages.length - 1;
           correspondent.address = address;

@@ -217,9 +217,7 @@ export function* receiveMessage(message) {
       const correspondent = yield select(
         selectCorrespondent(decryptedMessage.from),
       );
-      if (correspondent) {
-        yield call(NavigationService.navigate, 'Chat', { correspondent });
-      } else {
+      if (!correspondent) {
         console.error("Can't finis pairing, correspondent not stored");
       }
     } else if (decryptedMessage.subject === 'text') {
