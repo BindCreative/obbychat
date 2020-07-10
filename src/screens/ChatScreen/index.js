@@ -4,14 +4,16 @@ import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, Text, Clipboard, Alert } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
-
 import _ from 'lodash';
 
 import styles from './styles';
 import { signMessage } from '../../lib/oCustom';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
-import { clearChatHistory } from '../../actions/correspondents';
+import {
+  clearChatHistory,
+  removeCorrespondent,
+} from '../../actions/correspondents';
 import { selectCorrespondentMessages } from '../../selectors/messages';
 import { selectWalletAddress } from '../../selectors/wallet';
 import { selectCorrespondentWalletAddress } from '../../selectors/messages';
@@ -145,8 +147,9 @@ class ChatScreen extends React.Component {
           right={
             <ActionsBar
               {...this.props}
+              removeCorrespondent={this.props.removeCorrespondent}
               onSend={this.onSend}
-              correspondentWalletAddress={correspondent.walletAddress}
+              correspondentWalletAddress={this.props.correspondentWalletAddress}
               correspondentAddress={correspondent.address}
             />
           }
@@ -172,6 +175,7 @@ const mapStateToProps = (state, props) =>
 const mapDispatchToProps = dispatch => ({
   addMessageStart: payload => dispatch(addMessageStart(payload)),
   removeMessage: payload => dispatch(removeMessage(payload)),
+  removeCorrespondent: address => dispatch(removeCorrespondent({ address })),
   clearChatHistory: address => dispatch(clearChatHistory({ address })),
 });
 

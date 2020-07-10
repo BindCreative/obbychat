@@ -13,6 +13,7 @@ const ActionsBar = ({
   navigation,
   onSend,
   clearChatHistory,
+  removeCorrespondent,
   myWalletAddress,
   correspondentWalletAddress,
   correspondentAddress,
@@ -37,6 +38,27 @@ const ActionsBar = ({
     );
   }, [clearChatHistory, correspondentAddress]);
 
+  const handleDeleteContact = useCallback(() => {
+    Alert.alert(
+      'Delete contact',
+      'Are you sure?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            removeCorrespondent(correspondentAddress);
+            navigation.navigate('ChatList');
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [correspondentAddress]);
+
   const handleActionPress = useCallback(
     index => {
       switch (index) {
@@ -45,6 +67,10 @@ const ActionsBar = ({
           break;
         case 1:
           handleClearChat();
+          break;
+        case 2:
+          handleDeleteContact();
+          break;
         default:
       }
     },
@@ -118,7 +144,12 @@ const ActionsBar = ({
       </TouchableOpacity>
       <ActionSheet
         ref={actionSheet}
-        options={['Insert my address', 'Clear chat history', 'Cancel']}
+        options={[
+          'Insert my address',
+          'Clear chat history',
+          'Delete contact',
+          'Cancel',
+        ]}
         cancelButtonIndex={2}
         destructiveButtonIndex={2}
         onPress={handleActionPress}
