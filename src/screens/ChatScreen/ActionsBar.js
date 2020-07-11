@@ -150,8 +150,8 @@ const ActionsBar = ({
           'Delete contact',
           'Cancel',
         ]}
-        cancelButtonIndex={2}
-        destructiveButtonIndex={2}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={3}
         onPress={handleActionPress}
       />
     </View>
