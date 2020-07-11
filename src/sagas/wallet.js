@@ -56,9 +56,13 @@ export function* initWallet() {
 }
 
 export function* createInitialWallet(action) {
-  const { payload } = yield take(REHYDRATE);
+  // Take two as we have two different persisted stores
+  const { payload: payload1 } = yield take(REHYDRATE);
+  const { payload: payload2 } = yield take(REHYDRATE);
+  const payload = { ...payload1, ...payload2 };
+
   try {
-    if (payload?.wallet && !payload.wallet.address) {
+    if (!payload?.wallet?.address) {
       const password = '';
       let mnemonic = new Mnemonic();
       while (!Mnemonic.isValid(mnemonic.toString())) {
@@ -89,12 +93,14 @@ export function* createInitialWallet(action) {
         createInitialWalletSuccess({
           password,
           address,
+          addressPath,
           walletWif,
           addressWif,
           xPrivKey,
           publicKey,
           privateKey,
           walletPirvateKey,
+          walletPath,
           seedWords: mnemonic.phrase,
         }),
       );

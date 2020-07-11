@@ -14,6 +14,7 @@ const initialState = {
   publicKey: null,
   privateKey: null,
   walletPirvateKey: null,
+  walletPath: null,
 };
 
 function reducer(state = initialState, action) {
