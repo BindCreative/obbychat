@@ -24,7 +24,7 @@ const App = () => {
     const storeSetup = configureStore();
     setStore(storeSetup.store);
     setPersistor(storeSetup.persistor);
-  }, [configureStore, initWallet]);
+  }, []);
 
   useEffect(() => {
     if (!!store) {
