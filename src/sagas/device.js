@@ -58,6 +58,7 @@ import {
 let oChannel;
 
 if (!oChannel) {
+  console.log('oChannel init');
   oChannel = channel();
 }
 
@@ -76,10 +77,12 @@ export function* loginToHub(challenge) {
     temp_pubkey: tempDeviceKeyData.pubB64,
     pubkey: permanentDeviceKey.pubB64,
   };
+
   objTempPubkey.signature = sign(
     getDeviceMessageHashToSign(objTempPubkey),
     permanentDeviceKey.priv,
   );
+
   oClient.api
     .tempPubkey(objTempPubkey)
     .then(result => console.log('Temp pubkey result:', result))
@@ -113,7 +116,7 @@ export function* watchHubMessages() {
     while (true) {
       const { type, payload } = yield take(oChannel);
       if (type === 'justsaying') {
-        if (payload.subject === 'hub/challenge') {
+        if (payload.subject === 'hub/challenge' && !!payload.body) {
           yield call(loginToHub, payload.body);
         } else if (payload.subject === 'hub/message') {
           yield call(receiveMessage, payload);
@@ -130,13 +133,13 @@ export function* watchHubMessages() {
           );
         }
       } else if (type === 'request') {
-        // console.log('UNHANDLED REQUEST FROM HUB: ', payload);
+        console.log('UNHANDLED REQUEST FROM HUB: ', payload);
       } else {
-        // console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
+        console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
       }
     }
   } catch (error) {
-    // (error);
+    console.log('UNHANDLED HUB MESSAGE ERROR', error);
   }
 }
 
@@ -157,6 +160,7 @@ export function* receiveMessage(message) {
       yield put(removeCorrespondent({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
+      console.log('Pairing');
       const existingCorrespondent = yield select(
         selectCorrespondentByPairingSecret(
           decryptedMessage.body.pairing_secret,
@@ -166,6 +170,7 @@ export function* receiveMessage(message) {
         decryptedMessage.body?.reverse_pairing_secret;
       console.log('checks', existingCorrespondent, reversePairingSecret);
       if (!reversePairingSecret && !existingCorrespondent) {
+        console.log('Correspondent started adding you');
         // Correspondent started adding you
         const correspondent = {
           address: decryptedMessage.from,
@@ -182,7 +187,9 @@ export function* receiveMessage(message) {
           pairingSecret: correspondent.pairingSecret,
           recipientPubKey: body.message.pubkey,
         });
+        oClient.justsaying('hub/delete', body.message_hash);
       } else if (!existingCorrespondent && reversePairingSecret) {
+        console.log('I send pairing confirmation');
         // I send pairing confirmation
         const correspondent = {
           address: decryptedMessage.from,
@@ -200,11 +207,13 @@ export function* receiveMessage(message) {
           pairingSecret: reversePairingSecret,
           recipientPubKey: body.message.pubkey,
         });
+        oClient.justsaying('hub/delete', body.message_hash);
       } else if (
         !reversePairingSecret &&
         existingCorrespondent?.reversePairingSecret ===
           decryptedMessage.body.pairing_secret
       ) {
+        console.log('Correspondent sends pairing confirmation');
         // Correspondent sends pairing confirmation
         yield put(
           setCorrespondentName({
@@ -218,7 +227,7 @@ export function* receiveMessage(message) {
         selectCorrespondent(decryptedMessage.from),
       );
       if (!correspondent) {
-        console.error("Can't finis pairing, correspondent not stored");
+        console.error("Can't finish pairing, correspondent not stored");
       }
     } else if (decryptedMessage.subject === 'text') {
       // Check if signed message with wallet address info
@@ -235,7 +244,9 @@ export function* receiveMessage(message) {
           timestamp: Date.now(),
         }),
       );
+      oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'payment_notification') {
+      console.log('Payment notification', decryptedMessage);
       oClient.justsaying('hub/delete', body.message_hash);
     }
   } catch (error) {
@@ -243,9 +254,7 @@ export function* receiveMessage(message) {
       error,
       message: message.body.message,
     });
-    if (error === 'INVALID_DECRYPTION_KEY') {
-      oClient.justsaying('hub/delete', message.body.message_hash);
-    }
+    oClient.justsaying('hub/delete', message.body.message_hash);
   }
 }
 
@@ -436,10 +445,12 @@ export function* sendPairingMessage({
   }
 }
 
+// Deprecated, as reconnect option was introduced to obyte.js
 export function* startHubHeartbeat() {
   while (true) {
     yield delay(10000);
     yield call(oClient.api.heartbeat);
+    yield console.log('HB');
   }
 }
 
@@ -449,6 +460,5 @@ export default function* watch() {
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
-    takeEvery(actionTypes.WALLET_INIT_SUCCESS, startHubHeartbeat),
   ]);
 }

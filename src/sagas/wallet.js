@@ -27,7 +27,6 @@ import {
   loadWalletBalancesFail,
 } from './../actions/balances';
 import {
-  selectWallet,
   selectWalletAddress,
   selectWitnesses,
   selectAddressWif,
@@ -71,7 +70,7 @@ export function* createInitialWallet(action) {
       const xPrivKey = mnemonic.toHDPrivateKey();
 
       // Wallet wif
-      const walletPath = testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
+      const walletPath = testnet ? "m/44'/1'/0'/0'" : "m/44'/0'/0'/0";
       const { privateKey: walletPirvateKey } = yield xPrivKey.derive(
         walletPath,
       );
@@ -195,12 +194,12 @@ export function* fetchWalletHistory(action) {
 
 export function* sendPayment(action) {
   try {
-    const walletWif = yield select(selectAddressWif());
+    const addressWif = yield select(selectAddressWif());
     const params = {
       ...action.payload,
     };
 
-    yield call(oClient.post.payment, params, walletWif);
+    yield call(oClient.post.payment, params, addressWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
     yield call(NavigationService.navigate, 'Wallet');

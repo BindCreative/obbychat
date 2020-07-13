@@ -110,8 +110,14 @@ class PaymentScreen extends React.Component {
     }
 
     this.setState({
-      primaryValue: type === 'primary' ? value : !isNaN(primaryValue) ? primaryValue : 0,
-      secondaryValue: type === 'secondary' ? value : !isNaN(secondaryValue) ? secondaryValue : 0,
+      primaryValue:
+        type === 'primary' ? value : !isNaN(primaryValue) ? primaryValue : 0,
+      secondaryValue:
+        type === 'secondary'
+          ? value
+          : !isNaN(secondaryValue)
+          ? secondaryValue
+          : 0,
     });
   }
 
@@ -292,7 +298,10 @@ class PaymentScreen extends React.Component {
                 <ActionSheet
                   currentValue={primaryUnit}
                   onChange={value => this.changePrimaryUnit(value)}
-                  items={PRIMARY_UNITS.map(({label, altValue}) =>  ({ label, value: altValue }) )}
+                  items={PRIMARY_UNITS.map(({ label, altValue }) => ({
+                    label,
+                    value: altValue,
+                  }))}
                 />
               </View>
               <View style={styles.field}>
@@ -305,7 +314,10 @@ class PaymentScreen extends React.Component {
                 <ActionSheet
                   currentValue={secondaryUnit}
                   onChange={value => this.changeSecondaryUnit(value)}
-                  items={SECONDARY_UNITS.map(({label, altValue}) =>  ({ label, value: altValue }) )}
+                  items={SECONDARY_UNITS.map(({ label, altValue }) => ({
+                    label,
+                    value: altValue,
+                  }))}
                 />
               </View>
               <Button

@@ -17,7 +17,7 @@ export const selectWalletWif = () =>
   createSelector(getWalletState, state => state.walletWif);
 
 export const selectAddressWif = () =>
-  createSelector(getWalletState, state => state.selectAddressWif);
+  createSelector(getWalletState, state => state.addressWif);
 
 export const selectWitnesses = () =>
   createSelector(getWalletState, state => state.witnesses);
