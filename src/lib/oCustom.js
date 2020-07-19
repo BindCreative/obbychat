@@ -2,7 +2,7 @@ import _ from 'lodash';
 import Crypto from 'crypto';
 import obyte from 'obyte';
 import ecdsa from 'secp256k1';
-import { getChash160 } from 'obyte/lib/utils';
+import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { common } from './../constants';
 
 // Conf
@@ -13,8 +13,8 @@ export const hubAddress =
 
 export const oClient =
   common.network === 'testnet'
-    ? new obyte.Client('wss://obyte.org/bb-test', { testnet })
-    : new obyte.Client('wss://obyte.org/bb');
+    ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: true })
+    : new obyte.Client('wss://obyte.org/bb', { reconnect: true });
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
@@ -118,40 +118,8 @@ export const verify = function(hash, b64_sig, b64_pub_key) {
       new Buffer.from(b64_pub_key, 'base64'),
     );
   } catch (e) {
-    console.log('signature verification exception: ' + e.toString());
     return false;
   }
-};
-
-// Pairing
-export const startWaitingForPairing = handlePairingInfo => {
-  var pairing_secret = Crypto.randomBytes(9).toString('base64');
-  var pairingInfo = {
-    pairing_secret: pairing_secret,
-    device_pubkey: myPermDeviceKey.pub_b64,
-    device_address: my_device_address,
-    hub: my_device_hub,
-  };
-  return pairingInfo;
-};
-
-export const sendPairingMessage = (
-  hub_host,
-  recipient_device_pubkey,
-  pairing_secret,
-  reverse_pairing_secret,
-  callbacks,
-) => {
-  var body = { pairing_secret: pairing_secret, device_name: my_device_name };
-  if (reverse_pairing_secret)
-    body.reverse_pairing_secret = reverse_pairing_secret;
-  sendMessageToHub(
-    hub_host,
-    recipient_device_pubkey,
-    'pairing',
-    body,
-    callbacks,
-  );
 };
 
 // Messaging
@@ -223,7 +191,11 @@ export const decryptPackage = (
   var decrypted_message = decrypted_message_buf.toString('utf8');
   var json = JSON.parse(decrypted_message);
   if (json.encrypted_package) {
-    return decryptPackage(json.encrypted_package);
+    return decryptPackage(
+      json.encrypted_package,
+      myPermDeviceKey,
+      myTempDeviceKey,
+    );
   } else return json;
 };
 
@@ -239,7 +211,6 @@ export const createEncryptedPackage = (json, recipient_device_pubkey) => {
   var arrChunks = [];
   var CHUNK_LENGTH = 2003;
   for (var offset = 0; offset < text.length; offset += CHUNK_LENGTH) {
-    //	console.log('offset '+offset);
     arrChunks.push(
       cipher.update(
         text.slice(offset, Math.min(offset + CHUNK_LENGTH, text.length)),
@@ -250,10 +221,7 @@ export const createEncryptedPackage = (json, recipient_device_pubkey) => {
   arrChunks.push(cipher.final());
   var encrypted_message_buf = Buffer.concat(arrChunks);
   arrChunks = null;
-  //	var encrypted_message_buf = Buffer.concat([cipher.update(text, "utf8"), cipher.final()]);
-  //console.log(encrypted_message_buf);
   var encrypted_message = encrypted_message_buf.toString('base64');
-  //console.log(encrypted_message);
   var authtag = cipher.getAuthTag();
   // this is visible and verifiable by the hub
   var encrypted_package = {
@@ -306,4 +274,36 @@ export const deliverMessage = async objDeviceMessage => {
     accepted = true;
   });
   return accepted;
+};
+
+export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
+  var signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString(
+    'utf8',
+  );
+  try {
+    var objSignedMessage = JSON.parse(signedMessageJson);
+  } catch (e) {
+    return null;
+  }
+  var info = {
+    objSignedMessage: objSignedMessage,
+  };
+
+  return info;
+};
+
+export const signMessage = (message, fromAddress) => {
+  const objAuthor = {
+    address: fromAddress,
+    authentifiers: {},
+  };
+
+  const objUnit = {
+    signed_message: message,
+    authors: [objAuthor],
+  };
+
+  const result = Buffer.from(JSON.stringify(objUnit)).toString('base64');
+
+  return `[Signed message](signed-message:${result})`;
 };

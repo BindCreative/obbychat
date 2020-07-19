@@ -1,18 +1,44 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'lodash';
 import SafeAreaView from 'react-native-safe-area-view';
+import Share from 'react-native-share';
 
+import { urlHost } from '../../lib/oCustom';
 import { colors } from './../../constants';
 import Header from '../../components/Header';
 import Button from './../../components/Button';
 import styles from './styles';
 
-const QRCodeScreen = ({ navigation, backRoute, title }) => {
+const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
   const qrData = _.get(navigation, 'state.params.qrData');
-  console.log('MY QR: ', qrData);
+  const shareOptions = Platform.select({
+    ios: {
+      activityItemSources: [
+        {
+          placeholderItem: { type: 'text', content: `${urlHost}${qrData}` },
+          item: {
+            default: { type: 'text', content: `${urlHost}${qrData}` },
+            message: null,
+          },
+          linkMetadata: {
+            title: `My Obby chat ${
+              type === 'WALLET_ADDRESS' ? 'wallet address' : 'pairing code'
+            }`,
+          },
+        },
+      ],
+    },
+    default: {
+      title,
+      subject: `My Obby chat ${
+        type === 'WALLET_ADDRESS' ? 'wallet address' : 'pairing code'
+      }`,
+      message: `${urlHost}${qrData}`,
+    },
+  });
 
   return (
     <SafeAreaView
@@ -30,7 +56,7 @@ const QRCodeScreen = ({ navigation, backRoute, title }) => {
       <View style={styles.content}>
         <View style={styles.qrContainer}>
           <QRCode
-            value={qrData}
+            value={`${urlHost}${qrData}`}
             size={150}
             bgColor={colors.black}
             fgColor={colors.white}
@@ -38,8 +64,8 @@ const QRCodeScreen = ({ navigation, backRoute, title }) => {
         </View>
         <View style={styles.buttonContainer}>
           <Button
-            text='Done'
-            onPress={() => navigation.navigate(backRoute)}
+            text='Share'
+            onPress={() => Share.open(shareOptions)}
             style={{ width: 220 }}
           />
         </View>

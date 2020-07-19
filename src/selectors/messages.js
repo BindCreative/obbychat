@@ -8,14 +8,17 @@ export const selectCorrespondents = () =>
     const correspondents = Object.keys(state.correspondents).map(
       (address, i) => {
         let correspondent = _.clone(state.correspondents[address]);
-        if (address?.length === 33) {
+        if (!correspondent?.messages) {
+          return [];
+        }
+        if (correspondent && address?.length === 33) {
           const lastMessageIndex = correspondent.messages.length - 1;
           correspondent.address = address;
           correspondent.lastMessagePreview =
             typeof correspondent?.messages[lastMessageIndex]?.message ===
             'string'
               ? correspondent.messages[lastMessageIndex].message
-              : 'This message type is not yet supported.';
+              : '';
           correspondent.lastMessageTimestamp = correspondent?.messages?.length
             ? correspondent.messages[lastMessageIndex].timestamp
             : undefined;
@@ -23,9 +26,15 @@ export const selectCorrespondents = () =>
         }
       },
     );
-    return correspondents.filter(correspondent => {
-      return typeof correspondent === 'object' && correspondent.visible;
-    });
+    return correspondents
+      .filter(correspondent => {
+        return typeof correspondent === 'object' && correspondent.visible;
+      })
+      .sort(
+        (c1, c2) =>
+          c2.messages[c2.messages.length - 1]?.timestamp -
+          c1.messages[c1.messages.length - 1]?.timestamp,
+      );
   });
 
 export const selectCorrespondent = address =>
@@ -33,19 +42,33 @@ export const selectCorrespondent = address =>
     return state.correspondents[address];
   });
 
+export const selectCorrespondentByPairingSecret = pairingSecret =>
+  createSelector(getMessagesState, state => {
+    for (let key in state.correspondents) {
+      if (state.correspondents[key].pairingSecret === pairingSecret) {
+        return state.correspondents[key];
+      }
+    }
+    return null;
+  });
+
+export const selectCorrespondentWalletAddress = address =>
+  createSelector(getMessagesState, state => {
+    return state.correspondents[address]?.walletAddress;
+  });
+
 export const selectCorrespondentMessages = ({ address }) =>
   createSelector(getMessagesState, state => {
-    let allMessages = _.clone(
-      _.get(state, `correspondents[${address}].messages`, []),
-    );
+    let allMessages = _.get(state, `correspondents[${address}].messages`, []);
     const correspondentName = _.get(
       state,
       `correspondents[${address}].name`,
-      'Correspondent',
+      'New',
     );
     allMessages = allMessages.map(message => {
       const unhandled =
         message.type !== 'text' || typeof message.message !== 'string';
+
       return {
         _id: message.hash,
         type: 'text',

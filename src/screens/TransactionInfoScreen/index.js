@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, Text } from 'react-native';
-import { Container, Content } from 'native-base';
+import { View, Text, Linking } from 'react-native';
+import { Content } from 'native-base';
 import _ from 'lodash';
 import Moment from 'react-moment';
 import SafeAreaView from 'react-native-safe-area-view';
 
+import { common } from '../../constants';
 import Header from '../../components/Header';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { bytesToUnit } from './../../lib/utils';
@@ -24,6 +25,10 @@ class TransactionInfoScreen extends React.Component {
     const amountInDollars = (
       bytesToUnit(transaction.amount, 'GB') * this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
+
+    var explorerUrl = `https://${
+      common.network === 'testnet' ? 'testnet' : ''
+    }explorer.obyte.org/#${transaction.unitId}`;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -84,6 +89,7 @@ class TransactionInfoScreen extends React.Component {
               <Text style={styles.infoRowLabel}>ID:</Text>
               <Text
                 style={{ ...styles.infoRowValue, ...styles.infoRowValueHL }}
+                onPress={() => Linking.openURL(explorerUrl)}
               >
                 {transaction.unitId}
               </Text>

@@ -6,11 +6,14 @@ import { View, Text } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { Content, List, ListItem, Left, Right, Icon } from 'native-base';
 import UserAvatar from 'react-native-user-avatar';
+import ContentLoader, { Circle } from 'react-content-loader/native';
 import makeBlockie from 'ethereum-blockies-base64';
 
 import Header from '../../components/Header';
 import { selectWalletAddress } from './../../selectors/wallet';
 import styles from './styles';
+
+
 
 class SettingsScreen extends React.Component {
   render() {
@@ -23,11 +26,18 @@ class SettingsScreen extends React.Component {
       >
         <Header title='Settings' {...this.props} />
         <View style={styles.userInfo}>
+          {!!walletAddress &&
           <UserAvatar
             size={64}
             name={walletAddress}
             src={makeBlockie(walletAddress)}
           />
+          }
+          {!walletAddress &&
+            <ContentLoader>
+              <Circle cx='32' cy='32' r='32' />
+            </ContentLoader>
+          }
         </View>
         <Content>
           <List style={styles.list}>

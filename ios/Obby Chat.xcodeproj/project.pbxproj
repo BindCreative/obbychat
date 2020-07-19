@@ -5,60 +5,60 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* ObbyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ObbyTests.m */; };
 		013226D0E85C4FDB99315164 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1465EF17EEE64272B1596C60 /* AntDesign.ttf */; };
+		093D436A90624169807B9BCA /* Lato-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E3DB28E8406D4F97A02BF853 /* Lato-BlackItalic.ttf */; };
 		0F3D84D69A6D46049A487C9B /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 596CFCAAFA7041CBB8284A0A /* MaterialCommunityIcons.ttf */; };
 		10D0A5A896A84E74A236CDC8 /* Roboto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2804A11EE6FD466387D3061C /* Roboto.ttf */; };
+		1250F0CB7E7F18BB7FD28C89 /* libPods-Obby Chat-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 741BBD822B8BE738FFE84D06 /* libPods-Obby Chat-tvOS.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
-		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		18455F6FE1A34F5DB8776EF4 /* Agenda-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90B0E081BF704ABC87832FD8 /* Agenda-Bold.otf */; };
 		1F83E6712FD14099A77271DB /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6CDAEB454F3242C99AFB5F2C /* MaterialIcons.ttf */; };
+		2748B43969B34A3B82D79317 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 564DF84948E04803AEB5F52B /* Lato-Bold.ttf */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* ObbyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ObbyTests.m */; };
 		38D368D42CB643789397D374 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 857C9C2A3CB149DF95D63132 /* Zocial.ttf */; };
+		3C26165CC66FE02D24D58DF5 /* libPods-Obby Chat-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E65C8C104F477F42277D1D4 /* libPods-Obby Chat-tvOSTests.a */; };
+		4518B12B13F2440DBC622A59 /* Lato-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 82242746F9C04BCBB1D6FCA5 /* Lato-LightItalic.ttf */; };
 		4541757D6AE04B9DAC2DE412 /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D298F4ECAE3746A7840B8848 /* rubicon-icon-font.ttf */; };
+		475B643F36434107A1B2C34C /* Lato-HeavyItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85F812A3556541ADADF764A9 /* Lato-HeavyItalic.ttf */; };
 		493E88EE332249FFBC0B6C14 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DDD652B30F074540991B4231 /* Foundation.ttf */; };
-		545F8167D6C42D337FED2F58 /* libPods-Obby-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 815F6CC7DFECCA9F1947F6CE /* libPods-Obby-tvOSTests.a */; };
+		593554B31FDE4AB0A7823339 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22F6AB7691244BA589CC13EC /* Lato-Light.ttf */; };
+		5BE8C1B2F27188690C6E9D66 /* libPods-Obby ChatTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9BAE641C7E18E4D48450A64 /* libPods-Obby ChatTests.a */; };
 		5D6F3101DF1149BCA191F81A /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 001B73BD98B04DDEA68AB586 /* Feather.ttf */; };
+		5ED7729484C84C798B2AA313 /* Lato-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 45DD86BB963C43F7B33E3031 /* Lato-ThinItalic.ttf */; };
+		67149AAC06074C3DB5DAA69E /* Lato-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 624A99B98FDF46C98F1E0350 /* Lato-BoldItalic.ttf */; };
 		6F0C02E046F2492B989F1331 /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 30FEE54C8F4C42FCAF453EF6 /* Octicons.ttf */; };
 		7244A7A7E5FC4417A9576548 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6EF259CC9DBB4F3B87B5BBA9 /* Fontisto.ttf */; };
+		78FB2F45892D40BE9A68EFF2 /* Lato-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA655E0ACC844DAC85E98939 /* Lato-MediumItalic.ttf */; };
 		7AA5D0FF612D46648975373C /* Roboto_medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 406A18A8AF294805BB275EF9 /* Roboto_medium.ttf */; };
+		7F718E7E614F415995160AD0 /* Agenda-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 38A317970F2E4C8188D4D5AE /* Agenda-Medium.otf */; };
+		807B9839138E4DF2AD9D8625 /* Lato-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B55B9A14F3D467F9D0ED3FF /* Lato-Medium.ttf */; };
 		838812ADB3284196B14E91C6 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3980BCB612594CB5863C881E /* FontAwesome5_Brands.ttf */; };
+		848431CB17E749679FEE3A72 /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7BD33D6683E240D586ABD4FB /* Lato-Thin.ttf */; };
+		86BE9593B7434B92AA3DDF76 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 65686229E02440AEBB05078C /* Lato-Regular.ttf */; };
+		93734053899747E38BE651A8 /* Lato-HairlineItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75756DB8E204491CA0C91C22 /* Lato-HairlineItalic.ttf */; };
+		94A7867CD40E405B8FFDF218 /* Lato-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F040A5B9DDB43D7BF06EE67 /* Lato-Heavy.ttf */; };
 		9B75609A6740494A9CC454C1 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1A2D8D556F5B4F97B8E9C66A /* Entypo.ttf */; };
 		9BD63194FBDD4EFEA692F552 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A53AEFE151174268BC723051 /* FontAwesome5_Regular.ttf */; };
 		9C9047D76DF7480784208341 /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0F92F5AE7BC64325AD6014C9 /* EvilIcons.ttf */; };
-		9D46AE7B6E768B5B5BF9299A /* libPods-ObbyTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 682E95FDD1A6008E0E43513E /* libPods-ObbyTests.a */; };
-		9F85C44C37479BB47F14C00A /* libPods-Obby.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 33DB30998729BC1889DBEC35 /* libPods-Obby.a */; };
+		AD3D8E626CD9440982086C96 /* Lato-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F02668ECA9EA49D195782D5F /* Lato-Italic.ttf */; };
+		AF601697F590449A825A23CC /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2FD90C1225B84E9B9A4248ED /* Lato-Black.ttf */; };
+		BC80E15F7729449899309641 /* Lato-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0472E829BFE40229570A3B6 /* Lato-SemiboldItalic.ttf */; };
 		C23187EEF5C240ABB67A58A1 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B5CCCF430FB34F51AE589D93 /* SimpleLineIcons.ttf */; };
+		C29B5A521B117F400D62D319 /* libPods-Obby Chat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 278966828955BBED7EAC29D9 /* libPods-Obby Chat.a */; };
 		CD2CECDDE7D246808496F0D5 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4218EEA460334C16ABFEAE17 /* Ionicons.ttf */; };
-		E4D5AD6FECB09C594CCB4060 /* libPods-Obby-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F263115B387921B9CAAC573 /* libPods-Obby-tvOS.a */; };
+		D72D6738A237494181DE8AAE /* Agenda-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = AECAA9509CEB46149D4AEB7B /* Agenda-Light.otf */; };
+		E61B40A05DC14FA8858D1A90 /* Lato-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4C4B9EFBFFC495BB868A159 /* Lato-Semibold.ttf */; };
+		F2115F4E30E441578AFF1686 /* Lato-Hairline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CEED5EED1F6B4BE580F6980E /* Lato-Hairline.ttf */; };
 		F34CC1139CCF4031A3E4CC6E /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AFCCC573DEA64785A2093359 /* FontAwesome5_Solid.ttf */; };
 		FFD3021121D0449F96A569DF /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 864022EED1C1497E95314EA9 /* FontAwesome.ttf */; };
-		AF601697F590449A825A23CC /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2FD90C1225B84E9B9A4248ED /* Lato-Black.ttf */; };
-		093D436A90624169807B9BCA /* Lato-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E3DB28E8406D4F97A02BF853 /* Lato-BlackItalic.ttf */; };
-		2748B43969B34A3B82D79317 /* Lato-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 564DF84948E04803AEB5F52B /* Lato-Bold.ttf */; };
-		67149AAC06074C3DB5DAA69E /* Lato-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 624A99B98FDF46C98F1E0350 /* Lato-BoldItalic.ttf */; };
-		F2115F4E30E441578AFF1686 /* Lato-Hairline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CEED5EED1F6B4BE580F6980E /* Lato-Hairline.ttf */; };
-		93734053899747E38BE651A8 /* Lato-HairlineItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75756DB8E204491CA0C91C22 /* Lato-HairlineItalic.ttf */; };
-		94A7867CD40E405B8FFDF218 /* Lato-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F040A5B9DDB43D7BF06EE67 /* Lato-Heavy.ttf */; };
-		475B643F36434107A1B2C34C /* Lato-HeavyItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85F812A3556541ADADF764A9 /* Lato-HeavyItalic.ttf */; };
-		AD3D8E626CD9440982086C96 /* Lato-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F02668ECA9EA49D195782D5F /* Lato-Italic.ttf */; };
-		593554B31FDE4AB0A7823339 /* Lato-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 22F6AB7691244BA589CC13EC /* Lato-Light.ttf */; };
-		4518B12B13F2440DBC622A59 /* Lato-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 82242746F9C04BCBB1D6FCA5 /* Lato-LightItalic.ttf */; };
-		807B9839138E4DF2AD9D8625 /* Lato-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B55B9A14F3D467F9D0ED3FF /* Lato-Medium.ttf */; };
-		78FB2F45892D40BE9A68EFF2 /* Lato-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BA655E0ACC844DAC85E98939 /* Lato-MediumItalic.ttf */; };
-		86BE9593B7434B92AA3DDF76 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 65686229E02440AEBB05078C /* Lato-Regular.ttf */; };
-		E61B40A05DC14FA8858D1A90 /* Lato-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B4C4B9EFBFFC495BB868A159 /* Lato-Semibold.ttf */; };
-		BC80E15F7729449899309641 /* Lato-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B0472E829BFE40229570A3B6 /* Lato-SemiboldItalic.ttf */; };
-		848431CB17E749679FEE3A72 /* Lato-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7BD33D6683E240D586ABD4FB /* Lato-Thin.ttf */; };
-		5ED7729484C84C798B2AA313 /* Lato-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 45DD86BB963C43F7B33E3031 /* Lato-ThinItalic.ttf */; };
-		18455F6FE1A34F5DB8776EF4 /* Agenda-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90B0E081BF704ABC87832FD8 /* Agenda-Bold.otf */; };
-		D72D6738A237494181DE8AAE /* Agenda-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = AECAA9509CEB46149D4AEB7B /* Agenda-Light.otf */; };
-		7F718E7E614F415995160AD0 /* Agenda-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 38A317970F2E4C8188D4D5AE /* Agenda-Medium.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,71 +81,78 @@
 /* Begin PBXFileReference section */
 		001B73BD98B04DDEA68AB586 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/native-base/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		00E356EE1AD99517003FC87E /* ObbyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ObbyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* Obby ChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Obby ChatTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ObbyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObbyTests.m; sourceTree = "<group>"; };
-		0F263115B387921B9CAAC573 /* libPods-Obby-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0F92F5AE7BC64325AD6014C9 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/native-base/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Obby.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Obby.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Obby Chat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Obby Chat.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Obby/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Obby/AppDelegate.m; sourceTree = "<group>"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Obby/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Obby/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Obby/main.m; sourceTree = "<group>"; };
 		1465EF17EEE64272B1596C60 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/native-base/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		1A2D8D556F5B4F97B8E9C66A /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/native-base/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		1E65C8C104F477F42277D1D4 /* libPods-Obby Chat-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby Chat-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		22F6AB7691244BA589CC13EC /* Lato-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Light.ttf"; path = "../src/assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; };
+		278966828955BBED7EAC29D9 /* libPods-Obby Chat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby Chat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2804A11EE6FD466387D3061C /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
 		2B2EA621760694CFE59AABDD /* Pods-Obby-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Obby-tvOS/Pods-Obby-tvOS.release.xcconfig"; sourceTree = "<group>"; };
-		2D02E47B1E0B4A5D006451C7 /* Obby-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Obby-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2D02E4901E0B4A5D006451C7 /* Obby-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Obby-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B55B9A14F3D467F9D0ED3FF /* Lato-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Medium.ttf"; path = "../src/assets/fonts/Lato-Medium.ttf"; sourceTree = "<group>"; };
+		2D02E47B1E0B4A5D006451C7 /* Obby Chat-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Obby Chat-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D02E4901E0B4A5D006451C7 /* Obby Chat-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Obby Chat-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F040A5B9DDB43D7BF06EE67 /* Lato-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Heavy.ttf"; path = "../src/assets/fonts/Lato-Heavy.ttf"; sourceTree = "<group>"; };
+		2FD90C1225B84E9B9A4248ED /* Lato-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Black.ttf"; path = "../src/assets/fonts/Lato-Black.ttf"; sourceTree = "<group>"; };
 		30FEE54C8F4C42FCAF453EF6 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/native-base/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
-		33DB30998729BC1889DBEC35 /* libPods-Obby.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		38A317970F2E4C8188D4D5AE /* Agenda-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Agenda-Medium.otf"; path = "../src/assets/fonts/Agenda-Medium.otf"; sourceTree = "<group>"; };
 		3980BCB612594CB5863C881E /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/native-base/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		3EA2462620867FC9703A65B5 /* Pods-Obby Chat-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Obby Chat-tvOS/Pods-Obby Chat-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		406A18A8AF294805BB275EF9 /* Roboto_medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto_medium.ttf; path = "../node_modules/native-base/Fonts/Roboto_medium.ttf"; sourceTree = "<group>"; };
 		4218EEA460334C16ABFEAE17 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		45DD86BB963C43F7B33E3031 /* Lato-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-ThinItalic.ttf"; path = "../src/assets/fonts/Lato-ThinItalic.ttf"; sourceTree = "<group>"; };
 		4E561FB35AAE6BAF97EF1ACF /* Pods-ObbyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ObbyTests.debug.xcconfig"; path = "Target Support Files/Pods-ObbyTests/Pods-ObbyTests.debug.xcconfig"; sourceTree = "<group>"; };
 		513644CB146F4CC30EEB5E61 /* Pods-Obby-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Obby-tvOSTests/Pods-Obby-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		564DF84948E04803AEB5F52B /* Lato-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Bold.ttf"; path = "../src/assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; };
 		596CFCAAFA7041CBB8284A0A /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
+		624A99B98FDF46C98F1E0350 /* Lato-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-BoldItalic.ttf"; path = "../src/assets/fonts/Lato-BoldItalic.ttf"; sourceTree = "<group>"; };
 		6334B3BC9590139F4183BBD1 /* Pods-Obby-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Obby-tvOSTests/Pods-Obby-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		682E95FDD1A6008E0E43513E /* libPods-ObbyTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ObbyTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		65686229E02440AEBB05078C /* Lato-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Regular.ttf"; path = "../src/assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; };
+		6CD7EFD87576BCD88D1E0781 /* Pods-Obby Chat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat.release.xcconfig"; path = "Target Support Files/Pods-Obby Chat/Pods-Obby Chat.release.xcconfig"; sourceTree = "<group>"; };
 		6CDAEB454F3242C99AFB5F2C /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		6EF259CC9DBB4F3B87B5BBA9 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/native-base/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
-		815F6CC7DFECCA9F1947F6CE /* libPods-Obby-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6EFCC415540CF34C4B48D09F /* Pods-Obby Chat-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Obby Chat-tvOSTests/Pods-Obby Chat-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		741BBD822B8BE738FFE84D06 /* libPods-Obby Chat-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby Chat-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		75756DB8E204491CA0C91C22 /* Lato-HairlineItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-HairlineItalic.ttf"; path = "../src/assets/fonts/Lato-HairlineItalic.ttf"; sourceTree = "<group>"; };
+		7BD33D6683E240D586ABD4FB /* Lato-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Thin.ttf"; path = "../src/assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; };
+		82242746F9C04BCBB1D6FCA5 /* Lato-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-LightItalic.ttf"; path = "../src/assets/fonts/Lato-LightItalic.ttf"; sourceTree = "<group>"; };
 		857C9C2A3CB149DF95D63132 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/native-base/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		85F812A3556541ADADF764A9 /* Lato-HeavyItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-HeavyItalic.ttf"; path = "../src/assets/fonts/Lato-HeavyItalic.ttf"; sourceTree = "<group>"; };
 		864022EED1C1497E95314EA9 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/native-base/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
+		90B0E081BF704ABC87832FD8 /* Agenda-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Agenda-Bold.otf"; path = "../src/assets/fonts/Agenda-Bold.otf"; sourceTree = "<group>"; };
+		A17E62FCAA5148590E89BA8D /* Pods-Obby Chat-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Obby Chat-tvOSTests/Pods-Obby Chat-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		A53AEFE151174268BC723051 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/native-base/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		ABC0F199E8C96DFC469A5469 /* Pods-Obby-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Obby-tvOS/Pods-Obby-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		AECAA9509CEB46149D4AEB7B /* Agenda-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Agenda-Light.otf"; path = "../src/assets/fonts/Agenda-Light.otf"; sourceTree = "<group>"; };
+		AFB77DF034706CD351105B7B /* Pods-Obby Chat-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Obby Chat-tvOS/Pods-Obby Chat-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		AFCCC573DEA64785A2093359 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/native-base/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
+		B0472E829BFE40229570A3B6 /* Lato-SemiboldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-SemiboldItalic.ttf"; path = "../src/assets/fonts/Lato-SemiboldItalic.ttf"; sourceTree = "<group>"; };
+		B3D2B2804355F88F79EDB224 /* Pods-Obby ChatTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby ChatTests.release.xcconfig"; path = "Target Support Files/Pods-Obby ChatTests/Pods-Obby ChatTests.release.xcconfig"; sourceTree = "<group>"; };
+		B4C4B9EFBFFC495BB868A159 /* Lato-Semibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Semibold.ttf"; path = "../src/assets/fonts/Lato-Semibold.ttf"; sourceTree = "<group>"; };
 		B5CCCF430FB34F51AE589D93 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/native-base/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		BA655E0ACC844DAC85E98939 /* Lato-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-MediumItalic.ttf"; path = "../src/assets/fonts/Lato-MediumItalic.ttf"; sourceTree = "<group>"; };
+		C9BAE641C7E18E4D48450A64 /* libPods-Obby ChatTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Obby ChatTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE4473240D7F414E62547621 /* Pods-Obby.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby.debug.xcconfig"; path = "Target Support Files/Pods-Obby/Pods-Obby.debug.xcconfig"; sourceTree = "<group>"; };
+		CE4783273AA8FA9DB42F9C39 /* Pods-Obby ChatTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby ChatTests.debug.xcconfig"; path = "Target Support Files/Pods-Obby ChatTests/Pods-Obby ChatTests.debug.xcconfig"; sourceTree = "<group>"; };
+		CEED5EED1F6B4BE580F6980E /* Lato-Hairline.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Hairline.ttf"; path = "../src/assets/fonts/Lato-Hairline.ttf"; sourceTree = "<group>"; };
+		CF82C327B7A63EF6A46CDC57 /* Pods-Obby Chat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat.debug.xcconfig"; path = "Target Support Files/Pods-Obby Chat/Pods-Obby Chat.debug.xcconfig"; sourceTree = "<group>"; };
 		D298F4ECAE3746A7840B8848 /* rubicon-icon-font.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "rubicon-icon-font.ttf"; path = "../node_modules/native-base/Fonts/rubicon-icon-font.ttf"; sourceTree = "<group>"; };
 		D69182206EC402ECB55C4706 /* Pods-ObbyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ObbyTests.release.xcconfig"; path = "Target Support Files/Pods-ObbyTests/Pods-ObbyTests.release.xcconfig"; sourceTree = "<group>"; };
 		DDD652B30F074540991B4231 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/native-base/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
+		E3DB28E8406D4F97A02BF853 /* Lato-BlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-BlackItalic.ttf"; path = "../src/assets/fonts/Lato-BlackItalic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		F02668ECA9EA49D195782D5F /* Lato-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Lato-Italic.ttf"; path = "../src/assets/fonts/Lato-Italic.ttf"; sourceTree = "<group>"; };
 		FC8479CE079E8605B496F07E /* Pods-Obby.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby.release.xcconfig"; path = "Target Support Files/Pods-Obby/Pods-Obby.release.xcconfig"; sourceTree = "<group>"; };
-		2FD90C1225B84E9B9A4248ED /* Lato-Black.ttf */ = {isa = PBXFileReference; name = "Lato-Black.ttf"; path = "../src/assets/fonts/Lato-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		E3DB28E8406D4F97A02BF853 /* Lato-BlackItalic.ttf */ = {isa = PBXFileReference; name = "Lato-BlackItalic.ttf"; path = "../src/assets/fonts/Lato-BlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		564DF84948E04803AEB5F52B /* Lato-Bold.ttf */ = {isa = PBXFileReference; name = "Lato-Bold.ttf"; path = "../src/assets/fonts/Lato-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		624A99B98FDF46C98F1E0350 /* Lato-BoldItalic.ttf */ = {isa = PBXFileReference; name = "Lato-BoldItalic.ttf"; path = "../src/assets/fonts/Lato-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		CEED5EED1F6B4BE580F6980E /* Lato-Hairline.ttf */ = {isa = PBXFileReference; name = "Lato-Hairline.ttf"; path = "../src/assets/fonts/Lato-Hairline.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		75756DB8E204491CA0C91C22 /* Lato-HairlineItalic.ttf */ = {isa = PBXFileReference; name = "Lato-HairlineItalic.ttf"; path = "../src/assets/fonts/Lato-HairlineItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		2F040A5B9DDB43D7BF06EE67 /* Lato-Heavy.ttf */ = {isa = PBXFileReference; name = "Lato-Heavy.ttf"; path = "../src/assets/fonts/Lato-Heavy.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		85F812A3556541ADADF764A9 /* Lato-HeavyItalic.ttf */ = {isa = PBXFileReference; name = "Lato-HeavyItalic.ttf"; path = "../src/assets/fonts/Lato-HeavyItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		F02668ECA9EA49D195782D5F /* Lato-Italic.ttf */ = {isa = PBXFileReference; name = "Lato-Italic.ttf"; path = "../src/assets/fonts/Lato-Italic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		22F6AB7691244BA589CC13EC /* Lato-Light.ttf */ = {isa = PBXFileReference; name = "Lato-Light.ttf"; path = "../src/assets/fonts/Lato-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		82242746F9C04BCBB1D6FCA5 /* Lato-LightItalic.ttf */ = {isa = PBXFileReference; name = "Lato-LightItalic.ttf"; path = "../src/assets/fonts/Lato-LightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		2B55B9A14F3D467F9D0ED3FF /* Lato-Medium.ttf */ = {isa = PBXFileReference; name = "Lato-Medium.ttf"; path = "../src/assets/fonts/Lato-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		BA655E0ACC844DAC85E98939 /* Lato-MediumItalic.ttf */ = {isa = PBXFileReference; name = "Lato-MediumItalic.ttf"; path = "../src/assets/fonts/Lato-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		65686229E02440AEBB05078C /* Lato-Regular.ttf */ = {isa = PBXFileReference; name = "Lato-Regular.ttf"; path = "../src/assets/fonts/Lato-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B4C4B9EFBFFC495BB868A159 /* Lato-Semibold.ttf */ = {isa = PBXFileReference; name = "Lato-Semibold.ttf"; path = "../src/assets/fonts/Lato-Semibold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		B0472E829BFE40229570A3B6 /* Lato-SemiboldItalic.ttf */ = {isa = PBXFileReference; name = "Lato-SemiboldItalic.ttf"; path = "../src/assets/fonts/Lato-SemiboldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7BD33D6683E240D586ABD4FB /* Lato-Thin.ttf */ = {isa = PBXFileReference; name = "Lato-Thin.ttf"; path = "../src/assets/fonts/Lato-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		45DD86BB963C43F7B33E3031 /* Lato-ThinItalic.ttf */ = {isa = PBXFileReference; name = "Lato-ThinItalic.ttf"; path = "../src/assets/fonts/Lato-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		90B0E081BF704ABC87832FD8 /* Agenda-Bold.otf */ = {isa = PBXFileReference; name = "Agenda-Bold.otf"; path = "../src/assets/fonts/Agenda-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		AECAA9509CEB46149D4AEB7B /* Agenda-Light.otf */ = {isa = PBXFileReference; name = "Agenda-Light.otf"; path = "../src/assets/fonts/Agenda-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		38A317970F2E4C8188D4D5AE /* Agenda-Medium.otf */ = {isa = PBXFileReference; name = "Agenda-Medium.otf"; path = "../src/assets/fonts/Agenda-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,7 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9D46AE7B6E768B5B5BF9299A /* libPods-ObbyTests.a in Frameworks */,
+				5BE8C1B2F27188690C6E9D66 /* libPods-Obby ChatTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,7 +168,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F85C44C37479BB47F14C00A /* libPods-Obby.a in Frameworks */,
+				C29B5A521B117F400D62D319 /* libPods-Obby Chat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,7 +176,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E4D5AD6FECB09C594CCB4060 /* libPods-Obby-tvOS.a in Frameworks */,
+				1250F0CB7E7F18BB7FD28C89 /* libPods-Obby Chat-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +184,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				545F8167D6C42D337FED2F58 /* libPods-Obby-tvOSTests.a in Frameworks */,
+				3C26165CC66FE02D24D58DF5 /* libPods-Obby Chat-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -209,7 +216,6 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
 			name = Obby;
@@ -220,10 +226,10 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				33DB30998729BC1889DBEC35 /* libPods-Obby.a */,
-				0F263115B387921B9CAAC573 /* libPods-Obby-tvOS.a */,
-				815F6CC7DFECCA9F1947F6CE /* libPods-Obby-tvOSTests.a */,
-				682E95FDD1A6008E0E43513E /* libPods-ObbyTests.a */,
+				278966828955BBED7EAC29D9 /* libPods-Obby Chat.a */,
+				741BBD822B8BE738FFE84D06 /* libPods-Obby Chat-tvOS.a */,
+				1E65C8C104F477F42277D1D4 /* libPods-Obby Chat-tvOSTests.a */,
+				C9BAE641C7E18E4D48450A64 /* libPods-Obby ChatTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -301,10 +307,10 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Obby.app */,
-				00E356EE1AD99517003FC87E /* ObbyTests.xctest */,
-				2D02E47B1E0B4A5D006451C7 /* Obby-tvOS.app */,
-				2D02E4901E0B4A5D006451C7 /* Obby-tvOSTests.xctest */,
+				13B07F961A680F5B00A75B9A /* Obby Chat.app */,
+				00E356EE1AD99517003FC87E /* Obby ChatTests.xctest */,
+				2D02E47B1E0B4A5D006451C7 /* Obby Chat-tvOS.app */,
+				2D02E4901E0B4A5D006451C7 /* Obby Chat-tvOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -320,6 +326,14 @@
 				513644CB146F4CC30EEB5E61 /* Pods-Obby-tvOSTests.release.xcconfig */,
 				4E561FB35AAE6BAF97EF1ACF /* Pods-ObbyTests.debug.xcconfig */,
 				D69182206EC402ECB55C4706 /* Pods-ObbyTests.release.xcconfig */,
+				CF82C327B7A63EF6A46CDC57 /* Pods-Obby Chat.debug.xcconfig */,
+				6CD7EFD87576BCD88D1E0781 /* Pods-Obby Chat.release.xcconfig */,
+				3EA2462620867FC9703A65B5 /* Pods-Obby Chat-tvOS.debug.xcconfig */,
+				AFB77DF034706CD351105B7B /* Pods-Obby Chat-tvOS.release.xcconfig */,
+				6EFCC415540CF34C4B48D09F /* Pods-Obby Chat-tvOSTests.debug.xcconfig */,
+				A17E62FCAA5148590E89BA8D /* Pods-Obby Chat-tvOSTests.release.xcconfig */,
+				CE4783273AA8FA9DB42F9C39 /* Pods-Obby ChatTests.debug.xcconfig */,
+				B3D2B2804355F88F79EDB224 /* Pods-Obby ChatTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -327,9 +341,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* ObbyTests */ = {
+		00E356ED1AD99517003FC87E /* Obby ChatTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ObbyTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "Obby ChatTests" */;
 			buildPhases = (
 				E507547DE39DD4706D0DD900 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -341,14 +355,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = ObbyTests;
+			name = "Obby ChatTests";
 			productName = ObbyTests;
-			productReference = 00E356EE1AD99517003FC87E /* ObbyTests.xctest */;
+			productReference = 00E356EE1AD99517003FC87E /* Obby ChatTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* Obby */ = {
+		13B07F861A680F5B00A75B9A /* Obby Chat */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Obby" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Obby Chat" */;
 			buildPhases = (
 				9DDB7FE018CE87EBFD0C5521 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -361,14 +375,14 @@
 			);
 			dependencies = (
 			);
-			name = Obby;
+			name = "Obby Chat";
 			productName = Obby;
-			productReference = 13B07F961A680F5B00A75B9A /* Obby.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Obby Chat.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2D02E47A1E0B4A5D006451C7 /* Obby-tvOS */ = {
+		2D02E47A1E0B4A5D006451C7 /* Obby Chat-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby-tvOS" */;
+			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby Chat-tvOS" */;
 			buildPhases = (
 				939D7A7FEF02C4BCE12EB835 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
@@ -381,14 +395,14 @@
 			);
 			dependencies = (
 			);
-			name = "Obby-tvOS";
+			name = "Obby Chat-tvOS";
 			productName = "Obby-tvOS";
-			productReference = 2D02E47B1E0B4A5D006451C7 /* Obby-tvOS.app */;
+			productReference = 2D02E47B1E0B4A5D006451C7 /* Obby Chat-tvOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2D02E48F1E0B4A5D006451C7 /* Obby-tvOSTests */ = {
+		2D02E48F1E0B4A5D006451C7 /* Obby Chat-tvOSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby-tvOSTests" */;
+			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby Chat-tvOSTests" */;
 			buildPhases = (
 				0A79DD99BE0DCC65EAD63D4C /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
@@ -400,9 +414,9 @@
 			dependencies = (
 				2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */,
 			);
-			name = "Obby-tvOSTests";
+			name = "Obby Chat-tvOSTests";
 			productName = "Obby-tvOSTests";
-			productReference = 2D02E4901E0B4A5D006451C7 /* Obby-tvOSTests.xctest */;
+			productReference = 2D02E4901E0B4A5D006451C7 /* Obby Chat-tvOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -420,6 +434,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = NFLP3N867J;
+						ProvisioningStyle = Automatic;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -432,7 +447,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Obby" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Obby Chat" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -446,10 +461,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* Obby */,
-				00E356ED1AD99517003FC87E /* ObbyTests */,
-				2D02E47A1E0B4A5D006451C7 /* Obby-tvOS */,
-				2D02E48F1E0B4A5D006451C7 /* Obby-tvOSTests */,
+				13B07F861A680F5B00A75B9A /* Obby Chat */,
+				00E356ED1AD99517003FC87E /* Obby ChatTests */,
+				2D02E47A1E0B4A5D006451C7 /* Obby Chat-tvOS */,
+				2D02E48F1E0B4A5D006451C7 /* Obby Chat-tvOSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -467,7 +482,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				013226D0E85C4FDB99315164 /* AntDesign.ttf in Resources */,
 				9B75609A6740494A9CC454C1 /* Entypo.ttf in Resources */,
 				9C9047D76DF7480784208341 /* EvilIcons.ttf in Resources */,
@@ -558,7 +572,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Obby-tvOSTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Obby Chat-tvOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -594,7 +608,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Obby-tvOS-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Obby Chat-tvOS-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -616,7 +630,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Obby-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Obby Chat-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -638,7 +652,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ObbyTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Obby ChatTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -725,32 +739,20 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* Obby */;
+			target = 13B07F861A680F5B00A75B9A /* Obby Chat */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 		2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2D02E47A1E0B4A5D006451C7 /* Obby-tvOS */;
+			target = 2D02E47A1E0B4A5D006451C7 /* Obby Chat-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		13B07FB11A68108700A75B9A /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				13B07FB21A68108700A75B9A /* Base */,
-			);
-			name = LaunchScreen.xib;
-			path = Obby;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4E561FB35AAE6BAF97EF1ACF /* Pods-ObbyTests.debug.xcconfig */;
+			baseConfigurationReference = CE4783273AA8FA9DB42F9C39 /* Pods-Obby ChatTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -767,13 +769,13 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby.app/Obby";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby Chat.app/Obby Chat";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D69182206EC402ECB55C4706 /* Pods-ObbyTests.release.xcconfig */;
+			baseConfigurationReference = B3D2B2804355F88F79EDB224 /* Pods-Obby ChatTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -787,17 +789,18 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby.app/Obby";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby Chat.app/Obby Chat";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CE4473240D7F414E62547621 /* Pods-Obby.debug.xcconfig */;
+			baseConfigurationReference = CF82C327B7A63EF6A46CDC57 /* Pods-Obby Chat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 7;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = NFLP3N867J;
 				INFOPLIST_FILE = Obby/Info.plist;
@@ -807,8 +810,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = Obby;
+				PRODUCT_BUNDLE_IDENTIFIER = chat.obby;
+				PRODUCT_NAME = "Obby Chat";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -816,12 +819,13 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FC8479CE079E8605B496F07E /* Pods-Obby.release.xcconfig */;
+			baseConfigurationReference = 6CD7EFD87576BCD88D1E0781 /* Pods-Obby Chat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = NFLP3N867J;
 				INFOPLIST_FILE = Obby/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -830,8 +834,8 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = Obby;
+				PRODUCT_BUNDLE_IDENTIFIER = chat.obby;
+				PRODUCT_NAME = "Obby Chat";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -839,7 +843,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ABC0F199E8C96DFC469A5469 /* Pods-Obby-tvOS.debug.xcconfig */;
+			baseConfigurationReference = 3EA2462620867FC9703A65B5 /* Pods-Obby Chat-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -867,7 +871,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2B2EA621760694CFE59AABDD /* Pods-Obby-tvOS.release.xcconfig */;
+			baseConfigurationReference = AFB77DF034706CD351105B7B /* Pods-Obby Chat-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -895,7 +899,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6334B3BC9590139F4183BBD1 /* Pods-Obby-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = 6EFCC415540CF34C4B48D09F /* Pods-Obby Chat-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -915,14 +919,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Obby-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby-tvOS.app/Obby-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby Chat-tvOS.app/Obby Chat-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Debug;
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 513644CB146F4CC30EEB5E61 /* Pods-Obby-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = A17E62FCAA5148590E89BA8D /* Pods-Obby Chat-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -942,7 +946,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Obby-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby-tvOS.app/Obby-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Obby Chat-tvOS.app/Obby Chat-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Release;
@@ -1049,7 +1053,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ObbyTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "Obby ChatTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -1058,7 +1062,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Obby" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Obby Chat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1067,7 +1071,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby-tvOS" */ = {
+		2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby Chat-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D02E4971E0B4A5E006451C7 /* Debug */,
@@ -1076,7 +1080,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby-tvOSTests" */ = {
+		2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Obby Chat-tvOSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D02E4991E0B4A5E006451C7 /* Debug */,
@@ -1085,7 +1089,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Obby" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Obby Chat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

@@ -9,7 +9,6 @@ import {
   View,
   Text,
 } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
@@ -17,13 +16,14 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
+import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { selectWalletAddress } from './../../selectors/wallet';
 import { sendPaymentStart } from './../../actions/wallet';
-import { availableUnits, unitToBytes } from './../../lib/utils';
+import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
 
 export const Methods = {
@@ -110,8 +110,14 @@ class PaymentScreen extends React.Component {
     }
 
     this.setState({
-      primaryValue: type === 'primary' ? value : primaryValue,
-      secondaryValue: type === 'secondary' ? value : secondaryValue,
+      primaryValue:
+        type === 'primary' ? value : !isNaN(primaryValue) ? primaryValue : 0,
+      secondaryValue:
+        type === 'secondary'
+          ? value
+          : !isNaN(secondaryValue)
+          ? secondaryValue
+          : 0,
     });
   }
 
@@ -179,7 +185,6 @@ class PaymentScreen extends React.Component {
       'navigation.state.params.callback',
       false,
     );
-    // TODO: finish the string
     const requestString = `[${this.state.primaryValue} ${
       this.state.primaryUnit
     }](${urlHost}${this.props.myWalletAddress}?amount=${unitToBytes(
@@ -233,7 +238,7 @@ class PaymentScreen extends React.Component {
     return (
       <SafeAreaView
         style={styles.container}
-        forceInset={{ top: 'never', bottom: 'always' }}
+        forceInset={{ top: 'always', bottom: 'always' }}
       >
         <KeyboardAvoidingView style={styles.content}>
           <Header
@@ -290,13 +295,12 @@ class PaymentScreen extends React.Component {
                   keyboardType='decimal-pad'
                   autoFocus={true}
                 />
-                <RNPickerSelect
-                  style={{ color: 'red' }}
-                  value={primaryUnit}
-                  onValueChange={value => this.changePrimaryUnit(value)}
-                  items={availableUnits.map(unit => ({
-                    label: unit.label,
-                    value: unit.altValue,
+                <ActionSheet
+                  currentValue={primaryUnit}
+                  onChange={value => this.changePrimaryUnit(value)}
+                  items={PRIMARY_UNITS.map(({ label, altValue }) => ({
+                    label,
+                    value: altValue,
                   }))}
                 />
               </View>
@@ -307,13 +311,13 @@ class PaymentScreen extends React.Component {
                   value={!secondaryValue ? '' : String(secondaryValue)}
                   keyboardType='decimal-pad'
                 />
-                <RNPickerSelect
-                  value={secondaryUnit}
-                  onValueChange={value => this.changeSecondaryUnit(value)}
-                  items={[
-                    { label: 'USD', value: 'USD' },
-                    { label: 'BTC', value: 'BTC' },
-                  ]}
+                <ActionSheet
+                  currentValue={secondaryUnit}
+                  onChange={value => this.changeSecondaryUnit(value)}
+                  items={SECONDARY_UNITS.map(({ label, altValue }) => ({
+                    label,
+                    value: altValue,
+                  }))}
                 />
               </View>
               <Button

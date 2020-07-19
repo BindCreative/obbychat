@@ -64,20 +64,3 @@ export const setUnreadMessages = unreadMessages => ({
   type: actionTypes.UNREAD_MESSAGE_COUNT_SET,
   payload: { unreadMessages },
 });
-
-export const addCorrespondent = ({
-  address,
-  name,
-  hub,
-  pubKey,
-  pairingSecret,
-  reversePairingSecret,
-}) => ({
-  type: actionTypes.CORRESPONDENT_DEVICE_ADD,
-  payload: { address, name, hub, pubKey, pairingSecret, reversePairingSecret },
-});
-
-export const removeCorrespondent = ({ address }) => ({
-  type: actionTypes.CORRESPONDENT_DEVICE_REMOVE,
-  payload: { address },
-});

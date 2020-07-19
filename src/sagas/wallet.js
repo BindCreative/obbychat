@@ -1,7 +1,9 @@
-import { takeLatest, call, put, select } from '@redux-saga/core/effects';
+import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
+import { toWif, getChash160 } from 'obyte/lib/utils';
+import { REHYDRATE } from 'redux-persist';
 import NavigationService from './../navigation/service';
-import { oClient } from './../lib/oCustom';
+import { oClient, testnet } from './../lib/oCustom';
 import { actionTypes } from './../constants';
 import { subscribeToHub } from './device';
 import { setToastMessage } from './../actions/app';
@@ -25,33 +27,23 @@ import {
   loadWalletBalancesFail,
 } from './../actions/balances';
 import {
-  selectWallet,
   selectWalletAddress,
   selectWitnesses,
   selectAddressWif,
 } from './../selectors/wallet';
 
-let initiated = false;
-
 export function* initWallet() {
   try {
-    console.log('reload', initiated);
-    if (!initiated) {
-      const walletData = yield select(selectWallet());
-      if (walletData.password === null || walletData.seedWords === null) {
-        yield put(createInitialWalletStart());
-      }
-
-      // Handle websocket traffic
-      yield call(subscribeToHub);
-      // Fetch wallet data from hub
-      yield call(fetchBalances);
-      yield call(fetchWitnesses);
-      yield put(loadWalletHistory());
-      yield put(initWalletSuccess());
-      initiated = true;
-    }
+    yield put(createInitialWalletStart());
+    // Handle websocket traffic
+    yield call(subscribeToHub);
+    // Fetch wallet data from hub
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
+    yield put(loadWalletHistory());
+    yield put(initWalletSuccess());
   } catch (error) {
+    console.log(error);
     yield put(initWalletFail());
     yield put(
       setToastMessage({
@@ -59,26 +51,68 @@ export function* initWallet() {
         message: 'Unable to init wallet.',
       }),
     );
-    console.log(error);
   }
 }
 
 export function* createInitialWallet(action) {
-  try {
-    const password = '';
-    let mnemonic = new Mnemonic();
-    while (!Mnemonic.isValid(mnemonic.toString())) {
-      mnemonic = new Mnemonic();
-    }
+  // Take two as we have two different persisted stores
+  const { payload: payload1 } = yield take(REHYDRATE);
+  const { payload: payload2 } = yield take(REHYDRATE);
+  const payload = { ...payload1, ...payload2 };
 
-    yield put(
-      createInitialWalletSuccess({
-        password,
-        seedWords: mnemonic.phrase,
-      }),
-    );
+  try {
+    if (!payload?.wallet?.address) {
+      const password = '';
+      let mnemonic = new Mnemonic();
+      while (!Mnemonic.isValid(mnemonic.toString())) {
+        mnemonic = new Mnemonic();
+      }
+      const xPrivKey = mnemonic.toHDPrivateKey();
+
+      // Wallet wif
+      const walletPath = testnet ? "m/44'/1'/0'/0'" : "m/44'/0'/0'/0";
+      const { privateKey: walletPirvateKey } = yield xPrivKey.derive(
+        walletPath,
+      );
+      const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({
+        size: 32,
+      });
+      const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
+
+      // Address and address wif
+      const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+      const { privateKey } = yield xPrivKey.derive(addressPath);
+      const publicKeyBuffer = yield privateKey.publicKey.toBuffer();
+      const publicKey = yield publicKeyBuffer.toString('base64');
+      const addressPrivKeyBuf = yield privateKey.bn.toBuffer({ size: 32 });
+      const addressWif = yield call(toWif, addressPrivKeyBuf, testnet);
+      const address = yield call(getChash160, ['sig', { pubkey: publicKey }]);
+
+      yield put(
+        createInitialWalletSuccess({
+          password,
+          address,
+          addressPath,
+          walletWif,
+          addressWif,
+          xPrivKey,
+          publicKey,
+          privateKey,
+          walletPirvateKey,
+          walletPath,
+          seedWords: mnemonic.phrase,
+        }),
+      );
+
+      yield put(
+        setToastMessage({
+          type: 'SUCCESS',
+          message: 'Your wallet is ready to use!',
+        }),
+      );
+    }
   } catch (error) {
-    console.log(error);
+    console.log('createInitialWallet ERROR: ', error);
     yield put(createInitialWalletFail());
     yield put(
       setToastMessage({
@@ -90,20 +124,20 @@ export function* createInitialWallet(action) {
 }
 
 export function* fetchBalances(action) {
-  try {
-    const walletAddress = yield select(selectWalletAddress());
-    console.log('WALLET ADDRESS: ', walletAddress);
-    const balances = yield call(oClient.api.getBalances, [walletAddress]);
-    yield put(loadWalletBalancesSuccess(balances));
-  } catch (error) {
-    yield put(loadWalletBalancesFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to fetch balances.',
-      }),
-    );
-    console.log(error);
+  const walletAddress = yield select(selectWalletAddress());
+  if (walletAddress) {
+    try {
+      const balances = yield call(oClient.api.getBalances, [walletAddress]);
+      yield put(loadWalletBalancesSuccess(balances));
+    } catch (error) {
+      yield put(loadWalletBalancesFail());
+      yield put(
+        setToastMessage({
+          type: 'ERROR',
+          message: 'Unable to fetch balances.',
+        }),
+      );
+    }
   }
 }
 
@@ -121,53 +155,54 @@ export function* fetchWitnesses(action) {
     const witnesses = yield witnessesPromise;
     yield put(getWitnessesSuccess(witnesses));
   } catch (error) {
-    console.log({ error });
+    // console.log({ error });
   }
 }
 
 export function* fetchWalletHistory(action) {
-  try {
-    const witnesses = yield select(selectWitnesses());
-    const walletAddress = yield select(selectWalletAddress());
-    const params = {
-      witnesses: witnesses,
-      addresses: [walletAddress],
-    };
+  const walletAddress = yield select(selectWalletAddress());
+  if (walletAddress) {
+    try {
+      const witnesses = yield select(selectWitnesses());
+      const params = {
+        witnesses: witnesses,
+        addresses: [walletAddress],
+      };
 
-    const historyPromise = new Promise((resolve, reject) =>
-      oClient.api.getHistory(params, (err, history) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(history);
-        }
-      }),
-    );
-    const history = yield historyPromise;
-    yield put(loadWalletHistorySuccess(history));
-  } catch (error) {
-    yield put(loadWalletHistoryFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to fetch transactions.',
-      }),
-    );
-    console.log({ error });
+      const historyPromise = new Promise((resolve, reject) =>
+        oClient.api.getHistory(params, (err, history) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(history);
+          }
+        }),
+      );
+      const history = yield historyPromise;
+      yield put(loadWalletHistorySuccess(history));
+    } catch (error) {
+      yield put(loadWalletHistoryFail());
+      yield put(
+        setToastMessage({
+          type: 'ERROR',
+          message: 'Unable to fetch transactions.',
+        }),
+      );
+    }
   }
 }
 
 export function* sendPayment(action) {
   try {
-    const walletWif = yield select(selectAddressWif());
+    const addressWif = yield select(selectAddressWif());
     const params = {
       ...action.payload,
     };
 
-    yield call(oClient.post.payment, params, walletWif);
+    yield call(oClient.post.payment, params, addressWif);
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
-    yield call(NavigationService.back);
+    yield call(NavigationService.navigate, 'Wallet');
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
@@ -183,7 +218,6 @@ export function* sendPayment(action) {
         message: 'Unable to send payment',
       }),
     );
-    console.log({ error });
   }
 }
 

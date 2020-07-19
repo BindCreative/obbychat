@@ -45,4 +45,28 @@ export default StyleSheet.create({
   actionsBar: {
     flexDirection: 'row',
   },
+  noContactsContainer: {
+    flex: 1,
+    padding: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  noContactsText: {
+    color: colors.grey.main,
+    justifyContent: 'center',
+    textAlign: 'center',
+    fontFamily: 'Agenda-Light',
+    fontSize: 16,
+  },
+  changeNameDialogInput: {
+    alignSelf: 'stretch',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    color: colors.grey.dark,
+    height: 40,
+    fontSize: 15,
+    backgroundColor: colors.grey.lightest,
+    textAlign: 'center',
+  },
 });

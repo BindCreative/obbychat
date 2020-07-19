@@ -68,6 +68,7 @@ function reducer(state = initialState, action) {
             pairingSecret: action.payload.pairingSecret,
             reversePairingSecret: action.payload.reversePairingSecret,
             visible: true,
+            walletAddress: null,
             messages:
               state.correspondents[action.payload.address]?.messages ?? [],
           },
@@ -81,7 +82,44 @@ function reducer(state = initialState, action) {
           ...state.correspondents,
           [action.payload.address]: {
             ...state.correspondents[action.payload.address],
+            walletAddress: null,
             visible: false,
+          },
+        },
+      };
+
+    case actionTypes.CORRESPONDENT_WALLET_ADDRESS_UPDATE:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            walletAddress: action.payload.walletAddress,
+          },
+        },
+      };
+
+    case actionTypes.CORRESPONDENT_NAME_SET:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            name: action.payload.name,
+          },
+        },
+      };
+
+    case actionTypes.CORRESPONDENT_CHAT_CLEAR:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: [],
           },
         },
       };

@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { Alert, View, TouchableOpacity } from 'react-native';
 import ActionSheet from 'react-native-actionsheet';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
@@ -11,19 +11,65 @@ import styles from './styles';
 
 const ActionsBar = ({
   navigation,
-  onRequestPayment,
-  onSendPayment,
   onSend,
-  address,
+  clearChatHistory,
+  removeCorrespondent,
   myWalletAddress,
+  correspondentWalletAddress,
+  correspondentAddress,
 }) => {
   const actionSheet = useRef();
+
+  const handleClearChat = useCallback(() => {
+    Alert.alert(
+      'Clear chat history',
+      'Are you sure?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => clearChatHistory(correspondentAddress),
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [clearChatHistory, correspondentAddress]);
+
+  const handleDeleteContact = useCallback(() => {
+    Alert.alert(
+      'Delete contact',
+      'Are you sure?',
+      [
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            removeCorrespondent(correspondentAddress);
+            navigation.navigate('ChatList');
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+  }, [correspondentAddress]);
 
   const handleActionPress = useCallback(
     index => {
       switch (index) {
         case 0:
           onSend([{ text: myWalletAddress }]);
+          break;
+        case 1:
+          handleClearChat();
+          break;
+        case 2:
+          handleDeleteContact();
           break;
         default:
       }
@@ -37,22 +83,57 @@ const ActionsBar = ({
     }
   }, []);
 
+  const handleRequestPayment = useCallback(() => {
+    navigation.navigate('RequestPayment', {
+      walletAddress: myWalletAddress,
+      callback: text => {
+        onSend([{ text }]);
+      },
+    });
+  }, [myWalletAddress, navigation]);
+
+  const handleSendPayment = useCallback(() => {
+    if (!correspondentWalletAddress) {
+      Alert.alert(
+        '',
+        "You don't know their wallet address yet. Do you want to ask for it?",
+        [
+          {
+            text: 'No',
+            style: 'cancel',
+          },
+          {
+            text: 'Yes',
+            onPress: () =>
+              onSend([
+                {
+                  text:
+                    '[Data request](sign-message-request:Requesting wallet address to send payment)',
+                },
+              ]),
+          },
+        ],
+        { cancelable: false },
+      );
+    } else {
+      navigation.navigate('MakePayment', {
+        walletAddress: correspondentWalletAddress,
+      });
+    }
+  }, [Alert, correspondentWalletAddress, navigation]);
+
   return (
     <View style={styles.actionsBar}>
       <TouchableOpacity
         style={styles.iconButtonSmall}
-        onPress={() =>
-          navigation.navigate('RequestPayment', {
-            walletAddress: myWalletAddress,
-            callback: text => {
-              onRequestPayment([{ text }]);
-            },
-          })
-        }
+        onPress={handleRequestPayment}
       >
         <ReceiveIcon style={styles.icon} width={10} height={10} />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconButtonSmall} onPress={onSendPayment}>
+      <TouchableOpacity
+        style={styles.iconButtonSmall}
+        onPress={handleSendPayment}
+      >
         <SendIcon style={styles.icon} width={10} height={10} />
       </TouchableOpacity>
       <TouchableOpacity
@@ -65,13 +146,12 @@ const ActionsBar = ({
         ref={actionSheet}
         options={[
           'Insert my address',
-          //'Insert private profile',
-          //'Sign a message',
-          //'Offer a smart contract',
+          'Clear chat history',
+          'Delete contact',
           'Cancel',
         ]}
-        cancelButtonIndex={1}
-        destructiveButtonIndex={1}
+        cancelButtonIndex={3}
+        destructiveButtonIndex={3}
         onPress={handleActionPress}
       />
     </View>
