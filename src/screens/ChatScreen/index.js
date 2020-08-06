@@ -117,6 +117,7 @@ class ChatScreen extends React.Component {
         style={styles.chatArea}
         renderAvatar={null}
         renderMessageText={this.renderText}
+        renderLoading={() => <Text>Loading...</Text>}
         showUserAvatar={false}
         messages={messages}
         onSend={messagesArr => this.onSend(messagesArr)}

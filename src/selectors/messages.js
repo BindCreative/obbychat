@@ -60,17 +60,18 @@ export const selectCorrespondentWalletAddress = address =>
 export const selectCorrespondentMessages = ({ address }) =>
   createSelector(getMessagesState, state => {
     let allMessages = _.get(state, `correspondents[${address}].messages`, []);
-    const correspondentName = _.get(
-      state,
-      `correspondents[${address}].name`,
-      'New',
-    );
+    const correspondentName =
+      state.correspondents &&
+      state.correspondents[address] &&
+      state.correspondents[address].name
+        ? state.correspondents[address].name
+        : 'New';
+
     allMessages = allMessages.map(message => {
       const unhandled =
         message.type !== 'text' || typeof message.message !== 'string';
-
       return {
-        _id: message.hash,
+        _id: message._id,
         type: 'text',
         text: unhandled
           ? 'This message type is not yet supported.'

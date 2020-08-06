@@ -18,8 +18,7 @@ function reducer(state = initialState, action) {
         ...action.payload,
       };
 
-    case actionTypes.MESSAGE_RECEIVE_SUCCESS:
-    case actionTypes.MESSAGE_ADD_SUCCESS:
+    case actionTypes.MESSAGE_ADD_TEMP:
       return {
         ...state,
         correspondents: {
@@ -29,11 +28,85 @@ function reducer(state = initialState, action) {
             messages: [
               ...state.correspondents[action.payload.address].messages,
               {
+                _id: action.payload.id,
+                address: action.payload.address,
+                message: action.payload.message,
+                type: action.payload.type,
+                timestamp: action.payload.timestamp,
+                handleAs: 'SENT',
+                pending: true,
+              },
+            ],
+          },
+        },
+      };
+
+    case actionTypes.MESSAGE_ADD_SUCCESS:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: state.correspondents[action.payload.address].messages.map(
+              (message, i) => {
+                if (message._id === action.payload.id) {
+                  return {
+                    ...message,
+                    type: action.payload.messageType,
+                    message: action.payload.message,
+                    hash: action.payload.messageHash,
+                    handleAs: action.payload.handleAs,
+                    timestamp: action.payload.timestamp,
+                    pending: false,
+                  };
+                }
+                return message;
+              },
+            ),
+          },
+        },
+      };
+
+    case actionTypes.MESSAGE_ADD_FAIL:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: state.correspondents[action.payload.address].messages.map(
+              (message, i) => {
+                if (message._id === action.payload.id) {
+                  return {
+                    ...message,
+                    pending: true,
+                  };
+                }
+                return message;
+              },
+            ),
+          },
+        },
+      };
+
+    case actionTypes.MESSAGE_RECEIVE_SUCCESS:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: [
+              ...state.correspondents[action.payload.address].messages,
+              {
+                _id: action.payload.id,
                 type: action.payload.messageType,
                 message: action.payload.message,
                 hash: action.payload.messageHash,
                 handleAs: action.payload.handleAs,
                 timestamp: action.payload.timestamp,
+                pending: false,
               },
             ],
           },

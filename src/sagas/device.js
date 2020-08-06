@@ -12,6 +12,7 @@ import { channel } from '@redux-saga/core';
 import { isValidAddress } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
 import Crypto from 'crypto';
+import uuid from 'uuid/v4';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -38,6 +39,7 @@ import {
 } from '../actions/correspondents';
 import {
   addMessageSuccess,
+  addMessageTemp,
   addMessageFail,
   receiveMessageStart,
   receiveMessageSuccess,
@@ -145,6 +147,7 @@ export function* watchHubMessages() {
 
 export function* receiveMessage(message) {
   const { body } = message;
+  const id = yield call(uuid);
   const tempDeviceKey = yield select(selectDeviceTempKeyData());
   const permDeviceKey = yield select(selectPermanentDeviceKeyObj());
 
@@ -259,7 +262,9 @@ export function* receiveMessage(message) {
 }
 
 export function* sendMessage(action) {
+  const id = yield call(uuid);
   try {
+    yield put(addMessageTemp({ ...action.payload, id, timestamp: Date.now() }));
     const myPermKeys = yield select(selectPermanentDeviceKeyObj());
     const myDeviceAddress = yield select(selectDeviceAddress());
     const {
@@ -301,6 +306,7 @@ export function* sendMessage(action) {
     yield call(deliverMessage, objDeviceMessage);
     yield put(
       addMessageSuccess({
+        id,
         message,
         messageHash,
         address: recipientAddress,
@@ -309,15 +315,16 @@ export function* sendMessage(action) {
       }),
     );
   } catch (error) {
-    yield put(addMessageFail());
+    yield put(addMessageFail({ id, address: action.payload.address }));
     console.log('UNHANDLED ERROR: ', error);
   }
 }
 
-// Handles incoming chat messages
+// Persists incoming chat messages to store
 export function* handleReceivedMessage(action) {
   try {
-    yield put(receiveMessageSuccess(action.payload));
+    const id = yield call(uuid);
+    yield put(receiveMessageSuccess({ id, ...action.payload }));
     oClient.justsaying('hub/delete', action.payload.messageHash);
   } catch (error) {
     yield put(receiveMessageFail());
