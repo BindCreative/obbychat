@@ -24,6 +24,7 @@ class QRScannerScreen extends React.Component {
   }
 
   handleBarCodeScanned = ({ data }) => {
+    this.setState({ scanned: true });
     switch (this.props.type) {
       case 'WALLET_ADDRESS':
         return this.props.navigation.navigate('MakePayment', {
@@ -33,6 +34,7 @@ class QRScannerScreen extends React.Component {
         this.props.acceptInvitation(data);
         return;
       default:
+        this.setState({ scanned: false });
     }
   };
 
