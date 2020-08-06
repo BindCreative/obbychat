@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { TouchableOpacity, Text, Clipboard, Alert } from 'react-native';
+import { TouchableOpacity, Text, Clipboard, Alert, View } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
@@ -108,6 +108,14 @@ class ChatScreen extends React.Component {
     }
   }
 
+  chatLoading() {
+    return (
+      <View style={styles.chatLoader}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   renderChat() {
     const { messages } = this.props;
     return (
@@ -117,7 +125,7 @@ class ChatScreen extends React.Component {
         style={styles.chatArea}
         renderAvatar={null}
         renderMessageText={this.renderText}
-        renderLoading={() => <Text>Loading...</Text>}
+        renderLoading={this.chatLoading}
         showUserAvatar={false}
         messages={messages}
         onSend={messagesArr => this.onSend(messagesArr)}

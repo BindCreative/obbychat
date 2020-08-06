@@ -116,4 +116,9 @@ export default StyleSheet.create({
   textMessageSent: {
     color: colors.white,
   },
+  chatLoader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { ScrollView, View, TextInput } from 'react-native';
+import { View, TextInput, FlatList } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
@@ -20,6 +20,7 @@ class ChatListScreen extends React.Component {
     super(props);
 
     this.changeContactName = this.changeContactName.bind(this);
+    this.renderItem = this.renderItem.bind(this);
     this.state = {
       changeNameDialog: {
         visible: false,
@@ -37,6 +38,58 @@ class ChatListScreen extends React.Component {
         correspondent: {},
       },
     });
+  }
+
+  renderItem(data) {
+    const { item: correspondent } = data;
+    const { changeNameDialog } = this.state;
+
+    return (
+      <ListItem
+        avatar
+        style={styles.listItem}
+        onPress={() =>
+          this.props.navigation.navigate('Chat', {
+            correspondent,
+          })
+        }
+        onLongPress={() => {
+          this.setState({
+            changeNameDialog: {
+              ...changeNameDialog,
+              correspondent,
+              visible: true,
+            },
+          });
+        }}
+      >
+        <Left style={styles.listItemAvatar}>
+          <UserAvatar
+            size={42}
+            name={correspondent.name}
+            src={makeBlockie(correspondent.address)}
+          />
+        </Left>
+        <Body style={styles.listItemBody}>
+          <Text numberOfLines={1} style={styles.listItemTitle}>
+            {correspondent.name}
+          </Text>
+          <Text numberOfLines={1} note style={styles.listItemPreview}>
+            {correspondent.lastMessagePreview}
+          </Text>
+        </Body>
+        <Right style={styles.listItemBody}>
+          <Text numberOfLines={1} note style={styles.listItemTime}>
+            {correspondent.lastMessageTimestamp !== undefined && (
+              <TimeAgo
+                time={correspondent.lastMessageTimestamp}
+                interval={15000}
+              />
+            )}
+          </Text>
+        </Right>
+      </ListItem>
+    );
   }
 
   render() {
@@ -64,57 +117,12 @@ class ChatListScreen extends React.Component {
           </View>
         )}
         {!!correspondents.length && (
-          <ScrollView>
-            <List style={styles.list}>
-              {correspondents.map((correspondent, i) => (
-                <ListItem
-                  avatar
-                  style={styles.listItem}
-                  key={i}
-                  onPress={() =>
-                    this.props.navigation.navigate('Chat', {
-                      correspondent,
-                    })
-                  }
-                  onLongPress={() => {
-                    this.setState({
-                      changeNameDialog: {
-                        ...changeNameDialog,
-                        correspondent,
-                        visible: true,
-                      },
-                    });
-                  }}
-                >
-                  <Left style={styles.listItemAvatar}>
-                    <UserAvatar
-                      size={42}
-                      name={correspondent.name}
-                      src={makeBlockie(correspondent.address)}
-                    />
-                  </Left>
-                  <Body style={styles.listItemBody}>
-                    <Text numberOfLines={1} style={styles.listItemTitle}>
-                      {correspondent.name}
-                    </Text>
-                    <Text numberOfLines={1} note style={styles.listItemPreview}>
-                      {correspondent.lastMessagePreview}
-                    </Text>
-                  </Body>
-                  <Right style={styles.listItemBody}>
-                    <Text numberOfLines={1} note style={styles.listItemTime}>
-                      {correspondent.lastMessageTimestamp !== undefined && (
-                        <TimeAgo
-                          time={correspondent.lastMessageTimestamp}
-                          interval={15000}
-                        />
-                      )}
-                    </Text>
-                  </Right>
-                </ListItem>
-              ))}
-            </List>
-          </ScrollView>
+          <FlatList
+            data={correspondents}
+            contentContainerStyle={styles.list}
+            keyExtractor={correspondent => correspondent.address}
+            renderItem={this.renderItem}
+          />
         )}
         <Dialog.Container visible={changeNameDialog.visible}>
           <Dialog.Title>Change contact name</Dialog.Title>
