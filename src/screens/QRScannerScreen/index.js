@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
-import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { StatusBar, Text, View } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import SafeAreaView from 'react-native-safe-area-view';
 
@@ -14,6 +14,9 @@ class QRScannerScreen extends React.Component {
   constructor(props) {
     super(props);
     this.handleBarCodeScanned = this.handleBarCodeScanned.bind(this);
+    this.state = {
+      scanned: false,
+    };
   }
 
   componentDidMount() {
@@ -38,6 +41,14 @@ class QRScannerScreen extends React.Component {
   }
 
   render() {
+    if (this.state.scanned) {
+      return (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      );
+    }
+
     return (
       <QRCodeScanner
         containerStyle={styles.container}

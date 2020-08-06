@@ -15,4 +15,13 @@ export default StyleSheet.create({
   bottomContent: {
     height: 150,
   },
+  loadingContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.white,
+  },
 });
