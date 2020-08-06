@@ -149,6 +149,7 @@ function reducer(state = initialState, action) {
       };
 
     case actionTypes.CORRESPONDENT_DEVICE_REMOVE:
+    case actionTypes.CORRESPONDENT_REMOVED_DEVICE:
       return {
         ...state,
         correspondents: {

@@ -17,6 +17,11 @@ export const removeCorrespondent = ({ address }) => ({
   payload: { address },
 });
 
+export const correspondentRemovedDevice = ({ address }) => ({
+  type: actionTypes.CORRESPONDENT_REMOVED_DEVICE,
+  payload: { address },
+});
+
 export const updateCorrespondentWalletAddress = ({
   address,
   walletAddress,

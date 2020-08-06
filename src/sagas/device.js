@@ -34,6 +34,7 @@ import { setToastMessage } from './../actions/app';
 import {
   addCorrespondent,
   removeCorrespondent,
+  correspondentRemovedDevice,
   updateCorrespondentWalletAddress,
   setCorrespondentName,
 } from '../actions/correspondents';
@@ -160,7 +161,7 @@ export function* receiveMessage(message) {
     );
 
     if (decryptedMessage.subject === 'removed_paired_device') {
-      yield put(removeCorrespondent({ address: decryptedMessage.from }));
+      yield put(correspondentRemovedDevice({ address: decryptedMessage.from }));
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
       console.log('Pairing');
@@ -426,10 +427,10 @@ export function* sendPairingMessage({
       body: body,
     };
 
-    const encryptedPackage = createEncryptedPackage(
-      packageObj,
-      recipientPubKey,
-    );
+    // const encryptedPackage = createEncryptedPackage(
+    //   packageObj,
+    //   recipientPubKey,
+    // );
 
     const tempPubKeyData = yield getTempPubKey(recipientPubKey);
 
@@ -453,12 +454,36 @@ export function* sendPairingMessage({
 }
 
 // Deprecated, as reconnect option was introduced to obyte.js
-export function* startHubHeartbeat() {
-  while (true) {
-    yield delay(10000);
-    yield call(oClient.api.heartbeat);
-    yield console.log('HB');
-  }
+export function* removeCorrespondentSaga(action) {
+  const correspondent = yield select(
+    selectCorrespondent(action.payload.address),
+  );
+  const myPermKeys = yield select(selectPermanentDeviceKeyObj());
+  const myDeviceAddress = yield select(selectDeviceAddress());
+
+  const packageObj = {
+    from: myDeviceAddress,
+    device_hub: hubAddress,
+    subject: 'removed_paired_device',
+    body: 'removed',
+  };
+
+  const tempPubKeyData = yield getTempPubKey(correspondent.pubKey);
+
+  const objEncryptedPackage = createEncryptedPackage(
+    packageObj,
+    tempPubKeyData.temp_pubkey,
+  );
+  const objDeviceMessage = {
+    encrypted_package: objEncryptedPackage,
+    to: action.payload.address,
+    pubkey: myPermKeys.pubB64,
+  };
+  objDeviceMessage.signature = sign(
+    getDeviceMessageHashToSign(objDeviceMessage),
+    myPermKeys.priv,
+  );
+  yield deliverMessage(objDeviceMessage);
 }
 
 export default function* watch() {
@@ -467,5 +492,6 @@ export default function* watch() {
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
+    takeEvery(actionTypes.CORRESPONDENT_DEVICE_REMOVE, removeCorrespondentSaga),
   ]);
 }
