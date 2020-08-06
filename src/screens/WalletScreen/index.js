@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   Text,
   View,
-  ScrollView,
+  FlatList,
   RefreshControl,
   Dimensions,
 } from 'react-native';
@@ -39,6 +39,7 @@ class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
     this.renderTx = this.renderTx.bind(this);
+    this.renderHeader = this.renderHeader.bind(this);
     this.renderLoadingScreen = this.renderLoadingScreen.bind(this);
     this.state = {
       unit: 'MB',
@@ -46,11 +47,12 @@ class WalletScreen extends React.Component {
     };
   }
 
-  renderTx(tx, i) {
+  renderTx(data) {
+    const { item: tx } = data;
+
     if (this.state.txType === 'ALL' || this.state.txType === tx.type) {
       return (
         <TouchableOpacity
-          key={i}
           style={styles.transaction}
           onPress={() =>
             NavigationService.navigate('TransactionInfo', { transaction: tx })
@@ -128,12 +130,37 @@ class WalletScreen extends React.Component {
     );
   }
 
-  render() {
-    const { loading, loadBalances } = this.props;
+  renderHeader() {
     const balanceInDollars = (
       bytesToUnit(this.props.walletBalance, 'GB') *
       this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
+
+    return (
+      <React.Fragment>
+        <View style={styles.balanceRow}>
+          <Text style={styles.balanceText}>
+            {bytesToUnit(this.props.walletBalance, this.state.unit)}
+          </Text>
+          <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Text style={styles.convertedBalanceText}>${balanceInDollars}</Text>
+        </View>
+        <View style={styles.txHeaderBlock}>
+          <Text style={styles.txHeaderText}>Transactions</Text>
+          <ActionSheet
+            currentValue={this.state.txType}
+            onChange={txType => this.setState({ txType })}
+            items={TX_TYPES}
+          />
+        </View>
+      </React.Fragment>
+    );
+  }
+
+  render() {
+    const { loading, loadBalances } = this.props;
 
     return (
       <SafeAreaView
@@ -149,41 +176,16 @@ class WalletScreen extends React.Component {
         />
         {loading && this.renderLoadingScreen()}
         {!loading && (
-          <ScrollView
+          <FlatList
+            data={this.props.transactions}
+            contentContainerStyle={styles.content}
+            keyExtractor={tx => tx.unitId}
+            renderItem={this.renderTx}
+            ListHeaderComponent={this.renderHeader}
             refreshControl={
               <RefreshControl refreshing={loading} onRefresh={loadBalances} />
             }
-          >
-            <View style={styles.content}>
-              <View style={styles.balanceRow}>
-                <Text style={styles.balanceText}>
-                  {bytesToUnit(this.props.walletBalance, this.state.unit)}
-                </Text>
-                <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.convertedBalanceText}>
-                  ${balanceInDollars}
-                </Text>
-              </View>
-              <View style={styles.txHeaderBlock}>
-                <Text style={styles.txHeaderText}>Transactions</Text>
-                <ActionSheet
-                  currentValue={this.state.txType}
-                  onChange={txType => this.setState({ txType })}
-                  items={TX_TYPES}
-                />
-              </View>
-              {this.props.transactions.length > 0 && (
-                <View style={styles.transactions}>
-                  {!!this.props.transactions === true &&
-                    this.props.transactions.map((tx, i) =>
-                      this.renderTx(tx, i),
-                    )}
-                </View>
-              )}
-            </View>
-          </ScrollView>
+          />
         )}
       </SafeAreaView>
     );
