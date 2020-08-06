@@ -1,4 +1,4 @@
-## Obby chat
+## '
 
 Instant messaging app for Obyte. Offering secure end-to-end encryption, cryptocurrency payments, and smart contracts for fun & profit.
 
@@ -27,3 +27,18 @@ For more details and participation, please join [Obyte discord channel](https://
 ### Support or Contact
 
 Want to join or share your thoughts, [send us a letter](mailto:support@obby.chat).
+
+### Development (MAC)
+
+#### Android
+
+1. Get Java jdk 8 from https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html
+2. Check which java version is currently in use
+   `/usr/libexec/java_home -V`
+3. Set correct java version if needed
+   `` export JAVA_HOME=`/usr/libexec/java_home -v 1.8` ``
+4. Run `yarn android`
+
+#### iOS
+
+Run `yarn ios`
