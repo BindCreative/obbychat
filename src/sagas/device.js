@@ -371,7 +371,7 @@ export function* acceptInvitation(action) {
       recipientPubKey: cPubKey,
       hub: cHub,
     });
-    yield call(NavigationService.navigate, 'ChatList');
+    yield call(NavigationService.navigate, 'ChatStack');
   } else {
     yield put(
       setToastMessage({
@@ -379,7 +379,7 @@ export function* acceptInvitation(action) {
         message: 'Unable to accept invitation',
       }),
     );
-    yield call(NavigationService.navifate, 'ChatList');
+    yield call(NavigationService.navigate, 'ChatStack');
   }
 }
 

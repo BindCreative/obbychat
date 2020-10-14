@@ -1,9 +1,9 @@
 import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
-import ChatStack from './ChatStack';
-import WalletStack from './WalletStack';
-import SettingsStack from './SettingsStack';
+import SettingsScreen from '../screens/SettingsScreen';
+import ChatListScreen from '../screens/ChatListScreen';
+import WalletScreen from '../screens/WalletScreen';
 import ChatIcon from './../assets/images/icon-chat-bubble.svg';
 import WalletIcon from './../assets/images/icon-wallet.svg';
 import MenuIcon from './../assets/images/icon-menu.svg';
@@ -12,7 +12,7 @@ import { colors } from '../constants';
 const MainStack = createBottomTabNavigator(
   {
     ChatStack: {
-      screen: ChatStack,
+      screen: ChatListScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (
           <ChatIcon style={{ color: tintColor }} />
@@ -20,7 +20,7 @@ const MainStack = createBottomTabNavigator(
       },
     },
     WalletStack: {
-      screen: WalletStack,
+      screen: WalletScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (
           <WalletIcon style={{ color: tintColor }} />
@@ -28,7 +28,7 @@ const MainStack = createBottomTabNavigator(
       },
     },
     SettingsStack: {
-      screen: SettingsStack,
+      screen: SettingsScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (
           <MenuIcon style={{ color: tintColor }} />

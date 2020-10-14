@@ -189,11 +189,9 @@ android {
 }
 
 dependencies {
-    implementation project(':react-native-randombytes')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:0.61.5"  // From node_modules
     addUnimodulesDependencies()
-    implementation project(':react-native-camera')
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

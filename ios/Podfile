@@ -36,7 +36,6 @@ target 'Obby Chat' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
   pod 'Permission-Camera', :path => '../node_modules/react-native-permissions/ios/Camera.podspec'
 
-  pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
   
 
   target 'Obby ChatTests' do

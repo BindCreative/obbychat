@@ -19,6 +19,7 @@
     "assert": "^1.5.0",
     "bitcore-mnemonic": "^8.8.0",
     "browserify-zlib": "^0.1.4",
+    "buffer": "^4.9.2",
     "console-browserify": "^1.2.0",
     "constants-browserify": "^1.0.0",
     "dns.js": "^1.0.1",
@@ -101,6 +102,7 @@
     "prettier": "^1.19.1",
     "react-native-svg-transformer": "^0.13.0",
     "react-test-renderer": "16.9.0",
+    "redux-devtools-extension": "^2.13.8",
     "rn-nodeify": "^10.1.0"
   },
   "jest": {

@@ -16,52 +16,25 @@ const RootNav = createStackNavigator(
       screen: MainStack,
     },
     Chat: {
-      screen: props => <ChatScreen {...props} backRoute='ChatList' />,
+      screen: props => <ChatScreen {...props} />,
       path: '/chat/contact',
     },
-    ContactScanner: {
+    QrScanner: {
       screen: props => (
         <QRScannerScreen
           {...props}
-          type='DEVICE_INVITATION'
-          backRoute='ChatStack'
         />
       ),
-      path: '/chat/scan',
+      path: '/grScanner'
     },
-    MyQR: {
+    QrCode: {
       screen: (props, compProps) => (
         <QRCodeScreen
           {...props}
           {...compProps}
-          title='Pairing QR code'
-          type='PAIRING_CODE'
-          backRoute='ChatStack'
         />
       ),
-      path: '/chat/my-qr',
-    },
-    WalletScanner: {
-      screen: props => (
-        <QRScannerScreen
-          {...props}
-          type='WALLET_ADDRESS'
-          backRoute='WalletStack'
-        />
-      ),
-      path: '/wallet/scan',
-    },
-    MyWalletQR: {
-      screen: (props, compProps) => (
-        <QRCodeScreen
-          {...props}
-          {...compProps}
-          title='Wallet QR code'
-          type='WALLET_ADDRESS'
-          backRoute='WalletStack'
-        />
-      ),
-      path: '/wallet/my-qr',
+      path: '/qrCode'
     },
     MakePayment: {
       screen: props => <PaymentScreen {...props} method={Methods.SEND} />,

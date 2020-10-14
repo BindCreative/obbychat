@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
@@ -26,7 +26,14 @@ class ChatListScreen extends React.Component {
         visible: false,
         correspondent: {},
       },
+      initialized: false
     };
+  }
+
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({ initialized: true });
+    });
   }
 
   changeContactName(e) {
@@ -42,25 +49,16 @@ class ChatListScreen extends React.Component {
 
   renderItem(data) {
     const { item: correspondent } = data;
-    const { changeNameDialog } = this.state;
 
     return (
       <ListItem
         avatar
         style={styles.listItem}
-        onPress={() =>
-          this.props.navigation.navigate('Chat', {
-            correspondent,
-          })
-        }
+        onPress={() => {
+          this.props.navigation.navigate('Chat', { correspondent })
+        }}
         onLongPress={() => {
-          this.setState({
-            changeNameDialog: {
-              ...changeNameDialog,
-              correspondent,
-              visible: true,
-            },
-          });
+          this.setState({ changeNameDialog: { correspondent, visible: true } })
         }}
       >
         <Left style={styles.listItemAvatar}>
@@ -94,7 +92,7 @@ class ChatListScreen extends React.Component {
 
   render() {
     const { correspondents } = this.props;
-    const { changeNameDialog } = this.state;
+    const { changeNameDialog, initialized } = this.state;
 
     return (
       <SafeAreaView
@@ -108,46 +106,50 @@ class ChatListScreen extends React.Component {
           titlePosition='left'
           right={<ActionsBar />}
         />
-        {!correspondents.length && (
-          <View style={styles.noContactsContainer}>
-            <Text style={styles.noContactsText}>
-              Start adding contacts by sharing your QR code or scanning someone
-              else's!
-            </Text>
-          </View>
+        {initialized && (
+          <Fragment>
+            {!correspondents.length && (
+              <View style={styles.noContactsContainer}>
+                <Text style={styles.noContactsText}>
+                  Start adding contacts by sharing your QR code or scanning someone
+                  else's!
+                </Text>
+              </View>
+            )}
+            {!!correspondents.length && (
+              <FlatList
+                data={correspondents}
+                contentContainerStyle={styles.list}
+                keyExtractor={correspondent => correspondent.address}
+                renderItem={this.renderItem}
+              />
+            )}
+            <Dialog.Container visible={changeNameDialog.visible}>
+              <Dialog.Title>Change contact name</Dialog.Title>
+              <TextInput
+                style={styles.changeNameDialogInput}
+                onChangeText={name =>
+                  this.setState({
+                    changeNameDialog: {
+                      ...changeNameDialog,
+                      correspondent: { ...changeNameDialog.correspondent, name },
+                    },
+                  })
+                }
+                value={changeNameDialog.correspondent.name}
+              />
+              <Dialog.Button
+                label='Cancel'
+                onPress={() =>
+                  this.setState({
+                    changeNameDialog: { ...changeNameDialog, visible: false },
+                  })
+                }
+              />
+              <Dialog.Button label='Rename' onPress={this.changeContactName} />
+            </Dialog.Container>
+          </Fragment>
         )}
-        {!!correspondents.length && (
-          <FlatList
-            data={correspondents}
-            contentContainerStyle={styles.list}
-            keyExtractor={correspondent => correspondent.address}
-            renderItem={this.renderItem}
-          />
-        )}
-        <Dialog.Container visible={changeNameDialog.visible}>
-          <Dialog.Title>Change contact name</Dialog.Title>
-          <TextInput
-            style={styles.changeNameDialogInput}
-            onChangeText={name =>
-              this.setState({
-                changeNameDialog: {
-                  ...changeNameDialog,
-                  correspondent: { ...changeNameDialog.correspondent, name },
-                },
-              })
-            }
-            value={changeNameDialog.correspondent.name}
-          />
-          <Dialog.Button
-            label='Cancel'
-            onPress={() =>
-              this.setState({
-                changeNameDialog: { ...changeNameDialog, visible: false },
-              })
-            }
-          />
-          <Dialog.Button label='Rename' onPress={this.changeContactName} />
-        </Dialog.Container>
       </SafeAreaView>
     );
   }

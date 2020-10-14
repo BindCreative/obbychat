@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
@@ -8,6 +8,7 @@ import {
   FlatList,
   RefreshControl,
   Dimensions,
+  InteractionManager
 } from 'react-native';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import Moment from 'react-moment';
@@ -45,6 +46,12 @@ class WalletScreen extends React.Component {
       unit: 'MB',
       txType: 'ALL',
     };
+  }
+
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({ initialized: true });
+    });
   }
 
   renderTx(data) {
@@ -174,18 +181,22 @@ class WalletScreen extends React.Component {
           titlePosition='left'
           right={<ActionsBar />}
         />
-        {loading && this.renderLoadingScreen()}
-        {!loading && (
-          <FlatList
-            data={this.props.transactions}
-            contentContainerStyle={styles.content}
-            keyExtractor={tx => tx.unitId}
-            renderItem={this.renderTx}
-            ListHeaderComponent={this.renderHeader}
-            refreshControl={
-              <RefreshControl refreshing={loading} onRefresh={loadBalances} />
-            }
-          />
+        {this.state.initialized && (
+          <Fragment>
+            {loading && this.renderLoadingScreen()}
+            {!loading && (
+              <FlatList
+                data={this.props.transactions}
+                contentContainerStyle={styles.content}
+                keyExtractor={tx => tx.unitId}
+                renderItem={this.renderTx}
+                ListHeaderComponent={this.renderHeader}
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={loadBalances} />
+                }
+              />
+            )}
+          </Fragment>
         )}
       </SafeAreaView>
     );

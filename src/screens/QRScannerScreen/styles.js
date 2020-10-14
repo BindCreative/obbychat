@@ -16,6 +16,10 @@ export default StyleSheet.create({
     height: 150,
   },
   loadingContainer: {
+    zIndex: 2,
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     flex: 1,
     justifyContent: 'center',

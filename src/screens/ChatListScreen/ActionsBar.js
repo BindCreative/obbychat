@@ -10,6 +10,7 @@ import AddContactIcon from './../../assets/images/icon-person-add.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
 import styles from './styles';
+import QRCodeScreen from "../../navigation/Root";
 
 class ActionsBar extends React.Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class ActionsBar extends React.Component {
   render() {
     return (
       <View style={styles.actionsBar}>
-        {/** 
+        {/**
         <TouchableOpacity style={styles.iconButton}>
           <AddContactIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
@@ -34,8 +35,9 @@ class ActionsBar extends React.Component {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() =>
-            this.props.navigation.navigate('MyQR', {
+            this.props.navigation.navigate('QrCode', {
               qrData: this._getPairingCode(),
+              type: 'PAIRING_CODE'
             })
           }
         >
@@ -43,7 +45,7 @@ class ActionsBar extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => this.props.navigation.navigate('ContactScanner')}
+          onPress={() => this.props.navigation.navigate('QrScanner', { type: 'DEVICE_INVITATION' })}
         >
           <ScanIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>

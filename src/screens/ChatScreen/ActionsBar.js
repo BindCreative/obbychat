@@ -51,7 +51,7 @@ const ActionsBar = ({
           text: 'Yes',
           onPress: () => {
             removeCorrespondent(correspondentAddress);
-            navigation.navigate('ChatList');
+            navigation.navigate('ChatStack');
           },
         },
       ],

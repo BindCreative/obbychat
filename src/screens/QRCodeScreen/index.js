@@ -12,8 +12,18 @@ import Header from '../../components/Header';
 import Button from './../../components/Button';
 import styles from './styles';
 
-const QRCodeScreen = ({ navigation, backRoute, title, type }) => {
+const getTitle = (type) => {
+  switch (type) {
+    case "PAIRING_CODE": return "Pairing QR code";
+    case "WALLET_ADDRESS": return "Wallet QR code";
+    default: return "";
+  }
+};
+
+const QRCodeScreen = ({ navigation, backRoute }) => {
   const qrData = _.get(navigation, 'state.params.qrData');
+  const type = _.get(navigation, 'state.params.type');
+  const title = getTitle(type);
   const shareOptions = Platform.select({
     ios: {
       activityItemSources: [
