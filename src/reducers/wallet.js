@@ -15,6 +15,7 @@ const initialState = {
   privateKey: null,
   walletPirvateKey: null,
   walletPath: null,
+  init: false
 };
 
 function reducer(state = initialState, action) {
@@ -26,6 +27,12 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         ...action.payload,
+      };
+
+    case actionTypes.WALLET_INIT_SUCCESS:
+      return {
+        ...state,
+        init: true
       };
 
     case actionTypes.WITNESSES_GET_SUCCESS:

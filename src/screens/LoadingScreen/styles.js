@@ -3,8 +3,11 @@ import { colors } from '../../constants';
 
 export default StyleSheet.create({
   container: {
+    position: 'absolute',
     backgroundColor: colors.white,
-    flex: 1,
+    width: '100%',
+    height: '100%',
+    zIndex: 1000
   },
   content: {
     alignItems: 'center',

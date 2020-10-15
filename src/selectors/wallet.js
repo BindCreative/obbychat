@@ -21,3 +21,5 @@ export const selectAddressWif = () =>
 
 export const selectWitnesses = () =>
   createSelector(getWalletState, state => state.witnesses);
+
+export const selectWalletInit = createSelector(getWalletState, state => state.init);
