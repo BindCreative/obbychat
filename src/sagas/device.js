@@ -104,6 +104,10 @@ export function* subscribeToHub() {
         oChannel.put({ type, payload });
       }
     });
+    setInterval(() => {
+      oClient.api.heartbeat();
+      console.log('HB to hub');
+    }, 10000);
   } catch (error) {
     yield put(
       setToastMessage({
