@@ -9,16 +9,16 @@ import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import { initWallet } from '../../actions/wallet';
 
-import { selectWalletInit } from "../../selectors/wallet";
+import { selectWalletInit, selectWalletInitAddress } from "../../selectors/wallet";
 
-const App = ({ walletInit }) => {
+const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
 
   const [appState, setAppState] = useState('active');
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => dispatch(initWallet()), 100);
+    setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
   }, []);
 
   useEffect(
@@ -70,11 +70,17 @@ const App = ({ walletInit }) => {
 };
 
 App.propTypes = {
-  walletInit: PropTypes.bool.isRequired
+  walletInit: PropTypes.bool.isRequired,
+  walletAddress: PropTypes.string
+};
+
+App.defaultProps = {
+  walletAddress: ''
 };
 
 const mapStateToProps = state => ({
-  walletInit: selectWalletInit(state)
+  walletInit: selectWalletInit(state),
+  walletAddress: selectWalletInitAddress(state)
 });
 
 export default connect(mapStateToProps, null)(App);

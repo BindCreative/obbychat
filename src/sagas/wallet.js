@@ -32,9 +32,9 @@ import {
   selectAddressWif,
 } from './../selectors/wallet';
 
-export function* initWallet() {
+export function* initWallet({ payload }) {
   try {
-    yield put(createInitialWalletStart());
+    yield put(createInitialWalletStart(payload));
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
@@ -54,14 +54,9 @@ export function* initWallet() {
   }
 }
 
-export function* createInitialWallet(action) {
-  // Take two as we have two different persisted stores
-  const { payload: payload1 } = yield take(REHYDRATE);
-  const { payload: payload2 } = yield take(REHYDRATE);
-  const payload = { ...payload1, ...payload2 };
-
+export function* createInitialWallet({ payload }) {
   try {
-    if (!payload?.wallet?.address) {
+    if (!payload.address) {
       const password = '';
       let mnemonic = new Mnemonic();
       while (!Mnemonic.isValid(mnemonic.toString())) {
