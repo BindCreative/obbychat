@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
-import { AppState, StatusBar, InteractionManager } from 'react-native';
+import { AppState, StatusBar, InteractionManager, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { oClient } from '../../lib/oCustom';
 
 import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import { initWallet } from '../../actions/wallet';
+import { reSubscribeToHub } from "../../actions/device";
+import { stopSubscribeToHub } from "../../sagas/device";
 
 import { selectWalletInit, selectWalletInitAddress } from "../../selectors/wallet";
 
@@ -16,6 +20,8 @@ const App = ({ walletInit, walletAddress }) => {
 
   const [appState, setAppState] = useState('active');
   const [appReady, setAppReady] = useState(false);
+  const [appHidden, setAppHidden] = useState(false);
+  const timeoutId = useRef();
 
   useEffect(() => {
     setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
@@ -24,22 +30,39 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       if (walletInit) {
-        setTimeout(() => setAppReady(true), 4000);
+        timeoutId.current = setTimeout(() => setAppReady(true), 4000);
+      } else {
+        clearTimeout(timeoutId.current);
       }
     },
     [walletInit]
   );
 
+  useEffect(
+    () => {
+      if (appState === 'active') {
+        if (Platform.OS === 'android') {
+          setTimeout(() => setAppHidden(false), 3000);
+        }
+        // dispatch(reSubscribeToHub());
+      } else {
+        if (Platform.OS === 'android') {
+          setAppHidden(true);
+        }
+        // stopSubscribeToHub();
+      }
+    },
+    [appState]
+  );
+
+  const changeListener = nextAppState => setAppState(nextAppState);
+
   useEffect(() => {
-    AppState.addEventListener('change', nextAppState =>
-      setAppState(nextAppState),
-    );
+    AppState.addEventListener('change', changeListener);
     return () => {
-      AppState.removeEventListener('change', nextAppState =>
-        setAppState(nextAppState),
-      );
+      AppState.removeEventListener('change', changeListener);
     };
-  }, [setAppState]);
+  }, []);
 
   // TODO: close and restart hub connection
   // useEffect(() => {
@@ -48,17 +71,10 @@ const App = ({ walletInit, walletAddress }) => {
   //   }
   // }, [appState]);
 
-  // if (!appReady) {
-  //   return (
-  //     <SafeAreaProvider>
-  //       <LoadingScreen messages={['Starting up']} />
-  //     </SafeAreaProvider>
-  //   );
-  // }
-
   return (
     <SafeAreaProvider>
-      {!appReady && <LoadingScreen messages={['Starting up']} />}
+      {(!appReady || appHidden) && <LoadingScreen messages={!appReady ? ['Starting up'] : ['Restart']} />}
+      {/*{!appReady && <LoadingScreen messages={['Starting up']} />}*/}
       <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
       <Navigator
         ref={navigatorRef => {

@@ -9,7 +9,8 @@ import UserAvatar from 'react-native-user-avatar';
 import ContentLoader, { Circle } from 'react-content-loader/native';
 import makeBlockie from 'ethereum-blockies-base64';
 
-import Header from '../../components/Header';
+import ArrowLeftIcon from '../../assets/images/icon-arrow-left.svg';
+
 import { selectWalletAddress } from './../../selectors/wallet';
 import styles from './styles';
 
@@ -35,17 +36,21 @@ class SettingsScreen extends React.Component {
         style={styles.content}
         forceInset={{ top: 'always', bottom: 'always' }}
       >
-        <Header title='Settings' {...this.props} />
+        <View style={styles.headerNormal}>
+          <Text style={styles.headerTitle}>Settings</Text>
+        </View>
         {this.state.initialized && (
           <Fragment>
             <View style={styles.userInfo}>
-              {!!walletAddress &&
-              <UserAvatar
-                size={64}
-                name={walletAddress}
-                src={makeBlockie(walletAddress)}
-              />
-              }
+              {!!walletAddress && (
+                <View style={styles.userAvatarContainer}>
+                  <UserAvatar
+                    size={64}
+                    name={walletAddress}
+                    src={makeBlockie(walletAddress)}
+                  />
+                </View>
+              )}
               {!walletAddress &&
               <ContentLoader>
                 <Circle cx='32' cy='32' r='32' />
@@ -65,7 +70,7 @@ class SettingsScreen extends React.Component {
                     <Text style={styles.listItemText}>Recovery words</Text>
                   </Left>
                   <Right>
-                    <Icon name='arrow-forward' style={styles.listArrowIcon} />
+                    <ArrowLeftIcon height={18} width={18} style={styles.listArrowIcon} />
                   </Right>
                 </ListItem>
               </List>

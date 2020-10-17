@@ -29,6 +29,12 @@ function reducer(state = initialState, action) {
         ...action.payload,
       };
 
+    case actionTypes.WALLET_INIT_START:
+      return {
+        ...state,
+        init: false
+      };
+
     case actionTypes.WALLET_INIT_SUCCESS:
       return {
         ...state,

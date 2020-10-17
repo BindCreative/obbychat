@@ -58,6 +58,8 @@ import {
   selectDeviceTempKeyData,
 } from './../selectors/device';
 
+let heartBeatInterval = 0;
+
 let oChannel;
 
 if (!oChannel) {
@@ -94,9 +96,14 @@ export function* loginToHub(challenge) {
   oClient.justsaying('hub/refresh', null);
 }
 
+export function stopSubscribeToHub() {
+  oClient.close();
+  clearInterval(heartBeatInterval);
+}
+
 export function* subscribeToHub() {
   try {
-    yield oClient.subscribe((err, result) => {
+    oClient.subscribe((err, result) => {
       if (err) {
         throw new Error('Hub socket error');
       } else {
@@ -104,7 +111,7 @@ export function* subscribeToHub() {
         oChannel.put({ type, payload });
       }
     });
-    setInterval(() => {
+    heartBeatInterval = setInterval(() => {
       oClient.api.heartbeat();
       console.log('HB to hub');
     }, 10000);
@@ -493,6 +500,7 @@ export function* removeCorrespondentSaga(action) {
 export default function* watch() {
   yield all([
     watchHubMessages(),
+    takeEvery(actionTypes.RESUBSCRIBE_TO_HUB, subscribeToHub),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),

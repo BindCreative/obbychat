@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { View, Text, Image, Animated } from 'react-native';
+import { View, Text, Image, Animated, ActivityIndicator } from 'react-native';
 import _ from 'lodash';
 import SafeAreaView from 'react-native-safe-area-view';
 import styles from './styles';
@@ -8,7 +8,7 @@ import styles from './styles';
 const LoadingScreen = ({ messages = [] }) => {
   const loadingAnimationValue = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
+  const animate = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(loadingAnimationValue, {
@@ -21,7 +21,11 @@ const LoadingScreen = ({ messages = [] }) => {
         }),
       ]),
     ).start();
-  }, [loadingAnimationValue]);
+  };
+
+  useEffect(animate, []);
+
+  animate();
 
   return (
     <SafeAreaView

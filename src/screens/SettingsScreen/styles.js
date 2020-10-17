@@ -2,6 +2,19 @@ import { StyleSheet } from 'react-native';
 import { colors } from './../../constants';
 
 export default StyleSheet.create({
+  headerNormal: {
+    paddingHorizontal: 15,
+    paddingTop: 30,
+    paddingBottom: 5,
+    backgroundColor: colors.white,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  headerTitle: {
+    fontFamily: 'Agenda-Medium',
+    color: colors.black,
+    fontSize: 28,
+  },
   content: {
     flex: 1,
     backgroundColor: colors.white,
@@ -9,6 +22,10 @@ export default StyleSheet.create({
   userInfo: {
     paddingHorizontal: 15,
     paddingTop: 10,
+  },
+  userAvatarContainer: {
+    width: 62,
+    height: 64
   },
   listItem: {
     borderBottomColor: 'transparent',
@@ -27,5 +44,8 @@ export default StyleSheet.create({
   },
   listArrowIcon: {
     color: colors.black,
+    transform: [{
+      rotate: '180deg'
+    }]
   },
 });
