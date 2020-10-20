@@ -23,9 +23,10 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     paddingTop: 10,
   },
-  userAvatarContainer: {
-    width: 62,
-    height: 64
+  userAvatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32
   },
   listItem: {
     borderBottomColor: 'transparent',

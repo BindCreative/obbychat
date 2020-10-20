@@ -10,6 +10,7 @@ import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import { initWallet } from '../../actions/wallet';
+import { initDeviceInfo } from "../../actions/device";
 import { reSubscribeToHub } from "../../actions/device";
 import { stopSubscribeToHub } from "../../sagas/device";
 
@@ -24,6 +25,8 @@ const App = ({ walletInit, walletAddress }) => {
   const timeoutId = useRef();
 
   useEffect(() => {
+    dispatch(initDeviceInfo());
+    oClient.close();
     setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
   }, []);
 
@@ -42,7 +45,7 @@ const App = ({ walletInit, walletAddress }) => {
     () => {
       if (appState === 'active') {
         if (Platform.OS === 'android') {
-          setTimeout(() => setAppHidden(false), 3000);
+          setTimeout(() => setAppHidden(false), 4000);
         }
         // dispatch(reSubscribeToHub());
       } else {
@@ -73,7 +76,7 @@ const App = ({ walletInit, walletAddress }) => {
 
   return (
     <SafeAreaProvider>
-      {(!appReady || appHidden) && <LoadingScreen messages={!appReady ? ['Starting up'] : ['Restart']} />}
+      {(!appReady || appHidden) && <LoadingScreen />}
       {/*{!appReady && <LoadingScreen messages={['Starting up']} />}*/}
       <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
       <Navigator

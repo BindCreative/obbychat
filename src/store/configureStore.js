@@ -23,6 +23,7 @@ export default function configureStore() {
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const storeEnhancers = [middlewareEnhancer];
   const composedEnhancer = composeWithDevTools(...storeEnhancers);
+  // const composedEnhancer = compose(...storeEnhancers);
 
   // Secure storage
   const secureStorage = createSecureStore();

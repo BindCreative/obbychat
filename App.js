@@ -10,6 +10,8 @@ import configureStore from './src/store/configureStore';
 
 const storeSetup = configureStore();
 
+GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
+
 const App = () => (
   <Provider store={storeSetup.store}>
     <PersistGate persistor={storeSetup.persistor}>

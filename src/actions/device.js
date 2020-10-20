@@ -7,3 +7,7 @@ export const rotateDeviceTempKey = () => ({
 export const reSubscribeToHub = () => ({
   type: actionTypes.RESUBSCRIBE_TO_HUB
 });
+
+export const initDeviceInfo = () => ({
+  type: actionTypes.INIT_DEVICE_INFO
+});

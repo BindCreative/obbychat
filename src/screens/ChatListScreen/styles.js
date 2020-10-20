@@ -39,6 +39,11 @@ export default StyleSheet.create({
     fontFamily: 'Agenda-Light',
     fontSize: 16,
   },
+  userAvatar: {
+    width: 42,
+    height: 42,
+    borderRadius: 21
+  },
   listItemBody: {
     borderBottomWidth: 0,
   },

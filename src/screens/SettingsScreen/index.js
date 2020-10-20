@@ -2,10 +2,9 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
-import { View, Text, InteractionManager } from 'react-native';
+import { View, Text, InteractionManager, Alert, Image } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { Content, List, ListItem, Left, Right, Icon } from 'native-base';
-import UserAvatar from 'react-native-user-avatar';
 import ContentLoader, { Circle } from 'react-content-loader/native';
 import makeBlockie from 'ethereum-blockies-base64';
 
@@ -31,6 +30,8 @@ class SettingsScreen extends React.Component {
   render() {
     const { navigation, walletAddress } = this.props;
 
+    const { src } = this.state;
+
     return (
       <SafeAreaView
         style={styles.content}
@@ -43,13 +44,10 @@ class SettingsScreen extends React.Component {
           <Fragment>
             <View style={styles.userInfo}>
               {!!walletAddress && (
-                <View style={styles.userAvatarContainer}>
-                  <UserAvatar
-                    size={64}
-                    name={walletAddress}
-                    src={makeBlockie(walletAddress)}
-                  />
-                </View>
+                <Image
+                  style={styles.userAvatar}
+                  source={{ uri: makeBlockie(walletAddress) }}
+                />
               )}
               {!walletAddress &&
               <ContentLoader>

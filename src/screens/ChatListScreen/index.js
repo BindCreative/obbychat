@@ -1,9 +1,8 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList, InteractionManager } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image } from 'react-native';
 import TimeAgo from 'react-native-timeago';
-import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
 import { List, ListItem, Left, Right, Body, Text } from 'native-base';
@@ -62,10 +61,10 @@ class ChatListScreen extends React.Component {
         }}
       >
         <Left style={styles.listItemAvatar}>
-          <UserAvatar
-            size={42}
+          <Image
+            style={styles.userAvatar}
             name={correspondent.name}
-            src={makeBlockie(correspondent.address)}
+            source={{ uri: makeBlockie(correspondent.address) }}
           />
         </Left>
         <Body style={styles.listItemBody}>
