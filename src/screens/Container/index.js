@@ -10,7 +10,6 @@ import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import { initWallet } from '../../actions/wallet';
-import { initDeviceInfo } from "../../actions/device";
 import { reSubscribeToHub } from "../../actions/device";
 import { stopSubscribeToHub } from "../../sagas/device";
 
@@ -25,7 +24,6 @@ const App = ({ walletInit, walletAddress }) => {
   const timeoutId = useRef();
 
   useEffect(() => {
-    dispatch(initDeviceInfo());
     oClient.close();
     setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
   }, []);

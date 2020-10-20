@@ -115,7 +115,7 @@ export function* subscribeToHub() {
         throw new Error('Hub socket error');
       } else {
         const [type, payload] = result;
-        // console.log('subscribe', payload.subject);
+        console.log(type, payload);
         oChannel.put({ type, payload });
       }
     });
@@ -136,19 +136,14 @@ export function* watchHubMessages() {
   try {
     while (true) {
       const { type, payload } = yield take(oChannel);
-      // console.log('watch', payload.subject);
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge' && !!payload.body) {
-          // console.log('Login To Hub');
           yield call(loginToHub, payload.body);
         } else if (payload.subject === 'hub/message') {
-          // console.log('Receive Message');
           yield call(receiveMessage, payload);
         } else if (payload.subject === 'exchange_rates') {
-          // console.log('set Exchange Rates');
           yield put(setExchangeRates(payload.body));
         } else if (payload.subject === 'info' && /^(\d+) messages? sent$/.test(payload?.body)) {
-          // console.log('set Unread Message');
           yield put(
             setUnreadMessages(
               parseInt(/^(\d+) messages? sent$/.exec(payload.body)[1]),

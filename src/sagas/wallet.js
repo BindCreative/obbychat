@@ -31,10 +31,12 @@ import {
   selectWitnesses,
   selectAddressWif,
 } from './../selectors/wallet';
+import { initDeviceInfo } from "../actions/device";
 
 export function* initWallet({ payload }) {
   try {
     yield put(createInitialWalletStart(payload));
+    yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
