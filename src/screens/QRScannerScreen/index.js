@@ -1,21 +1,21 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar, Text, View, ActivityIndicator } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
 
 import { acceptInvitation } from './../../actions/correspondents';
 import Button from './../../components/Button';
 import styles from './styles';
+import { colors } from './../../constants';
 
 class QRScannerScreen extends React.Component {
   constructor(props) {
     super(props);
     this.handleBarCodeScanned = this.handleBarCodeScanned.bind(this);
     this.state = {
-      scanned: false,
+      scanned: false
     };
   }
 
@@ -48,6 +48,7 @@ class QRScannerScreen extends React.Component {
       <Fragment>
         {this.state.scanned && (
           <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.cyan.main} />
             <Text style={styles.loadingText}>Loading...</Text>
           </View>
         )}
@@ -55,16 +56,14 @@ class QRScannerScreen extends React.Component {
           containerStyle={styles.container}
           cameraStyle={styles.scanner}
           onRead={this.handleBarCodeScanned}
-          bottomContent={
-            <SafeAreaView style={styles.bottomContent}>
-              <Button
-                text='Cancel'
-                style={styles.backBtn}
-                onPress={() => this.props.navigation.pop()}
-              />
-            </SafeAreaView>
-          }
         />
+        <View style={styles.backBtnContainer}>
+          <Button
+            text='Cancel'
+            style={styles.backBtn}
+            onPress={() => this.props.navigation.pop()}
+          />
+        </View>
       </Fragment>
     );
   }

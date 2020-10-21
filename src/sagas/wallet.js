@@ -36,13 +36,13 @@ import { initDeviceInfo } from "../actions/device";
 export function* initWallet({ payload }) {
   try {
     yield put(createInitialWalletStart(payload));
-    yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);
     yield put(loadWalletHistory());
+    yield put(initDeviceInfo());
     yield put(initWalletSuccess());
   } catch (error) {
     console.log(error);

@@ -59,6 +59,9 @@ import {
   selectDeviceTempKeyData,
 } from './../selectors/device';
 
+import { loadWalletBalances } from '../actions/balances';
+import { loadWalletHistory } from '../actions/walletHistory';
+
 let heartBeatInterval = 0;
 
 let oChannel;
@@ -77,8 +80,8 @@ export function* initDeviceInfo() {
 };
 
 export function* loginToHub(challenge) {
-  const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
-  const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
+  const permanentDeviceKey = yield select(selectPermanentDeviceKeyObj());
+  const tempDeviceKeyData = yield select(selectDeviceTempKeyData());
 
   const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
   objLogin.signature = sign(
@@ -115,7 +118,7 @@ export function* subscribeToHub() {
         throw new Error('Hub socket error');
       } else {
         const [type, payload] = result;
-        console.log(type, payload);
+        console.log(type, payload.subject);
         oChannel.put({ type, payload });
       }
     });
@@ -167,7 +170,6 @@ export function* receiveMessage(message) {
   const permDeviceKey = deviceInfo.permanentDeviceKeyObj;
 
   try {
-    console.log('receiveMessage: decrypt');
     const decryptedMessage = yield call(
       decryptPackage,
       body.message.encrypted_package,
@@ -265,6 +267,8 @@ export function* receiveMessage(message) {
       );
       oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'payment_notification') {
+      yield put(loadWalletBalances());
+      yield put(loadWalletHistory());
       console.log('Payment notification', decryptedMessage);
       oClient.justsaying('hub/delete', body.message_hash);
     }
@@ -470,7 +474,8 @@ export function* sendPairingMessage({
       getDeviceMessageHashToSign(objDeviceMessage),
       myPermKeys.priv,
     );
-    yield deliverMessage(objDeviceMessage);
+    const res = yield deliverMessage(objDeviceMessage);
+    console.log('sendPairingMessage: ', res);
   } catch (e) {
     console.log('sendPairingMessage failed', JSON.stringify(e));
     throw new Error(e);
