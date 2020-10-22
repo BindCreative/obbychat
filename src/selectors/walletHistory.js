@@ -15,6 +15,7 @@ export const selectTransactions = () =>
       }
       let transactions = [];
       for (let [ij, joint] of walletHistory.history.joints.entries()) {
+        const confirmed = !!joint.ball;
         let amount = 0;
         let type;
         let toAddress = [];
@@ -49,6 +50,7 @@ export const selectTransactions = () =>
           payloadCommission: joint.unit.payload_commission,
           totalCommission:
             joint.unit.headers_commission + joint.unit.payload_commission,
+          confirmed
         });
       }
       return transactions;

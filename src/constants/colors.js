@@ -1,6 +1,7 @@
 export default {
   black: '#000000',
   white: '#ffffff',
+  red: '#ED4A43',
   cyan: {
     main: '#25C7D1',
   },

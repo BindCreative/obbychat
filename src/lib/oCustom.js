@@ -5,6 +5,8 @@ import ecdsa from 'secp256k1';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { common } from './../constants';
 
+let wasClosed = false;
+
 // Conf
 export const testnet = common.network === 'testnet';
 
@@ -15,6 +17,11 @@ export const oClient =
   common.network === 'testnet'
     ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
+
+if (!wasClosed) {
+  wasClosed = true;
+  oClient.close();
+}
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 

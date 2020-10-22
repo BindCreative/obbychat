@@ -58,9 +58,9 @@ import {
   selectPermanentDeviceKeyObj,
   selectDeviceTempKeyData,
 } from './../selectors/device';
+import { selectWalletAddress } from "../selectors/wallet";
 
-import { loadWalletBalances } from '../actions/balances';
-import { loadWalletHistory } from '../actions/walletHistory';
+import { fetchBalances, fetchWalletHistory } from "./wallet";
 
 let heartBeatInterval = 0;
 
@@ -80,8 +80,8 @@ export function* initDeviceInfo() {
 };
 
 export function* loginToHub(challenge) {
-  const permanentDeviceKey = yield select(selectPermanentDeviceKeyObj());
-  const tempDeviceKeyData = yield select(selectDeviceTempKeyData());
+  const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
+  const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
 
   const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
   objLogin.signature = sign(
@@ -125,6 +125,8 @@ export function* subscribeToHub() {
     heartBeatInterval = setInterval(() => {
       oClient.api.heartbeat();
     }, 10000);
+    const walletAddress = yield select(selectWalletAddress());
+    oClient.justsaying('light/new_address_to_watch', walletAddress);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -152,6 +154,11 @@ export function* watchHubMessages() {
               parseInt(/^(\d+) messages? sent$/.exec(payload.body)[1]),
             ),
           );
+        } else if (payload.subject === 'light/have_updates') {
+          yield call(fetchWalletHistory);
+        } else if (payload.subject === 'joint') {
+          yield call(fetchBalances);
+          yield call(fetchWalletHistory);
         }
       } else if (type === 'request') {
         console.log('UNHANDLED REQUEST FROM HUB: ', payload);
@@ -164,8 +171,7 @@ export function* watchHubMessages() {
   }
 }
 
-export function* receiveMessage(message) {
-  const { body } = message;
+export function* receiveMessage({ body }) {
   const tempDeviceKey = deviceInfo.deviceTempKeyData;
   const permDeviceKey = deviceInfo.permanentDeviceKeyObj;
 
@@ -179,7 +185,6 @@ export function* receiveMessage(message) {
 
     if (decryptedMessage.subject === 'removed_paired_device') {
       yield put(correspondentRemovedDevice({ address: decryptedMessage.from }));
-      oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'pairing') {
       console.log('Pairing');
       const existingCorrespondent = yield select(
@@ -208,7 +213,6 @@ export function* receiveMessage(message) {
           pairingSecret: correspondent.pairingSecret,
           recipientPubKey: body.message.pubkey,
         });
-        oClient.justsaying('hub/delete', body.message_hash);
       } else if (!existingCorrespondent && reversePairingSecret) {
         console.log('I send pairing confirmation');
         // I send pairing confirmation
@@ -228,7 +232,6 @@ export function* receiveMessage(message) {
           pairingSecret: reversePairingSecret,
           recipientPubKey: body.message.pubkey,
         });
-        oClient.justsaying('hub/delete', body.message_hash);
       } else if (
         !reversePairingSecret &&
         existingCorrespondent?.reversePairingSecret ===
@@ -243,7 +246,6 @@ export function* receiveMessage(message) {
           }),
         );
       }
-      oClient.justsaying('hub/delete', body.message_hash);
       const correspondent = yield select(
         selectCorrespondent(decryptedMessage.from),
       );
@@ -265,20 +267,16 @@ export function* receiveMessage(message) {
           timestamp: Date.now(),
         }),
       );
-      oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'payment_notification') {
-      yield put(loadWalletBalances());
-      yield put(loadWalletHistory());
       console.log('Payment notification', decryptedMessage);
-      oClient.justsaying('hub/delete', body.message_hash);
     }
   } catch (error) {
     console.log('MESSAGE PARSING ERROR:', {
       error,
-      message: message.body.message,
+      message: body.message,
     });
-    oClient.justsaying('hub/delete', message.body.message_hash);
   }
+  oClient.justsaying('hub/delete', body.message_hash);
 }
 
 export function* sendMessage(action) {

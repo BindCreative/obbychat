@@ -8,7 +8,10 @@ export default StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 10,
+    padding: 10
+  },
+  scrollContent: {
+    flex: 1
   },
   amountBlock: {
     paddingTop: 40,
@@ -47,7 +50,6 @@ export default StyleSheet.create({
   },
   infoRowLabel: {
     flex: 1,
-    width: 100,
     color: colors.grey.main,
     fontFamily: 'Agenda-Light',
     fontSize: 16,
@@ -63,4 +65,20 @@ export default StyleSheet.create({
   infoRowValueHL: {
     color: colors.cyan.main,
   },
+  confirmationText: {
+    marginLeft: 30,
+    fontFamily: 'Agenda-Medium',
+    color: colors.white,
+    fontSize: 14,
+    lineHeight: 16,
+    padding: 2,
+    borderRadius: 2,
+    textAlign: 'right'
+  },
+  confirmedText: {
+    backgroundColor: colors.cyan.main
+  },
+  unConfirmedText: {
+    backgroundColor: colors.red
+  }
 });

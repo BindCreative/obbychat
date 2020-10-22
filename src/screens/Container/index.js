@@ -24,7 +24,6 @@ const App = ({ walletInit, walletAddress }) => {
   const timeoutId = useRef();
 
   useEffect(() => {
-    oClient.close();
     setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
   }, []);
 
