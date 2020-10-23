@@ -18,9 +18,10 @@ export const parseTextMessage = originalText => {
       type = 'WALLET_ADDRESS';
       return address;
     })
-    .replace(REG_REQUEST_PAYMENT, (str, payload, address, params) => {
+    .replace(REG_REQUEST_PAYMENT, (str, payload, address, amount) => {
       type = 'REQUEST_PAYMENT';
-      return `Payment request: ${params}\n${address}`;
+      params = { amount, address };
+      return `Payment request: ${amount}\n${address}`;
     })
     .replace(REG_TEXTCOINT, str => {
       type = 'TEXTCOINT';

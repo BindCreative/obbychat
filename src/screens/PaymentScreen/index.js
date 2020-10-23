@@ -51,16 +51,22 @@ class PaymentScreen extends React.Component {
       secondaryUnit: 'USD',
       primaryValue: 0,
       secondaryValue: 0,
+      disabledInputs: false
     };
   }
 
   componentDidMount() {
     if (_.get(this.props, 'navigation.state.params.walletAddress', false)) {
       this.props.navigation.setParams({ title: 'Enter amount' });
+      const amount = this.props.navigation.state.params.amount;
       this.setState({
         address: this.props.navigation.state.params.walletAddress,
-        step: 2,
+        step: 2
       });
+      if (amount) {
+        this.changePrimaryUnit('BYTE')
+          .then(() => this.changeValue(amount, 'primary'));
+      }
     } else {
       this.props.navigation.setParams({ title: 'Enter address' });
     }

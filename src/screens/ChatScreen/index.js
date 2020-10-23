@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useMemo } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, Text, Clipboard, Alert, View } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -20,39 +20,37 @@ import { selectCorrespondentWalletAddress } from '../../selectors/messages';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
 
-class ChatScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onSend = this.onSend.bind(this);
-    this.renderText = this.renderText.bind(this);
-    this.onLoadEarlier = this.onLoadEarlier.bind(this);
-    this.renderChat = this.renderChat.bind(this);
-    this.state = {
-      keyboardVisible: false,
-    };
-  }
+const ChatScreen = ({
+  myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute
+}) => {
+  const dispatch = useDispatch();
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-  onSend(messages = []) {
+  const onRemoveCorespondent = data => dispatch(removeCorrespondent(data));
+  const onRemoveMessage = data => dispatch(removeMessage(data));
+  const onClearChatHistory = data => dispatch(clearChatHistory(data));
+
+  const onSend = (messages = []) => {
     if (messages) {
       const { address, pubKey } = _.get(
-        this.props.navigation,
+        navigation,
         'state.params.correspondent',
       );
-      this.props.addMessageStart({
+      dispatch(addMessageStart({
         address,
         pubKey,
         type: 'text',
         message: messages[0].text,
-      });
+      }));
     }
-  }
+  };
 
-  onLoadEarlier() {
+  const onLoadEarlier = () => {
     // TODO: make pagination from reducer
-  }
+  };
 
-  renderText(props) {
-    const { text, user } = props.currentMessage;
+  const renderText = ({ currentMessage }) => {
+    const { text, user } = currentMessage;
     const { parsedText, type, params } = parseTextMessage(text);
     let style = { ...styles.textMessage };
     let pressAction = () => {};
@@ -64,22 +62,44 @@ class ChatScreen extends React.Component {
     if (user._id === 1) {
       style = { ...style, ...styles.textMessageSent };
     } else {
-      if (type === 'SIGN_MESSAGE_REQUEST') {
-        pressAction = () => {
-          Alert.alert('Do you want to sign this message?', '', [
-            { text: 'No', style: 'cancel' },
-            {
-              text: 'Yes',
-              onPress: () => {
-                const signedMessage = signMessage(
-                  params.messageToSign,
-                  this.props.myWalletAddress,
-                );
-                this.onSend([{ text: signedMessage }]);
+      switch (type) {
+        case 'SIGN_MESSAGE_REQUEST': {
+          pressAction = () => {
+            Alert.alert('Do you want to sign this message?', '', [
+              { text: 'No', style: 'cancel' },
+              {
+                text: 'Yes',
+                onPress: () => {
+                  const signedMessage = signMessage(
+                    params.messageToSign,
+                    myWalletAddress,
+                  );
+                  onSend([{ text: signedMessage }]);
+                },
               },
-            },
-          ]);
-        };
+            ]);
+          };
+          break;
+        }
+        case 'REQUEST_PAYMENT': {
+          const { amount, address } = params;
+          const { name } = user;
+          const paymentAmount = +amount.split("=")[1];
+          pressAction = () => {
+            Alert.alert(`Do you want to pay ${paymentAmount} bytes to ${name}?`, '', [
+              { text: 'No', style: 'cancel' },
+              {
+                text: 'Yes',
+                onPress: () => {
+                  navigation.navigate('MakePayment', {
+                    walletAddress: address,
+                    amount: paymentAmount
+                  });
+                }
+              }
+            ])
+          }
+        }
       }
     }
 
@@ -87,9 +107,7 @@ class ChatScreen extends React.Component {
       return (
         <TouchableOpacity
           onPress={pressAction}
-          onLongPress={() => {
-            Clipboard.setString(parsedText);
-          }}
+          onLongPress={() => Clipboard.setString(parsedText)}
         >
           <Text style={style}>{parsedText}</Text>
         </TouchableOpacity>
@@ -98,77 +116,66 @@ class ChatScreen extends React.Component {
       return (
         <Text
           style={style}
-          onLongPress={() => {
-            Clipboard.setString(parsedText);
-          }}
+          onLongPress={() => Clipboard.setString(parsedText)}
         >
           {parsedText}
         </Text>
       );
     }
-  }
+  };
 
-  chatLoading() {
-    return (
-      <View style={styles.chatLoader}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+  const chatLoading = () => (
+    <View style={styles.chatLoader}>
+      <Text>Loading...</Text>
+    </View>
+  );
 
-  renderChat() {
-    const { messages } = this.props;
-    return (
+  const correspondent = useMemo(
+    () => _.get(navigation, 'state.params.correspondent'),
+    [navigation]
+  );
+
+  return (
+    <SafeAreaView
+      style={styles.container}
+      forceInset={{ top: 'always', bottom: 'always' }}
+    >
+      <Header
+        hasBackButton
+        hasBorder
+        backRoute={backRoute}
+        size='compact'
+        titlePosition='left'
+        title={correspondent.name}
+        navigation={navigation}
+        right={
+          <ActionsBar
+            navigation={navigation}
+            myWalletAddress={myWalletAddress}
+            clearChatHistory={onClearChatHistory}
+            removeCorrespondent={onRemoveCorespondent}
+            onSend={onSend}
+            correspondentWalletAddress={correspondentWalletAddress}
+            correspondentAddress={correspondent.address}
+          />
+        }
+      />
       <GiftedChat
         scrollToBottom
         bottomOffset={0}
         style={styles.chatArea}
         renderAvatar={null}
-        renderMessageText={this.renderText}
-        renderLoading={this.chatLoading}
+        renderMessageText={renderText}
+        renderLoading={chatLoading}
         showUserAvatar={false}
         messages={messages}
-        onSend={messagesArr => this.onSend(messagesArr)}
-        onLoadEarlier={this.onLoadEarlier}
-        user={{
-          _id: 1,
-        }}
+        onSend={onSend}
+        onLoadEarlier={onLoadEarlier}
+        user={{ _id: 1 }}
       />
-    );
-  }
-
-  render() {
-    const { navigation, backRoute } = this.props;
-    const correspondent = _.get(navigation, 'state.params.correspondent');
-
-    return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{ top: 'always', bottom: 'always' }}
-      >
-        <Header
-          hasBackButton
-          hasBorder
-          backRoute={backRoute}
-          size='compact'
-          titlePosition='left'
-          title={correspondent.name}
-          right={
-            <ActionsBar
-              {...this.props}
-              removeCorrespondent={this.props.removeCorrespondent}
-              onSend={this.onSend}
-              correspondentWalletAddress={this.props.correspondentWalletAddress}
-              correspondentAddress={correspondent.address}
-            />
-          }
-          navigation={navigation}
-        />
-        {this.renderChat()}
-      </SafeAreaView>
-    );
-  }
-}
+    </SafeAreaView>
+  );
+};
 
 const mapStateToProps = (state, props) =>
   createStructuredSelector({
@@ -181,12 +188,4 @@ const mapStateToProps = (state, props) =>
     }),
   });
 
-const mapDispatchToProps = dispatch => ({
-  addMessageStart: payload => dispatch(addMessageStart(payload)),
-  removeMessage: payload => dispatch(removeMessage(payload)),
-  removeCorrespondent: address => dispatch(removeCorrespondent({ address })),
-  clearChatHistory: address => dispatch(clearChatHistory({ address })),
-});
-
-ChatScreen = connect(mapStateToProps, mapDispatchToProps)(ChatScreen);
-export default ChatScreen;
+export default connect(mapStateToProps, null)(ChatScreen);

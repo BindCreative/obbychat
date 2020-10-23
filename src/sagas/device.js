@@ -32,6 +32,7 @@ import {
   getDeviceAddress,
 } from './../lib/oCustom';
 import { setToastMessage } from './../actions/app';
+import { updateWalletData } from "../actions/balances";
 import {
   addCorrespondent,
   removeCorrespondent,
@@ -59,8 +60,6 @@ import {
   selectDeviceTempKeyData,
 } from './../selectors/device';
 import { selectWalletAddress } from "../selectors/wallet";
-
-import { fetchBalances, fetchWalletHistory } from "./wallet";
 
 let heartBeatInterval = 0;
 
@@ -125,8 +124,8 @@ export function* subscribeToHub() {
     heartBeatInterval = setInterval(() => {
       oClient.api.heartbeat();
     }, 10000);
-    const walletAddress = yield select(selectWalletAddress());
-    oClient.justsaying('light/new_address_to_watch', walletAddress);
+    // const walletAddress = yield select(selectWalletAddress());
+    // oClient.justsaying('light/new_address_to_watch', walletAddress);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -154,11 +153,8 @@ export function* watchHubMessages() {
               parseInt(/^(\d+) messages? sent$/.exec(payload.body)[1]),
             ),
           );
-        } else if (payload.subject === 'light/have_updates') {
-          yield call(fetchWalletHistory);
-        } else if (payload.subject === 'joint') {
-          yield call(fetchBalances);
-          yield call(fetchWalletHistory);
+        } else if (payload.subject === 'light/have_updates' || payload.subject === 'joint') {
+          yield put(updateWalletData());
         }
       } else if (type === 'request') {
         console.log('UNHANDLED REQUEST FROM HUB: ', payload);
@@ -269,6 +265,9 @@ export function* receiveMessage({ body }) {
       );
     } else if (decryptedMessage.subject === 'payment_notification') {
       console.log('Payment notification', decryptedMessage);
+      // const { joint } = yield call(oClient.api.getJoint, decryptedMessage.body);
+      // const { unit } = joint;
+      // console.log(unit);
     }
   } catch (error) {
     console.log('MESSAGE PARSING ERROR:', {

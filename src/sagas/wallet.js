@@ -120,7 +120,7 @@ export function* createInitialWallet({ payload }) {
   }
 }
 
-export function* fetchBalances() {
+export function* fetchBalances(action) {
   const walletAddress = yield select(selectWalletAddress());
   if (walletAddress) {
     try {
@@ -218,6 +218,12 @@ export function* sendPayment(action) {
   }
 }
 
+export function* updateWalletData() {
+  const address = yield select(selectWalletAddress());
+  yield call(fetchBalances, { address });
+  yield call(fetchWalletHistory, { address });
+}
+
 export default function* watch() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(
@@ -227,4 +233,5 @@ export default function* watch() {
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
   yield takeLatest(actionTypes.WALLET_HISTORY_GET_START, fetchWalletHistory);
   yield takeLatest(actionTypes.PAYMENT_SEND_START, sendPayment);
+  yield takeLatest(actionTypes.UPDATE_WALLET_DATA, updateWalletData)
 }
