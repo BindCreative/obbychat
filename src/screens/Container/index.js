@@ -15,6 +15,8 @@ import { stopSubscribeToHub } from "../../sagas/device";
 
 import { selectWalletInit, selectWalletInitAddress } from "../../selectors/wallet";
 
+const prefix = 'obbyChat://';
+
 const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
 
@@ -30,7 +32,7 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       if (walletInit) {
-        timeoutId.current = setTimeout(() => setAppReady(true), 4000);
+        timeoutId.current = setTimeout(() => setAppReady(true), 1000);
       } else {
         clearTimeout(timeoutId.current);
       }
@@ -73,14 +75,19 @@ const App = ({ walletInit, walletAddress }) => {
 
   return (
     <SafeAreaProvider>
-      {(!appReady || appHidden) && <LoadingScreen />}
       {/*{!appReady && <LoadingScreen messages={['Starting up']} />}*/}
       <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
-      <Navigator
-        ref={navigatorRef => {
-          NavigationService.setTopLevelNavigator(navigatorRef);
-        }}
-      />
+      {(!appReady || appHidden)
+        ? <LoadingScreen />
+        : (
+          <Navigator
+            ref={navigatorRef => {
+              NavigationService.setTopLevelNavigator(navigatorRef);
+            }}
+            uriPrefix={prefix}
+          />
+        )
+      }
     </SafeAreaProvider>
   );
 };

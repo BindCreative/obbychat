@@ -1,18 +1,19 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList, InteractionManager, Image } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image, Linking } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
 import { List, ListItem, Left, Right, Body, Text } from 'native-base';
 import Dialog from 'react-native-dialog';
 
-import { setCorrespondentName } from '../../actions/correspondents';
+import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
 import { selectCorrespondents } from '../../selectors/messages';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
+import LoadingModal from '../../components/LoadingModal';
 
 class ChatListScreen extends React.Component {
   constructor(props) {
@@ -25,13 +26,34 @@ class ChatListScreen extends React.Component {
         visible: false,
         correspondent: {},
       },
-      initialized: false
+      initialized: false,
+      invitationFetching: false
     };
   }
+
+  runAcceptInvitation = async (data) => {
+    debugger;
+    this.setState({ invitationFetching: true });
+    await this.props.acceptInvitation(data);
+    this.setState({ invitationFetching: false });
+  };
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.setState({ initialized: true });
+    });
+    const { navigation } = this.props;
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        const regex = /[?&]([^=#]+)=([^&#]*)/g;
+        const params = {};
+        let match;
+        while (match = regex.exec(url)) {
+          params[match[1]] = match[2];
+        }
+        const { address } = params;
+        // this.runAcceptInvitation(address);
+      }
     });
   }
 
@@ -91,13 +113,14 @@ class ChatListScreen extends React.Component {
 
   render() {
     const { correspondents } = this.props;
-    const { changeNameDialog, initialized } = this.state;
+    const { changeNameDialog, initialized, invitationFetching } = this.state;
 
     return (
       <SafeAreaView
         style={styles.container}
         forceInset={{ top: 'always', bottom: 'always' }}
       >
+        {invitationFetching && <LoadingModal />}
         <Header
           {...this.props}
           title='Chat'
@@ -158,8 +181,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setCorrespondentName: ({ name, address }) =>
-    dispatch(setCorrespondentName({ address, name })),
+  setCorrespondentName: ({ name, address }) => dispatch(setCorrespondentName({ address, name })),
+  acceptInvitation: data => dispatch(acceptInvitation({ data }))
 });
 
 ChatListScreen = connect(mapStateToProps, mapDispatchToProps)(ChatListScreen);

@@ -72,6 +72,12 @@ class PaymentScreen extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.navigation.state.params !== this.props.navigation.state.params) {
+      console.log(this.props.navigation.state.params);
+    }
+  }
+
   changeValue(value, type) {
     if (isNaN(value) || !['primary', 'secondary'].includes(type)) {
       return;

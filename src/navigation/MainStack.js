@@ -12,6 +12,7 @@ import { colors } from '../constants';
 const MainStack = createBottomTabNavigator(
   {
     ChatStack: {
+      path: 'chat/:pairingId',
       screen: ChatListScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (
@@ -20,6 +21,7 @@ const MainStack = createBottomTabNavigator(
       },
     },
     WalletStack: {
+      path: 'wallet',
       screen: WalletScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (
@@ -28,6 +30,7 @@ const MainStack = createBottomTabNavigator(
       },
     },
     SettingsStack: {
+      path: 'settings',
       screen: SettingsScreen,
       navigationOptions: {
         tabBarIcon: ({ focused, tintColor }) => (

@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 import { acceptInvitation } from './../../actions/correspondents';
 import Button from './../../components/Button';
+import LoadingModal from '../../components/LoadingModal';
 import styles from './styles';
 import { colors } from './../../constants';
 
@@ -47,10 +48,7 @@ class QRScannerScreen extends React.Component {
     return (
       <Fragment>
         {this.state.scanned && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.cyan.main} />
-            <Text style={styles.loadingText}>Loading...</Text>
-          </View>
+          <LoadingModal />
         )}
         <QRCodeScanner
           containerStyle={styles.container}

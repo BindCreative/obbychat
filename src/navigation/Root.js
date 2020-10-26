@@ -14,31 +14,28 @@ const RootNav = createStackNavigator(
   {
     MainStack: {
       screen: MainStack,
+      path: ''
     },
     Chat: {
       screen: props => <ChatScreen {...props} />,
-      path: '/chat/contact',
+      path: 'chat/contact',
     },
     QrScanner: {
-      screen: props => (
-        <QRScannerScreen
-          {...props}
-        />
-      ),
-      path: '/grScanner'
+      screen: props => <QRScannerScreen {...props} />,
+      path: 'grScanner'
     },
     QrCode: {
-      screen: (props, compProps) => (
-        <QRCodeScreen
-          {...props}
-          {...compProps}
-        />
-      ),
-      path: '/qrCode'
+      screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} />,
+      path: 'qrCode'
     },
     MakePayment: {
-      screen: props => <PaymentScreen {...props} method={Methods.SEND} />,
-      path: '/wallet/make-payment',
+      screen: props => (
+        <PaymentScreen
+          {...props}
+          method={Methods.SEND}
+        />
+      ),
+      path: 'wallet/make-payment/:address/:amount',
       navigationOptions: ({ navigation }) => ({
         tabBarIcon: null,
         tabBarVisible: false,
@@ -46,7 +43,7 @@ const RootNav = createStackNavigator(
     },
     RequestPayment: {
       screen: props => <PaymentScreen {...props} method={Methods.REQUEST} />,
-      path: '/wallet/request-payment',
+      path: 'wallet/request-payment',
       navigationOptions: {
         tabBarIcon: null,
         tabBarVisible: false,
@@ -54,7 +51,7 @@ const RootNav = createStackNavigator(
     },
     SeedWords: {
       screen: props => <SeedWordsScreen {...props} />,
-      path: '/settings/seed-words',
+      path: 'settings/seed-words',
       navigationOptions: {
         headerShown: false,
         tabBarIcon: null,
@@ -63,7 +60,7 @@ const RootNav = createStackNavigator(
     },
     TransactionInfo: {
       screen: props => <TransactionInfoScreen {...props} />,
-      path: '/wallet/transaction',
+      path: 'wallet/transaction',
       navigationOptions: {
         tabBarIcon: null,
         tabBarVisible: false,
