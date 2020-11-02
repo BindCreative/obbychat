@@ -35,7 +35,7 @@ const RootNav = createStackNavigator(
           method={Methods.SEND}
         />
       ),
-      path: 'wallet/make-payment/:address/:amount',
+      path: 'wallet/make-payment',
       navigationOptions: ({ navigation }) => ({
         tabBarIcon: null,
         tabBarVisible: false,

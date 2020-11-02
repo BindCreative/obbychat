@@ -10,7 +10,6 @@ import AddContactIcon from './../../assets/images/icon-person-add.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
 import styles from './styles';
-import QRCodeScreen from "../../navigation/Root";
 
 class ActionsBar extends React.Component {
   constructor(props) {

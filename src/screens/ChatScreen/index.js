@@ -26,7 +26,7 @@ const ChatScreen = ({
   const dispatch = useDispatch();
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-  const onRemoveCorespondent = data => dispatch(removeCorrespondent(data));
+  const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onRemoveMessage = data => dispatch(removeMessage(data));
   const onClearChatHistory = data => dispatch(clearChatHistory(data));
 
@@ -83,36 +83,32 @@ const ChatScreen = ({
         }
         case 'REQUEST_PAYMENT': {
           const { amount, address } = params;
-          const { name } = user;
           const paymentAmount = +amount.split("=")[1];
           pressAction = () => {
-            Alert.alert(`Do you want to pay ${paymentAmount} bytes to ${name}?`, '', [
-              { text: 'No', style: 'cancel' },
-              {
-                text: 'Yes',
-                onPress: () => {
-                  navigation.navigate('MakePayment', {
-                    walletAddress: address,
-                    amount: paymentAmount
-                  });
-                }
-              }
-            ])
+            navigation.navigate('MakePayment', {
+              walletAddress: address,
+              amount: paymentAmount
+            });
+          };
+          break;
+        }
+        case "WALLET_ADDRESS": {
+          if (user._id !== 1) {
+            const { address } = params;
+            pressAction = () => {
+              navigation.navigate('MakePayment', {
+                walletAddress: address
+              });
+            };
           }
+          break;
         }
       }
     }
 
-    if (type) {
-      return (
-        <TouchableOpacity
-          onPress={pressAction}
-          onLongPress={() => Clipboard.setString(parsedText)}
-        >
-          <Text style={style}>{parsedText}</Text>
-        </TouchableOpacity>
-      );
-    } else {
+    if (!type
+      || (type === 'WALLET_ADDRESS' && user._id ===1)
+    ) {
       return (
         <Text
           style={style}
@@ -120,6 +116,15 @@ const ChatScreen = ({
         >
           {parsedText}
         </Text>
+      );
+    } else {
+      return (
+        <TouchableOpacity
+          onPress={pressAction}
+          onLongPress={() => Clipboard.setString(parsedText)}
+        >
+          <Text style={style}>{parsedText}</Text>
+        </TouchableOpacity>
       );
     }
   };

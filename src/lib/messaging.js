@@ -16,6 +16,7 @@ export const parseTextMessage = originalText => {
   const parsedText = originalText
     .replace(REG_WALLET_ADDRESS, (str, address) => {
       type = 'WALLET_ADDRESS';
+      params = { address };
       return address;
     })
     .replace(REG_REQUEST_PAYMENT, (str, payload, address, amount) => {

@@ -42,6 +42,11 @@ export const selectCorrespondent = address =>
     return state.correspondents[address];
   });
 
+export const selectCorrespondentFetching = () =>
+  createSelector(getMessagesState, state => {
+    return state.addFetching;
+  });
+
 export const selectCorrespondentByPairingSecret = pairingSecret =>
   createSelector(getMessagesState, state => {
     for (let key in state.correspondents) {

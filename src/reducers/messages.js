@@ -5,6 +5,7 @@ import { actionTypes } from './../constants';
 const initialState = {
   correspondents: {},
   unreadMessages: 0,
+  addFetching: false
 };
 
 function reducer(state = initialState, action) {
@@ -16,6 +17,18 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         ...action.payload,
+      };
+
+    case actionTypes.CORRESPONDENT_INVITATION_ACCEPT:
+      return {
+        ...state,
+        addFetching: true
+      };
+
+    case actionTypes.CORRESPONDENT_DEVICE_ADD_FAIL:
+      return {
+        ...state,
+        addFetching: false
       };
 
     case actionTypes.MESSAGE_ADD_TEMP:
@@ -146,6 +159,7 @@ function reducer(state = initialState, action) {
               state.correspondents[action.payload.address]?.messages ?? [],
           },
         },
+        addFetching: false
       };
 
     case actionTypes.CORRESPONDENT_DEVICE_REMOVE:

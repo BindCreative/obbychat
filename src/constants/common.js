@@ -30,4 +30,13 @@ Common.UNITS = {
   },
 };
 
+Common.HASH_LENGTH = 44;
+
+Common.urlTypes = {
+  emptyRun: 'emptyRun',
+  error: 'error',
+  pairing: 'pairing',
+  payment: 'payment'
+};
+
 export default Common;

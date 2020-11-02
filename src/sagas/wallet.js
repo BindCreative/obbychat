@@ -197,9 +197,6 @@ export function* sendPayment(action) {
     };
 
     yield call(oClient.post.payment, params, addressWif);
-    yield call(fetchBalances, action);
-    yield call(fetchWalletHistory, action);
-    yield call(NavigationService.navigate, 'Wallet');
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
@@ -207,6 +204,9 @@ export function* sendPayment(action) {
         message: 'Transaction completed',
       }),
     );
+    yield call(fetchBalances, action);
+    yield call(fetchWalletHistory, action);
+    yield call(NavigationService.navigate, 'Wallet');
   } catch (error) {
     yield put(sendPaymentFail());
     yield put(

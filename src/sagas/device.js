@@ -39,6 +39,7 @@ import {
   correspondentRemovedDevice,
   updateCorrespondentWalletAddress,
   setCorrespondentName,
+  addCorrespondentFail
 } from '../actions/correspondents';
 import {
   addMessageSuccess,
@@ -124,8 +125,8 @@ export function* subscribeToHub() {
     heartBeatInterval = setInterval(() => {
       oClient.api.heartbeat();
     }, 10000);
-    // const walletAddress = yield select(selectWalletAddress());
-    // oClient.justsaying('light/new_address_to_watch', walletAddress);
+    const walletAddress = yield select(selectWalletAddress());
+    oClient.justsaying('light/new_address_to_watch', walletAddress);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -137,7 +138,7 @@ export function* subscribeToHub() {
 }
 
 export function* watchHubMessages() {
-  try {
+  // try {
     while (true) {
       const { type, payload } = yield take(oChannel);
       if (type === 'justsaying') {
@@ -162,9 +163,9 @@ export function* watchHubMessages() {
         console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
       }
     }
-  } catch (error) {
-    console.log('UNHANDLED HUB MESSAGE ERROR', error);
-  }
+  // } catch (error) {
+  //   console.log('UNHANDLED HUB MESSAGE ERROR', error);
+  // }
 }
 
 export function* receiveMessage({ body }) {
@@ -249,6 +250,8 @@ export function* receiveMessage({ body }) {
         console.error("Can't finish pairing, correspondent not stored");
       }
     } else if (decryptedMessage.subject === 'text') {
+      const endSpace = /\s$/;
+      decryptedMessage.body = decryptedMessage.body.replace(endSpace, '');
       // Check if signed message with wallet address info
       yield call(checkForSigning, decryptedMessage);
       // Persist the message
@@ -350,23 +353,32 @@ export function* handleReceivedMessage(action) {
 
 export function* acceptInvitation(action) {
   try {
-    let cDeviceAddress, cPubKey, cHub, pairingSecret;
     const { data } = action.payload;
-    data.replace(
-      REGEX_PAIRING,
-      (
-        str,
-        protocol,
-        correspondentPubKey,
-        correspondentHub,
-        correspondentPairingSecret,
-      ) => {
-        cDeviceAddress = getDeviceAddress(correspondentPubKey);
-        cPubKey = correspondentPubKey;
-        cHub = correspondentHub;
-        pairingSecret = correspondentPairingSecret;
-      },
-    );
+    let cDeviceAddress, cPubKey, cHub, pairingSecret;
+
+    if (typeof data === 'string') {
+      data.replace(
+        REGEX_PAIRING,
+        (
+          str,
+          protocol,
+          correspondentPubKey,
+          correspondentHub,
+          correspondentPairingSecret,
+        ) => {
+          cDeviceAddress = getDeviceAddress(correspondentPubKey);
+          cPubKey = correspondentPubKey;
+          cHub = correspondentHub;
+          pairingSecret = correspondentPairingSecret;
+        },
+      );
+    } else {
+      const { pubkey, hub, pairing_secret } = data;
+      cDeviceAddress = getDeviceAddress(pubkey);
+      cPubKey = pubkey;
+      cHub = hub;
+      pairingSecret = pairing_secret;
+    }
 
     if (cDeviceAddress) {
       const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
@@ -391,6 +403,7 @@ export function* acceptInvitation(action) {
       yield call(NavigationService.navigate, 'ChatStack');
     } else {
       yield call(NavigationService.navigate, 'ChatStack');
+      yield put(addCorrespondentFail());
       yield put(
         setToastMessage({
           type: 'ERROR',
@@ -400,13 +413,13 @@ export function* acceptInvitation(action) {
     }
   } catch(e) {
     yield call(NavigationService.navigate, 'ChatStack');
+    yield put(addCorrespondentFail());
     yield put(
       setToastMessage({
         type: 'ERROR',
         message: 'Unable to accept invitation',
       })
     );
-    console.log(JSON.stringify((e)));
   }
 }
 

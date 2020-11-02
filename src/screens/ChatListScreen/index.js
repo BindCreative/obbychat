@@ -8,8 +8,10 @@ import SafeAreaView from 'react-native-safe-area-view';
 import { List, ListItem, Left, Right, Body, Text } from 'native-base';
 import Dialog from 'react-native-dialog';
 
+import common from '../../constants/common';
+
 import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
-import { selectCorrespondents } from '../../selectors/messages';
+import { selectCorrespondents, selectCorrespondentFetching } from '../../selectors/messages';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
@@ -18,46 +20,34 @@ import LoadingModal from '../../components/LoadingModal';
 class ChatListScreen extends React.Component {
   constructor(props) {
     super(props);
-
-    this.changeContactName = this.changeContactName.bind(this);
-    this.renderItem = this.renderItem.bind(this);
     this.state = {
       changeNameDialog: {
         visible: false,
         correspondent: {},
       },
-      initialized: false,
-      invitationFetching: false
+      initialized: false
     };
   }
-
-  runAcceptInvitation = async (data) => {
-    debugger;
-    this.setState({ invitationFetching: true });
-    await this.props.acceptInvitation(data);
-    this.setState({ invitationFetching: false });
-  };
 
   componentDidMount() {
     InteractionManager.runAfterInteractions(() => {
       this.setState({ initialized: true });
     });
-    const { navigation } = this.props;
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        const regex = /[?&]([^=#]+)=([^&#]*)/g;
-        const params = {};
-        let match;
-        while (match = regex.exec(url)) {
-          params[match[1]] = match[2];
-        }
-        const { address } = params;
-        // this.runAcceptInvitation(address);
-      }
-    });
   }
 
-  changeContactName(e) {
+  componentDidUpdate(prevProps): void {
+    const { navigation } = this.props;
+    if (
+      navigation.state.params
+      && !prevProps.navigation.state.params
+      && navigation.state.params.type
+      && navigation.state.params.type === common.urlTypes.pairing
+    ) {
+      this.props.acceptInvitation(navigation.state.params);
+    }
+  }
+
+  changeContactName = (e) => {
     const { name, address } = this.state.changeNameDialog.correspondent;
     this.props.setCorrespondentName({ name, address });
     this.setState({
@@ -66,9 +56,9 @@ class ChatListScreen extends React.Component {
         correspondent: {},
       },
     });
-  }
+  };
 
-  renderItem(data) {
+  renderItem = (data) => {
     const { item: correspondent } = data;
 
     return (
@@ -109,18 +99,18 @@ class ChatListScreen extends React.Component {
         </Right>
       </ListItem>
     );
-  }
+  };
 
   render() {
-    const { correspondents } = this.props;
-    const { changeNameDialog, initialized, invitationFetching } = this.state;
+    const { correspondents, correspondentFetching } = this.props;
+    const { changeNameDialog, initialized } = this.state;
 
     return (
       <SafeAreaView
         style={styles.container}
         forceInset={{ top: 'always', bottom: 'always' }}
       >
-        {invitationFetching && <LoadingModal />}
+        {/*{correspondentFetching && <LoadingModal />}*/}
         <Header
           {...this.props}
           title='Chat'
@@ -178,6 +168,7 @@ class ChatListScreen extends React.Component {
 }
 const mapStateToProps = createStructuredSelector({
   correspondents: selectCorrespondents(),
+  correspondentFetching: selectCorrespondentFetching()
 });
 
 const mapDispatchToProps = dispatch => ({

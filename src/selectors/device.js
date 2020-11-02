@@ -41,10 +41,10 @@ export const selectDevicePubKey = () =>
 export const selectPermanentDeviceKeyObj = () =>
   createSelector(
     selectDevicePrivKey(),
-    selectDevicePubKey(),
-    (priv, pubB64) => {
-      return { priv, pubB64 };
-    },
+    (priv) => ({
+      priv,
+      pubB64: publicKeyCreate(Buffer.from(priv), true).toString('base64')
+    })
   );
 
 export const selectDeviceTempKeyData = () =>
