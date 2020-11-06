@@ -8,6 +8,8 @@ const initialState = {
   addFetching: false
 };
 
+const isMessageExist = (list, message) => list.some(({ hash }) => hash === message.messageHash);
+
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
@@ -103,28 +105,34 @@ function reducer(state = initialState, action) {
         },
       };
 
-    case actionTypes.MESSAGE_RECEIVE_SUCCESS:
-      return {
-        ...state,
-        correspondents: {
-          ...state.correspondents,
-          [action.payload.address]: {
-            ...state.correspondents[action.payload.address],
-            messages: [
-              ...state.correspondents[action.payload.address].messages,
-              {
-                _id: action.payload.id,
-                type: action.payload.messageType,
-                message: action.payload.message,
-                hash: action.payload.messageHash,
-                handleAs: action.payload.handleAs,
-                timestamp: action.payload.timestamp,
-                pending: false,
-              },
-            ],
+    case actionTypes.MESSAGE_RECEIVE_SUCCESS: {
+      if (isMessageExist(state.correspondents[action.payload.address].messages, action.payload)) {
+        console.log('message not unique: ', action.payload);
+        return state;
+      } else {
+        return {
+          ...state,
+          correspondents: {
+            ...state.correspondents,
+            [action.payload.address]: {
+              ...state.correspondents[action.payload.address],
+              messages: [
+                ...state.correspondents[action.payload.address].messages,
+                {
+                  _id: action.payload.id,
+                  type: action.payload.messageType,
+                  message: action.payload.message,
+                  hash: action.payload.messageHash,
+                  handleAs: action.payload.handleAs,
+                  timestamp: action.payload.timestamp,
+                  pending: false,
+                },
+              ],
+            },
           },
-        },
-      };
+        };
+      }
+    }
 
     case actionTypes.MESSAGE_REMOVE:
       return {

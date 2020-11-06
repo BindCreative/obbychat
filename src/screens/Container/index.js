@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
-import { AppState, StatusBar, InteractionManager, Platform, Linking } from 'react-native';
+import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
 
 import common from '../../constants/common';
+import { oClient } from '../../lib/oCustom';
 
 import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
@@ -19,6 +21,20 @@ import parseUrl from '../../lib/parseUrl';
 import { selectWalletInit, selectWalletInitAddress } from "../../selectors/wallet";
 
 const prefix = 'obyte-tn:|obyte';
+
+setJSExceptionHandler((error, isFatal) => {
+  if (error) {
+    console.log('caught global error');
+    Alert.alert(
+      "Unexpected error occurred",
+      `
+    Error: ${isFatal ? "Fatal" : ""}
+    ${error.name}
+    ${error.message}
+    `
+    )
+  }
+}, true);
 
 const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
@@ -58,7 +74,10 @@ const App = ({ walletInit, walletAddress }) => {
   };
 
   useEffect(() => {
-    setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
+    oClient.client.ws.onclose = () => {
+      setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
+    };
+    oClient.close();
     Linking.getInitialURL().then(handleLinkingUrl);
     Linking.addEventListener('url', handleIosLinkingUrl);
   }, []);
@@ -77,11 +96,19 @@ const App = ({ walletInit, walletAddress }) => {
 
   const changeListener = (appState) => {
     console.log(appState);
+    console.log(oClient.client.open);
     if (appState === 'active') {
       if (Platform.OS === 'android') {
         setTimeout(() => setAppHidden(false), 4000);
       }
-      dispatch(reSubscribeToHub());
+      if (oClient.client.open) {
+        oClient.client.ws.onclose = () => {
+          setTimeout(() => dispatch(reSubscribeToHub()), 100);
+        };
+        oClient.close();
+      } else {
+        dispatch(reSubscribeToHub())
+      }
     } else {
       if (Platform.OS === 'android') {
         setAppHidden(true);
@@ -96,13 +123,6 @@ const App = ({ walletInit, walletAddress }) => {
       AppState.removeEventListener('change', changeListener);
     };
   }, []);
-
-  // TODO: close and restart hub connection
-  // useEffect(() => {
-  //   if (appState !== 'active') {
-  //     oClient.close();
-  //   }
-  // }, [appState]);
 
   return (
     <SafeAreaProvider>

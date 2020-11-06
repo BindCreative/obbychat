@@ -7,15 +7,22 @@ import { getWalletState } from './wallet';
 
 export const getDeviceState = state => state.main.device;
 
+let deviceWif = '';
+
 export const selectDeviceWif = () =>
   createSelector(getWalletState, state => {
-    const mnemonic = new Mnemonic(state.seedWords);
-    const xPrivKey = mnemonic.toHDPrivateKey();
-    const path = testnet ? "m/44'/1'" : "m/44'/0'";
-    const { privateKey } = xPrivKey.derive(path);
-    const walletPrivKeyBuf = privateKey.bn.toBuffer({ size: 32 });
-    const walletWif = toWif(walletPrivKeyBuf, testnet);
-    return walletWif;
+    if (deviceWif) {
+      return deviceWif;
+    } else {
+      const mnemonic = new Mnemonic(state.seedWords);
+      const xPrivKey = mnemonic.toHDPrivateKey();
+      const path = testnet ? "m/44'/1'" : "m/44'/0'";
+      const { privateKey } = xPrivKey.derive(path);
+      const walletPrivKeyBuf = privateKey.bn.toBuffer({ size: 32 });
+      const walletWif = toWif(walletPrivKeyBuf, testnet);
+      deviceWif = walletWif;
+      return walletWif;
+    }
   });
 
 export const selectDeviceAddress = () =>

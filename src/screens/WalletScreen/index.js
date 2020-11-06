@@ -39,9 +39,6 @@ const TX_TYPES = [
 class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.renderTx = this.renderTx.bind(this);
-    this.renderHeader = this.renderHeader.bind(this);
-    this.renderLoadingScreen = this.renderLoadingScreen.bind(this);
     this.state = {
       unit: 'MB',
       txType: 'ALL',
@@ -54,7 +51,7 @@ class WalletScreen extends React.Component {
     });
   }
 
-  renderTx(data) {
+  renderTx = (data) => {
     const { item: tx } = data;
 
     if (this.state.txType === 'ALL' || this.state.txType === tx.type) {
@@ -78,7 +75,13 @@ class WalletScreen extends React.Component {
               {tx.timestamp}
             </Moment>
           </View>
-          <Text style={styles.txType}>{tx.type}</Text>
+          <Text style={styles.txType}>{
+            tx.confirmed
+              ? tx.type
+              : tx.type === 'RECEIVED'
+                ? "RECEIVING"
+                : "SENDING"
+          }</Text>
           <Text style={styles.txAddress}>
             {tx.type === 'RECEIVED' && tx.fromAddress.join(', ')}
             {tx.type === 'SENT' && tx.toAddress.join(', ')}
@@ -86,58 +89,56 @@ class WalletScreen extends React.Component {
         </TouchableOpacity>
       );
     }
-  }
+  };
 
-  renderLoadingScreen() {
-    return (
-      <SafeAreaView
-        forceInset={{ top: 'always', bottom: 'always' }}
-        style={styles.container}
+  renderLoadingScreen = () => (
+    <SafeAreaView
+      forceInset={{ top: 'always', bottom: 'always' }}
+      style={styles.container}
+    >
+      <ContentLoader
+        width={Dimensions.get('window').width - 10}
+        height={Dimensions.get('window').height * 0.75}
       >
-        <ContentLoader
-          width={Dimensions.get('window').width - 10}
-          height={Dimensions.get('window').height * 0.75}
-        >
-          <Rect x='10' y='10' rx='4' ry='4' width='300' height='40' />
-          <Rect x='10' y='62' rx='4' ry='4' width='240' height='32' />
-          <Rect
-            x='10'
-            y='150'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='260'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='370'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='480'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-        </ContentLoader>
-      </SafeAreaView>
-    );
-  }
+        <Rect x='10' y='10' rx='4' ry='4' width='300' height='40' />
+        <Rect x='10' y='62' rx='4' ry='4' width='240' height='32' />
+        <Rect
+          x='10'
+          y='150'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='260'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='370'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='480'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+      </ContentLoader>
+    </SafeAreaView>
+  );
 
-  renderHeader() {
+  renderHeader = () => {
     const balanceInDollars = (
       bytesToUnit(this.props.walletBalance, 'GB') *
       this.props.exchangeRates.GBYTE_USD
@@ -164,7 +165,7 @@ class WalletScreen extends React.Component {
         </View>
       </React.Fragment>
     );
-  }
+  };
 
   render() {
     const { loading, loadBalances } = this.props;

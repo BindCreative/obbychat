@@ -28,7 +28,7 @@ const ChatScreen = ({
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onRemoveMessage = data => dispatch(removeMessage(data));
-  const onClearChatHistory = data => dispatch(clearChatHistory(data));
+  const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
 
   const onSend = (messages = []) => {
     if (messages) {

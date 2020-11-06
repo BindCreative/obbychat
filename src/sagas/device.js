@@ -80,6 +80,7 @@ export function* initDeviceInfo() {
 };
 
 export function* loginToHub(challenge) {
+  console.log('login to hub');
   const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
   const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
 
@@ -106,8 +107,15 @@ export function* loginToHub(challenge) {
 }
 
 export function stopSubscribeToHub() {
+  console.log('stop subscribing');
   oClient.close();
   clearInterval(heartBeatInterval);
+}
+
+function* resubscribeToHub() {
+  console.log('resubscribing');
+  yield call(subscribeToHub);
+  yield put(updateWalletData());
 }
 
 export function* subscribeToHub() {
@@ -138,9 +146,9 @@ export function* subscribeToHub() {
 }
 
 export function* watchHubMessages() {
-  // try {
-    while (true) {
-      const { type, payload } = yield take(oChannel);
+  while (true) {
+    try {
+      const {type, payload} = yield take(oChannel);
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge' && !!payload.body) {
           yield call(loginToHub, payload.body);
@@ -162,10 +170,10 @@ export function* watchHubMessages() {
       } else {
         console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
       }
+    } catch (error) {
+      console.log('UNHANDLED HUB MESSAGE ERROR', error);
     }
-  // } catch (error) {
-  //   console.log('UNHANDLED HUB MESSAGE ERROR', error);
-  // }
+  }
 }
 
 export function* receiveMessage({ body }) {
@@ -529,7 +537,7 @@ export default function* watch() {
   yield all([
     watchHubMessages(),
     takeEvery(actionTypes.INIT_DEVICE_INFO, initDeviceInfo),
-    takeEvery(actionTypes.RESUBSCRIBE_TO_HUB, subscribeToHub),
+    takeEvery(actionTypes.RESUBSCRIBE_TO_HUB, resubscribeToHub),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),

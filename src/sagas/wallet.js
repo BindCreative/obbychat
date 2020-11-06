@@ -201,7 +201,7 @@ export function* sendPayment(action) {
     yield put(
       setToastMessage({
         type: 'SUCCESS',
-        message: 'Transaction completed',
+        message: 'Transaction broadcasted',
       }),
     );
     yield call(fetchBalances, action);

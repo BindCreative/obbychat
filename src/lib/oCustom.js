@@ -18,10 +18,10 @@ export const oClient =
     ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
 
-if (!wasClosed) {
-  wasClosed = true;
-  oClient.close();
-}
+// if (!wasClosed) {
+//   wasClosed = true;
+//   oClient.close();
+// }
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
