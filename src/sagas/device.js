@@ -67,7 +67,6 @@ let heartBeatInterval = 0;
 let oChannel;
 
 if (!oChannel) {
-  console.log('oChannel init');
   oChannel = channel();
 }
 
@@ -77,10 +76,9 @@ export function* initDeviceInfo() {
   deviceInfo.deviceAddress = yield select(selectDeviceAddress());
   deviceInfo.permanentDeviceKeyObj = yield select(selectPermanentDeviceKeyObj());
   deviceInfo.deviceTempKeyData = yield select(selectDeviceTempKeyData());
-};
+}
 
 export function* loginToHub(challenge) {
-  console.log('login to hub');
   const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
   const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
 
@@ -107,20 +105,24 @@ export function* loginToHub(challenge) {
 }
 
 export function stopSubscribeToHub() {
-  console.log('stop subscribing');
   oClient.close();
   clearInterval(heartBeatInterval);
 }
 
 function* resubscribeToHub() {
-  console.log('resubscribing');
   yield call(subscribeToHub);
   yield put(updateWalletData());
 }
 
+const fetchClientConnection = () => new Promise(resolve => oClient.client.ws.onopen = resolve);
+
 export function* subscribeToHub() {
   try {
     oClient.client.connect();
+    oClient.client.ws.onclose = () => {
+      setTimeout(() => oClient.client.connect(), 1000)
+    };
+    yield call(fetchClientConnection);
     oClient.subscribe((err, result) => {
       if (err) {
         throw new Error('Hub socket error');

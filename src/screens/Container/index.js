@@ -96,11 +96,10 @@ const App = ({ walletInit, walletAddress }) => {
 
   const changeListener = (appState) => {
     console.log(appState);
-    console.log(oClient.client.open);
     if (appState === 'active') {
-      if (Platform.OS === 'android') {
-        setTimeout(() => setAppHidden(false), 4000);
-      }
+      // if (Platform.OS === 'android') {
+      //   setTimeout(() => setAppHidden(false), 4000);
+      // }
       if (oClient.client.open) {
         oClient.client.ws.onclose = () => {
           setTimeout(() => dispatch(reSubscribeToHub()), 100);
@@ -110,9 +109,10 @@ const App = ({ walletInit, walletAddress }) => {
         dispatch(reSubscribeToHub())
       }
     } else {
-      if (Platform.OS === 'android') {
-        setAppHidden(true);
-      }
+      // if (Platform.OS === 'android') {
+      //   setAppHidden(true);
+      // }
+      oClient.client.ws.onclose = () => null;
       stopSubscribeToHub();
     }
   };
