@@ -66,9 +66,31 @@ class PaymentScreen extends React.Component {
       if (amount) {
         this.changePrimaryUnit('BYTE')
           .then(() => this.changeValue(amount, 'primary'));
+      } else {
+        this.changePrimaryUnit('MBYTE')
+          .then(() => this.changeValue(0, 'primary'));
       }
     } else {
       this.props.navigation.setParams({ title: 'Enter address' });
+    }
+  }
+
+  componentDidUpdate(prevProps): void {
+    const { navigation } = this.props;
+    if (navigation.state.params.walletAddress
+      && navigation.state.params !== prevProps.navigation.state.params) {
+      const { walletAddress, amount } = navigation.state.params;
+      this.setState({
+        address: walletAddress,
+        step: 2
+      });
+      if (amount) {
+        this.changePrimaryUnit('BYTE')
+          .then(() => this.changeValue(amount, 'primary'));
+      } else {
+        this.changePrimaryUnit('MBYTE')
+          .then(() => this.changeValue(0, 'primary'));
+      }
     }
   }
 

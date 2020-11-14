@@ -39,7 +39,7 @@ class ChatListScreen extends React.Component {
     const { navigation } = this.props;
     if (
       navigation.state.params
-      && !prevProps.navigation.state.params
+      && (!prevProps.navigation.state.params || prevProps.navigation.state !== navigation.state)
       && navigation.state.params.type
       && navigation.state.params.type === common.urlTypes.pairing
     ) {

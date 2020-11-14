@@ -21,7 +21,10 @@ const initialState = {
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-      return _.get(action, 'payload.wallet', state);
+      return {
+        ..._.get(action, 'payload.wallet', state),
+        init: false
+      };
 
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {

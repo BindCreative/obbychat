@@ -62,11 +62,14 @@ const parseUrl = (url) => {
         type: common.urlTypes.error,
         message: `address ${address} is invalid`
       });
-    } else if (query_string) {
+    } else {
       const urlParams = {
         type: common.urlTypes.payment,
         walletAddress: address
       };
+      if (!query_string) {
+        return urlParams;
+      }
       const assocParams = parseQueryString(query_string);
       const strAmount = assocParams.amount;
       if (typeof strAmount === 'string') {
@@ -117,11 +120,6 @@ const parseUrl = (url) => {
         }
       }
       return urlParams;
-    } else {
-      return ({
-        type: common.urlTypes.error,
-        message: 'empty query string'
-      });
     }
   }
 };

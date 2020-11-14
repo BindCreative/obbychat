@@ -14,7 +14,7 @@ const LoadingScreen = () => (
       <Image
         style={styles.logo}
         resizeMethod='scale'
-        source={require('./../../assets/images/logo.gif')}
+        source={require('./../../assets/images/loading.gif')}
       />
       <Text>Loading...</Text>
     </View>

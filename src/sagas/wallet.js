@@ -1,6 +1,7 @@
 import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
+import { Alert } from 'react-native';
 import { REHYDRATE } from 'redux-persist';
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/oCustom';
@@ -18,7 +19,6 @@ import {
   sendPaymentFail,
 } from './../actions/wallet';
 import {
-  loadWalletHistory,
   loadWalletHistorySuccess,
   loadWalletHistoryFail,
 } from '../actions/walletHistory';
@@ -42,7 +42,7 @@ export function* initWallet({ payload }) {
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);
-    yield put(loadWalletHistory());
+    yield call(fetchWalletHistory);
     yield put(initWalletSuccess());
   } catch (error) {
     console.log(error);

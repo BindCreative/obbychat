@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
 import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
@@ -40,9 +40,7 @@ const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
 
   const [appReady, setAppReady] = useState(false);
-  const [appHidden, setAppHidden] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
-  const timeoutId = useRef();
 
   const redirect = () => {
     if (redirectParams) {
@@ -54,7 +52,7 @@ const App = ({ walletInit, walletAddress }) => {
         case common.urlTypes.pairing:
           return navigate('ChatStack', { type, ...params });
         case common.urlTypes.payment:
-          return navigate('MakePayment', params);
+          return navigate('MakePayment', { params });
       }
     }
   };
@@ -63,9 +61,6 @@ const App = ({ walletInit, walletAddress }) => {
     if (url) {
       const urlData = parseUrl(url);
       setRedirectParams(urlData);
-      if (walletInit) {
-        redirect();
-      }
     }
   };
 
@@ -73,10 +68,13 @@ const App = ({ walletInit, walletAddress }) => {
     handleLinkingUrl(event.url);
   };
 
+  const init = () => {
+    setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
+    oClient.client.ws.removeEventListener('close', init);
+  };
+
   useEffect(() => {
-    oClient.client.ws.onclose = () => {
-      setTimeout(() => dispatch(initWallet({ address: walletAddress })), 100);
-    };
+    oClient.client.ws.addEventListener('close', init);
     oClient.close();
     Linking.getInitialURL().then(handleLinkingUrl);
     Linking.addEventListener('url', handleIosLinkingUrl);
@@ -85,35 +83,39 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       if (walletInit) {
-        redirect();
-        timeoutId.current = setTimeout(() => setAppReady(true), 1000);
-      } else {
-        clearTimeout(timeoutId.current);
+        setTimeout(() => setAppReady(true), 1000);
       }
     },
     [walletInit]
   );
 
-  const changeListener = (appState) => {
-    console.log(appState);
-    if (appState === 'active') {
-      // if (Platform.OS === 'android') {
-      //   setTimeout(() => setAppHidden(false), 4000);
-      // }
-      if (oClient.client.open) {
-        oClient.client.ws.onclose = () => {
-          setTimeout(() => dispatch(reSubscribeToHub()), 100);
-        };
-        oClient.close();
-      } else {
-        dispatch(reSubscribeToHub())
+  useEffect(
+    () => {
+      if (walletInit && redirectParams) {
+        redirect();
       }
-    } else {
-      // if (Platform.OS === 'android') {
-      //   setAppHidden(true);
-      // }
-      oClient.client.ws.onclose = () => null;
-      stopSubscribeToHub();
+    },
+    [walletInit, redirectParams]
+  );
+
+  const resubscribe = () => {
+    setTimeout(() => dispatch(reSubscribeToHub()), 100);
+    oClient.client.ws.removeEventListener('close', resubscribe)
+  };
+
+  const changeListener = (appState) => {
+    if (appReady) {
+      if (appState === 'active') {
+        if (oClient.client.open) {
+          oClient.client.ws.addEventListener('close', resubscribe);
+          oClient.close();
+        } else {
+          dispatch(reSubscribeToHub());
+        }
+      } else {
+        oClient.client.ws.onclose = () => null;
+        stopSubscribeToHub();
+      }
     }
   };
 
@@ -126,7 +128,7 @@ const App = ({ walletInit, walletAddress }) => {
 
   return (
     <SafeAreaProvider>
-      {(!appReady || appHidden) && <LoadingScreen />}
+      {!appReady && <LoadingScreen />}
       <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
       <Navigator
         ref={navigatorRef => {

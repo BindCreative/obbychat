@@ -7,7 +7,7 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
 
 import styles from './styles';
-import { signMessage } from '../../lib/oCustom';
+import { signMessage } from 'obyte/lib/utils';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
 import {

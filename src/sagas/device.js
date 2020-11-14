@@ -104,9 +104,14 @@ export function* loginToHub(challenge) {
   oClient.justsaying('hub/refresh', null);
 }
 
+const reconnect = () => {
+  setTimeout(() => oClient.client.connect(), 1000);
+};
+
 export function stopSubscribeToHub() {
   oClient.close();
   clearInterval(heartBeatInterval);
+  oClient.client.ws.removeEventListener('close', reconnect);
 }
 
 function* resubscribeToHub() {
@@ -114,14 +119,18 @@ function* resubscribeToHub() {
   yield put(updateWalletData());
 }
 
-const fetchClientConnection = () => new Promise(resolve => oClient.client.ws.onopen = resolve);
+const fetchClientConnection = () => new Promise(resolve => {
+  const onOpen = () => {
+    resolve();
+    oClient.client.ws.removeEventListener('open', onOpen);
+  };
+
+  oClient.client.ws.addEventListener('open', onOpen);
+});
 
 export function* subscribeToHub() {
   try {
     oClient.client.connect();
-    oClient.client.ws.onclose = () => {
-      setTimeout(() => oClient.client.connect(), 1000)
-    };
     yield call(fetchClientConnection);
     oClient.subscribe((err, result) => {
       if (err) {
@@ -137,6 +146,7 @@ export function* subscribeToHub() {
     }, 10000);
     const walletAddress = yield select(selectWalletAddress());
     oClient.justsaying('light/new_address_to_watch', walletAddress);
+    oClient.client.ws.addEventListener('close', reconnect);
   } catch (error) {
     yield put(
       setToastMessage({
