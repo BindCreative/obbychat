@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import { actionTypes } from '../constants';
 
 const initialState = {

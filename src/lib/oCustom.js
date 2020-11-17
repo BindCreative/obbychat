@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import obyte from 'obyte';
 import ecdsa from 'secp256k1';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';

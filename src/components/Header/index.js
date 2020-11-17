@@ -22,7 +22,7 @@ const Header = ({
 
   if (size === 'compact') {
     return (
-      <View style={{ ...styles.headerCompact, ...headerBorderStyle }}>
+      <View style={{ ...styles.headerContainer, ...headerBorderStyle }}>
         <View style={styles.headerLeft}>
           {hasBackButton === true && (
             <TouchableOpacity
@@ -74,7 +74,7 @@ const Header = ({
     );
   } else if (size === 'normal') {
     return (
-      <View style={{ ...styles.headerNormal, ...headerBorderStyle }}>
+      <View style={{ ...styles.headerContainer, ...headerBorderStyle }}>
         <View style={styles.headerLeft}>
           {hasBackButton === true && (
             <TouchableOpacity

@@ -11,7 +11,7 @@ import {
 import { channel } from '@redux-saga/core';
 import { isValidAddress } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
 import { Alert } from'react-native';
 

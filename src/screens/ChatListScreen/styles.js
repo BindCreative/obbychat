@@ -24,11 +24,13 @@ export default StyleSheet.create({
   },
   listItem: {
     marginLeft: 0,
-    paddingHorizontal: 15,
+    paddingHorizontal: 15
   },
   listItemPreview: {
     fontFamily: 'Agenda-Light',
     fontSize: 16,
+    flex: 1,
+    marginRight: 5
   },
   listItemTitle: {
     fontFamily: 'Agenda-Medium',
@@ -38,6 +40,13 @@ export default StyleSheet.create({
   listItemTime: {
     fontFamily: 'Agenda-Light',
     fontSize: 16,
+  },
+  userAvatarContainer: {
+    height: '100%',
+    width: 42,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   userAvatar: {
     width: 42,
@@ -74,4 +83,12 @@ export default StyleSheet.create({
     backgroundColor: colors.grey.lightest,
     textAlign: 'center',
   },
+  descriptionContainer: {
+    flexDirection: 'row',
+    opacity: 0.4,
+    display: 'flex',
+    flexWrap: 'nowrap',
+    justifyContent: 'space-between',
+    flex: 1
+  }
 });

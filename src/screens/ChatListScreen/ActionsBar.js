@@ -1,5 +1,5 @@
 import React from 'react';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, View } from 'react-native';

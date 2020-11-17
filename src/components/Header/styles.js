@@ -2,14 +2,7 @@ import { StyleSheet } from 'react-native';
 import { colors } from './../../constants';
 
 export default StyleSheet.create({
-  headerNormal: {
-    paddingTop: 30,
-    paddingBottom: 5,
-    backgroundColor: colors.white,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  headerCompact: {
+  headerContainer: {
     paddingTop: 30,
     paddingBottom: 5,
     backgroundColor: colors.white,

@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { View, Text, Linking, ScrollView } from 'react-native';
-import { Content } from 'native-base';
 import _ from 'lodash';
 import Moment from 'react-moment';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -39,7 +38,7 @@ class TransactionInfoScreen extends React.Component {
           titlePosition='center'
           hasBackButton
         />
-        <Content contentContainerStyle={styles.content}>
+        <View contentContainerStyle={styles.content}>
           <View style={styles.amountBlock}>
             <View style={styles.amountRow}>
               <Text style={styles.primaryAmount}>
@@ -112,7 +111,7 @@ class TransactionInfoScreen extends React.Component {
               </View>
             </View>
           </ScrollView>
-        </Content>
+        </View>
       </SafeAreaView>
     );
   }

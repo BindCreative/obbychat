@@ -1,11 +1,11 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList, InteractionManager, Image, Linking } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text, ScrollView } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
-import { List, ListItem, Left, Right, Body, Text } from 'native-base';
+import { List } from 'react-native-paper';
 import Dialog from 'react-native-dialog';
 
 import common from '../../constants/common';
@@ -62,6 +62,42 @@ class ChatListScreen extends React.Component {
     const { item: correspondent } = data;
 
     return (
+      <List.Item
+        style={styles.listItem}
+        onPress={() => {
+          this.props.navigation.navigate('Chat', { correspondent })
+        }}
+        onLongPress={() => {
+          this.setState({ changeNameDialog: { correspondent, visible: true } })
+        }}
+        left={() => (
+          <View style={styles.userAvatarContainer}>
+            <Image
+              style={styles.userAvatar}
+              name={correspondent.name}
+              source={{ uri: makeBlockie(correspondent.address) }}
+            />
+          </View>
+        )}
+        title={correspondent.name}
+        titleStyle={styles.listItemTitle}
+        description={() => (
+          <View style={styles.descriptionContainer}>
+            <Text numberOfLines={1} style={styles.listItemPreview}>{correspondent.lastMessagePreview}</Text>
+            <Text numberOfLines={1} note style={styles.listItemTime}>
+              {correspondent.lastMessageTimestamp !== undefined && (
+                <TimeAgo
+                  time={correspondent.lastMessageTimestamp}
+                  interval={15000}
+                />
+              )}
+            </Text>
+          </View>
+        )}
+      />
+    );
+
+    /*return (
       <ListItem
         avatar
         style={styles.listItem}
@@ -98,7 +134,7 @@ class ChatListScreen extends React.Component {
           </Text>
         </Right>
       </ListItem>
-    );
+    );*/
   };
 
   render() {

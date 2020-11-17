@@ -3,6 +3,7 @@ import { colors } from './../../constants';
 
 export default StyleSheet.create({
   content: {
+    flex: 1,
     padding: 10,
     justifyContent: 'space-around',
     backgroundColor: colors.white,
