@@ -32,6 +32,7 @@ export default StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   listItemText: {
+    color: 'black',
     fontFamily: 'Agenda-Medium',
     fontSize: 22,
   },

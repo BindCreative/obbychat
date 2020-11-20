@@ -287,7 +287,7 @@ class PaymentScreen extends React.Component {
                   style={styles.addressInput}
                   onChangeText={this.onChangeAddress}
                   value={address ? address : ''}
-                  autoFocus={true}
+                  autofocus={false}
                 />
                 {!address && (
                   <View style={styles.addressInputPaste}>
@@ -321,6 +321,7 @@ class PaymentScreen extends React.Component {
                   onChangeText={value => this.changeValue(value, 'primary')}
                   value={!primaryValue ? '' : String(primaryValue)}
                   keyboardType='decimal-pad'
+                  autofocus={false}
                 />
                 <ActionSheet
                   currentValue={primaryUnit}
@@ -337,6 +338,7 @@ class PaymentScreen extends React.Component {
                   onChangeText={value => this.changeValue(value, 'secondary')}
                   value={!secondaryValue ? '' : String(secondaryValue)}
                   keyboardType='decimal-pad'
+                  autofocus={false}
                 />
                 <ActionSheet
                   currentValue={secondaryUnit}

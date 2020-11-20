@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text, ScrollView } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text, RefreshControl } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -63,6 +63,7 @@ class ChatListScreen extends React.Component {
 
     return (
       <List.Item
+        key={correspondent.address}
         style={styles.listItem}
         onPress={() => {
           this.props.navigation.navigate('Chat', { correspondent })
@@ -96,45 +97,6 @@ class ChatListScreen extends React.Component {
         )}
       />
     );
-
-    /*return (
-      <ListItem
-        avatar
-        style={styles.listItem}
-        onPress={() => {
-          this.props.navigation.navigate('Chat', { correspondent })
-        }}
-        onLongPress={() => {
-          this.setState({ changeNameDialog: { correspondent, visible: true } })
-        }}
-      >
-        <Left style={styles.listItemAvatar}>
-          <Image
-            style={styles.userAvatar}
-            name={correspondent.name}
-            source={{ uri: makeBlockie(correspondent.address) }}
-          />
-        </Left>
-        <Body style={styles.listItemBody}>
-          <Text numberOfLines={1} style={styles.listItemTitle}>
-            {correspondent.name}
-          </Text>
-          <Text numberOfLines={1} note style={styles.listItemPreview}>
-            {correspondent.lastMessagePreview}
-          </Text>
-        </Body>
-        <Right style={styles.listItemBody}>
-          <Text numberOfLines={1} note style={styles.listItemTime}>
-            {correspondent.lastMessageTimestamp !== undefined && (
-              <TimeAgo
-                time={correspondent.lastMessageTimestamp}
-                interval={15000}
-              />
-            )}
-          </Text>
-        </Right>
-      </ListItem>
-    );*/
   };
 
   render() {
@@ -167,7 +129,6 @@ class ChatListScreen extends React.Component {
             {!!correspondents.length && (
               <FlatList
                 data={correspondents}
-                contentContainerStyle={styles.list}
                 keyExtractor={correspondent => correspondent.address}
                 renderItem={this.renderItem}
               />

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   take,
   takeEvery,
@@ -222,7 +221,14 @@ export function* receiveMessage({ body }) {
           pubKey: body.message.pubkey,
           pairingSecret: decryptedMessage.body.pairing_secret,
         };
+        const pairedCorrespondent = yield select(selectCorrespondent(decryptedMessage.from));
         yield put(addCorrespondent(correspondent));
+        NavigationService.navigate('Chat', {
+          correspondent: {
+            ...pairedCorrespondent,
+            ...correspondent
+          }
+        });
         yield call(sendPairingMessage, {
           reversePairingSecret,
           hub: correspondent.hub,
@@ -241,7 +247,14 @@ export function* receiveMessage({ body }) {
           pairingSecret: decryptedMessage.body.pairing_secret,
           reversePairingSecret,
         };
+        const pairedCorrespondent = yield select(selectCorrespondent(decryptedMessage.from));
         yield put(addCorrespondent(correspondent));
+        NavigationService.navigate('Chat', {
+          correspondent: {
+            ...pairedCorrespondent,
+            ...correspondent
+          }
+        });
         yield call(sendPairingMessage, {
           reversePairingSecret,
           hub: correspondent.hub,

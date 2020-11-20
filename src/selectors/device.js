@@ -9,6 +9,9 @@ export const getDeviceState = state => state.main.device;
 
 let deviceWif = '';
 
+export const selectPrivKey = () =>
+  createSelector(getDeviceState, state => Buffer.from(state.deviceTempKeys.privKey));
+
 export const selectDeviceWif = () =>
   createSelector(getWalletState, state => {
     if (deviceWif) {

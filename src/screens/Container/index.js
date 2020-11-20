@@ -52,14 +52,14 @@ const App = ({ walletInit, walletAddress }) => {
         case common.urlTypes.pairing:
           return navigate('ChatStack', { type, ...params });
         case common.urlTypes.payment:
-          return navigate('MakePayment', { params });
+          return navigate('MakePayment', { ...params, title: 'Enter amount' });
       }
     }
   };
 
   const handleLinkingUrl = (url) => {
     if (url) {
-      const urlData = parseUrl(url);
+      const urlData = parseUrl(url, walletAddress);
       setRedirectParams(urlData);
     }
   };
@@ -92,7 +92,7 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       if (walletInit && redirectParams) {
-        redirect();
+        redirect()
       }
     },
     [walletInit, redirectParams]

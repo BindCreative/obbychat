@@ -50,6 +50,8 @@ const QRCodeScreen = ({ navigation, backRoute }) => {
     },
   });
 
+  console.log(`${urlHost}${qrData}`);
+
   return (
     <SafeAreaView
       style={styles.container}

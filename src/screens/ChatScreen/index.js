@@ -7,21 +7,21 @@ import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
 
 import styles from './styles';
-import { signMessage } from 'obyte/lib/utils';
+import { signMessage, fromWif } from 'obyte/lib/utils';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
 import {
   clearChatHistory,
   removeCorrespondent,
 } from '../../actions/correspondents';
-import { selectCorrespondentMessages } from '../../selectors/messages';
-import { selectWalletAddress } from '../../selectors/wallet';
-import { selectCorrespondentWalletAddress } from '../../selectors/messages';
+import { selectCorrespondentMessages, selectCorrespondentWalletAddress } from '../../selectors/messages';
+import { selectWalletAddress, selectAddressWif } from '../../selectors/wallet';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
+import { testnet } from "../../lib/oCustom";
 
 const ChatScreen = ({
-  myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute
+  myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute, addressWif
 }) => {
   const dispatch = useDispatch();
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -70,11 +70,17 @@ const ChatScreen = ({
               {
                 text: 'Yes',
                 onPress: () => {
+                  const { privateKey } = fromWif(addressWif, testnet);
                   const signedMessage = signMessage(
                     params.messageToSign,
-                    myWalletAddress,
+                    {
+                      wif: myWalletAddress,
+                      testnet,
+                      privateKey
+                    }
                   );
-                  onSend([{ text: signedMessage }]);
+                  const message = Buffer.from(JSON.stringify(signedMessage)).toString('base64');
+                  onSend([{ text: `[Signed message](signed-message:${message})` }]);
                 },
               },
             ]);
@@ -191,6 +197,7 @@ const mapStateToProps = (state, props) =>
     messages: selectCorrespondentMessages({
       address: props.navigation.state.params.correspondent.address,
     }),
+    addressWif: selectAddressWif()
   });
 
 export default connect(mapStateToProps, null)(ChatScreen);

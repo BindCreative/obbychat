@@ -17,7 +17,7 @@ const parseQueryString = (str, delimiter) => {
   return assocParams;
 };
 
-const parseUrl = (url) => {
+const parseUrl = (url, walletAddress) => {
   const protocol = common.network === "testnet" ? "obyte-tn" : "obyte";
   const re = new RegExp(`^${protocol}:(.+)$`, 'i');
   const arrMatches = url.match(re);
@@ -65,7 +65,8 @@ const parseUrl = (url) => {
     } else {
       const urlParams = {
         type: common.urlTypes.payment,
-        walletAddress: address
+        walletAddress: address,
+        amount: 0
       };
       if (!query_string) {
         return urlParams;
@@ -104,14 +105,20 @@ const parseUrl = (url) => {
         urlParams.message = `unused parameter base64data`;
         return urlParams;
       }
-      if (assocParams.from_address) {
-        urlParams.type = common.urlTypes.error;
-        urlParams.message = `unused parameter from_address`;
-        return urlParams;
+      const { from_address } = assocParams;
+      if (from_address) {
+        if (from_address !== walletAddress) {
+          urlParams.type = common.urlTypes.error;
+          urlParams.message = `wrong parameter from_address`;
+          return urlParams;
+        } else {
+          urlParams.from_address = from_address;
+
+        }
       }
-      const single_address = assocParams.single_address;
+      const { single_address } = assocParams;
       if (single_address) {
-        if (single_address !== 1) {
+        if (single_address !== "1") {
           urlParams.type = common.urlTypes.error;
           urlParams.message = `invalid single_address: ${single_address}`;
           return urlParams;
