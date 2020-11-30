@@ -95,11 +95,11 @@ const parseUrl = (url, walletAddress) => {
         }
         urlParams.asset = asset;
       }
-      if (assocParams.device_address) {
-        urlParams.type = common.urlTypes.error;
-        urlParams.message = `unused parameter device_address`;
-        return urlParams;
-      }
+      // if (assocParams.device_address) {
+      //   urlParams.type = common.urlTypes.error;
+      //   urlParams.message = `unused parameter device_address`;
+      //   return urlParams;
+      // }
       if (assocParams.base64data) {
         urlParams.type = common.urlTypes.error;
         urlParams.message = `unused parameter base64data`;
