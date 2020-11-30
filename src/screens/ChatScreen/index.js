@@ -74,7 +74,6 @@ const ChatScreen = ({
                   const signedMessage = signMessage(
                     params.messageToSign,
                     {
-                      wif: myWalletAddress,
                       testnet,
                       privateKey
                     }
