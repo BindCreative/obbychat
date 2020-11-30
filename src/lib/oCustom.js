@@ -298,19 +298,3 @@ export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
 
   return info;
 };
-
-export const signMessage = (message, fromAddress) => {
-  const objAuthor = {
-    address: fromAddress,
-    authentifiers: {},
-  };
-
-  const objUnit = {
-    signed_message: message,
-    authors: [objAuthor],
-  };
-
-  const result = Buffer.from(JSON.stringify(objUnit)).toString('base64');
-
-  return `[Signed message](signed-message:${result})`;
-};
