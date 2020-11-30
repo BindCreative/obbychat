@@ -6,7 +6,7 @@ export const REG_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|o
 export const REG_TEXTCOINT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):textcoin\?(.+))\)/g;
 export const REGEX_DATA = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):data\?(.+))\)/g;
 export const REGEX_SIGN_MESSAGE_REQUEST = /\[(.+?)\]\(sign-message-request(-network-aware)?:(.+?)\)/g;
-export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:(.+?)\)/g;
+export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:([\w\/+=]+?)\)/g;
 export const REGEX_PAIRING = /(byteball-tn|byteball|obyte-tn|obyte):([\w\/+]{44})@([\w.:\/-]+)#(.+)/g;
 
 export const parseTextMessage = originalText => {
