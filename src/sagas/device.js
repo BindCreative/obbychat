@@ -465,7 +465,7 @@ export function* checkForSigning(decryptedMessage) {
       info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
   });
 
-  if (info.valid) {
+  if (info && info.valid) {
     yield put(
       updateCorrespondentWalletAddress({
         address: decryptedMessage.from,

@@ -121,4 +121,13 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  blueUrl: {
+    color: '#0000EE'
+  },
+  url: {
+    textDecorationLine: 'underline'
+  },
+  command: {
+    color: '#0000EE'
+  }
 });

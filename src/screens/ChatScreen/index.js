@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { TouchableOpacity, Text, Clipboard, Alert, View } from 'react-native';
+import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
@@ -25,6 +25,7 @@ const ChatScreen = ({
 }) => {
   const dispatch = useDispatch();
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [text, setText] = useState("");
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onRemoveMessage = data => dispatch(removeMessage(data));
@@ -52,7 +53,7 @@ const ChatScreen = ({
   const renderText = ({ currentMessage }) => {
     const { text, user } = currentMessage;
     const { parsedText, type, params } = parseTextMessage(text);
-    let style = { ...styles.textMessage };
+    let style = styles.textMessage;
     let pressAction = () => {};
 
     if (type) {
@@ -108,12 +109,24 @@ const ChatScreen = ({
           }
           break;
         }
+        case "COMMAND": {
+          if (user._id !== 1) {
+            pressAction = () => {
+              setText(parsedText);
+            }
+          }
+          break;
+        }
+        case "SUGGEST_COMMAND": {
+          if (user._id !== 1) {
+            pressAction = () => onSend([{ text: parsedText }]);
+          }
+          break;
+        }
       }
     }
 
-    if (!type
-      || (type === 'WALLET_ADDRESS' && user._id ===1)
-    ) {
+    if (!type || (type === 'WALLET_ADDRESS' && user._id === 1)) {
       return (
         <Text
           style={style}
@@ -122,6 +135,25 @@ const ChatScreen = ({
           {parsedText}
         </Text>
       );
+    } else if (type === "URL") {
+      return (
+        <TouchableOpacity onPress={() => Linking.openURL(parsedText)}>
+          <Text style={user._id === 1
+            ? { ...style, ...styles.url }
+            : { ...style, ...styles.url, ...styles.blueUrl }}
+          >
+            {parsedText}
+          </Text>
+        </TouchableOpacity>
+      )
+    } else if (user._id !== 1 && (type === "COMMAND" || type === "SUGGEST_COMMAND")) {
+      return (
+        <TouchableOpacity onPress={pressAction}>
+          <Text style={{ ...style, ...styles.command }}>
+            {parsedText}
+          </Text>
+        </TouchableOpacity>
+      )
     } else {
       return (
         <TouchableOpacity
@@ -171,6 +203,8 @@ const ChatScreen = ({
         }
       />
       <GiftedChat
+        text={text}
+        onInputTextChanged={setText}
         scrollToBottom
         bottomOffset={0}
         style={styles.chatArea}
