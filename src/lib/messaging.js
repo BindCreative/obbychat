@@ -37,19 +37,22 @@ export const parseTextMessage = originalText => {
       (str, description, networkAware, messageToSign) => {
         type = 'SIGN_MESSAGE_REQUEST';
         params = { messageToSign };
-        return `Request to sign message: ${messageToSign}`;
+        return `Request to sign message: \"${messageToSign}\"`;
       },
     )
     .replace(REGEX_SIGNED_MESSAGE, (str, description, signedMessageBase64) => {
       type = 'SIGNED_MESSAGE';
       const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
       const { objSignedMessage } = info;
+      console.log(`\"${objSignedMessage.signed_message}\"`);
       let text =
         typeof objSignedMessage.signed_message === 'string'
-          ? objSignedMessage.signed_message
-          : JSON.stringify(objSignedMessage.signed_message, null, '\t');
+          ? `\"${objSignedMessage.signed_message}\"`
+          : `\"${JSON.stringify(objSignedMessage.signed_message, null, '\t')}\"`;
 
       // TODO: signed message validation
+
+      text += info.valid ? ' (valid)' : ' (invalid)';
 
       return `Signed message: ${text}`;
     });

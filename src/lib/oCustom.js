@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import * as Crypto from 'react-native-crypto';
 import obyte from 'obyte';
+import { validateSignedMessage } from 'obyte/lib/utils';
 import ecdsa from 'secp256k1';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { common } from './../constants';
@@ -284,17 +285,14 @@ export const deliverMessage = async objDeviceMessage => {
 };
 
 export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
-  var signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString(
-    'utf8',
-  );
+  const signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString('utf8');
   try {
     var objSignedMessage = JSON.parse(signedMessageJson);
   } catch (e) {
     return null;
   }
-  var info = {
+  return {
     objSignedMessage: objSignedMessage,
+    valid: validateSignedMessage(objSignedMessage)
   };
-
-  return info;
 };
