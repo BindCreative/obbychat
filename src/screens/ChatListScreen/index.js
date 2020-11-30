@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text, RefreshControl } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -11,11 +11,10 @@ import Dialog from 'react-native-dialog';
 import common from '../../constants/common';
 
 import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
-import { selectCorrespondents, selectCorrespondentFetching } from '../../selectors/messages';
+import { selectCorrespondents } from '../../selectors/messages';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
-import LoadingModal from '../../components/LoadingModal';
 
 class ChatListScreen extends React.Component {
   constructor(props) {
@@ -100,7 +99,7 @@ class ChatListScreen extends React.Component {
   };
 
   render() {
-    const { correspondents, correspondentFetching } = this.props;
+    const { correspondents } = this.props;
     const { changeNameDialog, initialized } = this.state;
 
     return (
@@ -108,7 +107,6 @@ class ChatListScreen extends React.Component {
         style={styles.container}
         forceInset={{ top: 'always', bottom: 'always' }}
       >
-        {/*{correspondentFetching && <LoadingModal />}*/}
         <Header
           {...this.props}
           title='Chat'
@@ -164,8 +162,7 @@ class ChatListScreen extends React.Component {
   }
 }
 const mapStateToProps = createStructuredSelector({
-  correspondents: selectCorrespondents(),
-  correspondentFetching: selectCorrespondentFetching()
+  correspondents: selectCorrespondents()
 });
 
 const mapDispatchToProps = dispatch => ({

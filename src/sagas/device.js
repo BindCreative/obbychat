@@ -8,7 +8,7 @@ import {
   delay,
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
-import { isValidAddress } from 'obyte/lib/utils';
+import { isValidAddress, validateSignedMessage } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
@@ -286,7 +286,7 @@ export function* receiveMessage({ body }) {
       const endSpace = /\s$/;
       decryptedMessage.body = decryptedMessage.body.replace(endSpace, '');
       // Check if signed message with wallet address info
-      yield call(checkForSigning, decryptedMessage);
+      yield call(checkForSigning, decryptedMessage, body);
       // Persist the message
       yield put(
         receiveMessageStart({
@@ -457,21 +457,21 @@ export function* acceptInvitation(action) {
 }
 
 export function* checkForSigning(decryptedMessage) {
-  let walletAddress;
+  let walletAddress, valid;
+
   decryptedMessage.body.replace(
     REGEX_SIGNED_MESSAGE,
     (str, description, signedMessageBase64) => {
-      const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
-      walletAddress = info.objSignedMessage.authors[0].address ?? null;
-    },
-  );
+      const signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString('utf8');
+      const objSignedMessage = JSON.parse(signedMessageJson);
 
-  if (isValidAddress(walletAddress)) {
+      walletAddress = objSignedMessage.authors[0].address ?? null;
+      valid = validateSignedMessage(objSignedMessage);
+  });
+
+  if (valid) {
     yield put(
-      updateCorrespondentWalletAddress({
-        address: decryptedMessage.from,
-        walletAddress,
-      }),
+      updateCorrespondentWalletAddress({ address: decryptedMessage.from, walletAddress })
     );
   }
 }
