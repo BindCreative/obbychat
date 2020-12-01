@@ -111,15 +111,13 @@ const ChatScreen = ({
         }
         case "COMMAND": {
           if (user._id !== 1) {
-            pressAction = () => {
-              setText(parsedText);
-            }
+            pressAction = () => onSend([{ text: parsedText }]);
           }
           break;
         }
         case "SUGGEST_COMMAND": {
           if (user._id !== 1) {
-            pressAction = () => onSend([{ text: parsedText }]);
+            pressAction = () => setText(parsedText);
           }
           break;
         }
