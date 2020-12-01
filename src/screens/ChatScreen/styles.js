@@ -122,13 +122,13 @@ export default StyleSheet.create({
     alignItems: 'center',
   },
   blueUrl: {
-    color: '#0000EE'
+    color: colors.blue
   },
   url: {
     textDecorationLine: 'underline'
   },
   command: {
-    color: '#0000EE',
+    color: colors.blue,
     backgroundColor: 'transparent'
   },
   dotLineContainer: {
@@ -142,6 +142,6 @@ export default StyleSheet.create({
     borderRadius: 1,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: '#0000EE',
+    borderColor: colors.blue,
   }
 });

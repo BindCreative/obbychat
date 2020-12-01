@@ -10,6 +10,7 @@ import styles from './styles';
 import { signMessage, fromWif } from 'obyte/lib/utils';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
+import { setToastMessage } from '../../actions/app';
 import {
   clearChatHistory,
   removeCorrespondent,
@@ -50,6 +51,14 @@ const ChatScreen = ({
     // TODO: make pagination from reducer
   };
 
+  const copyText = (text) => {
+    Clipboard.setString(text);
+    dispatch(setToastMessage({
+      message: 'Copied to clipboard',
+      duration: 1000
+    }))
+  };
+
   const renderText = ({ currentMessage }) => {
     const { text, user } = currentMessage;
     const { parsedText, type, params } = parseTextMessage(text);
@@ -58,6 +67,35 @@ const ChatScreen = ({
 
     if (type) {
       style = { ...style, ...styles.actionMessage };
+    }
+
+    switch (type) {
+      case 'TEXTCOINT':
+      case 'DATA':
+      case 'PAYMENT':
+      case 'VOTE':
+      case 'PROFILE':
+      case 'PROFILE_REQUEST':
+      case 'PROSAIC_CONTRACT': {
+        pressAction = () => copyText(params.originText);
+        break;
+      }
+      case "COMMAND": {
+        if (user._id === 1) {
+          pressAction = () => copyText(params.originText);
+        } else {
+          pressAction = () => onSend([{ text: parsedText }]);
+        }
+        break;
+      }
+      case "SUGGEST_COMMAND": {
+        if (user._id === 1) {
+          pressAction = () => copyText(params.originText);
+        } else {
+          pressAction = () => setText(parsedText);
+        }
+        break;
+      }
     }
 
     if (user._id === 1) {
@@ -90,52 +128,36 @@ const ChatScreen = ({
         case 'REQUEST_PAYMENT': {
           const { amount, address } = params;
           const paymentAmount = +amount.split("=")[1];
-          pressAction = () => {
-            navigation.navigate('MakePayment', {
-              walletAddress: address,
-              amount: paymentAmount
-            });
-          };
+          pressAction = () => navigation.navigate('MakePayment', { walletAddress: address, amount: paymentAmount });
           break;
         }
         case "WALLET_ADDRESS": {
-          if (user._id !== 1) {
-            const { address } = params;
-            pressAction = () => {
-              navigation.navigate('MakePayment', {
-                walletAddress: address
-              });
-            };
-          }
-          break;
-        }
-        case "COMMAND": {
-          if (user._id !== 1) {
-            pressAction = () => onSend([{ text: parsedText }]);
-          }
-          break;
-        }
-        case "SUGGEST_COMMAND": {
-          if (user._id !== 1) {
-            pressAction = () => setText(parsedText);
-          }
+          const { address } = params;
+          pressAction = () => navigation.navigate('MakePayment', { walletAddress: address });
           break;
         }
       }
     }
 
-    if (!type || (type === 'WALLET_ADDRESS' && user._id === 1)) {
+    if (
+      !type
+      || (type === 'WALLET_ADDRESS' && user._id === 1)
+    ) {
       return (
         <Text
           style={style}
-          onLongPress={() => Clipboard.setString(parsedText)}
+          onLongPress={() => copyText(parsedText)}
         >
           {parsedText}
         </Text>
       );
-    } else if (type === "URL") {
+    }
+    if (type === "URL") {
       return (
-        <TouchableOpacity onPress={() => Linking.openURL(parsedText)}>
+        <TouchableOpacity
+          onPress={() => Linking.openURL(parsedText)}
+          onLongPress={() => copyText(parsedText)}
+        >
           <Text style={user._id === 1
             ? { ...style, ...styles.url }
             : { ...style, ...styles.url, ...styles.blueUrl }}
@@ -144,9 +166,16 @@ const ChatScreen = ({
           </Text>
         </TouchableOpacity>
       )
-    } else if (user._id !== 1 && (type === "COMMAND" || type === "SUGGEST_COMMAND")) {
+    }
+    if (
+      user._id !== 1
+      && (type === "COMMAND" || type === "SUGGEST_COMMAND")
+    ) {
       return (
-        <TouchableOpacity onPress={pressAction}>
+        <TouchableOpacity
+          onPress={pressAction}
+          onLongPress={() => copyText(params.originText)}
+        >
           <Text style={{ ...style, ...styles.command }}>
             {parsedText}
           </Text>
@@ -157,16 +186,15 @@ const ChatScreen = ({
           )}
         </TouchableOpacity>
       )
-    } else {
-      return (
-        <TouchableOpacity
-          onPress={pressAction}
-          onLongPress={() => Clipboard.setString(parsedText)}
-        >
-          <Text style={style}>{parsedText}</Text>
-        </TouchableOpacity>
-      );
     }
+    return (
+      <TouchableOpacity
+        onPress={pressAction}
+        onLongPress={() => copyText(parsedText)}
+      >
+        <Text style={style}>{parsedText}</Text>
+      </TouchableOpacity>
+    );
   };
 
   const chatLoading = () => (

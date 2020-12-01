@@ -23,32 +23,39 @@ export const parseTextMessage = originalText => {
   let params = {};
 
   const parsedText = originalText
-    .replace(REG_TEXTCOINT, () => {
+    .replace(REG_TEXTCOINT, (str) => {
       type = 'TEXTCOINT';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
+    .replace(REGEX_DATA, (str) => {
       type = 'DATA';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
-      type = 'REGEX_PAYMENT';
+    .replace(REGEX_PAYMENT, (str) => {
+      type = 'PAYMENT';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
-      type = 'REGEX_VOTE';
+    .replace(REGEX_VOTE, (str) => {
+      type = 'VOTE';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
-      type = 'REGEX_PROFILE';
+    .replace(REGEX_PROFILE, (str) => {
+      type = 'PROFILE';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
-      type = 'REGEX_PROFILE_REQUEST';
+    .replace(REGEX_PROFILE_REQUEST, (str) => {
+      type = 'PROFILE_REQUEST';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
-    .replace(REGEX_DATA, () => {
-      type = 'REGEX_PROSAIC_CONTRACT';
+    .replace(REGEX_PROSAIC_CONTRACT, (str) => {
+      type = 'PROSAIC_CONTRACT';
+      params = { originText: str };
       return '[UNSUPPORTED ACTION]';
     })
     .replace(REG_WALLET_ADDRESS, (str, address) => {
@@ -88,10 +95,12 @@ export const parseTextMessage = originalText => {
     })
     .replace(REGEX_COMMAND, (str, description, command) => {
       type = "COMMAND";
+      params = { originText: str };
       return command;
     })
     .replace(REGEX_SUGGEST_COMMAND, (str, description, command) => {
       type = "SUGGEST_COMMAND";
+      params = { originText: str };
       return command;
     })
     .replace(REGEX_URL, (str, description, url) => {

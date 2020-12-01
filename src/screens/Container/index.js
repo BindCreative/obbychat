@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
 import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
@@ -42,6 +42,8 @@ const App = ({ walletInit, walletAddress }) => {
   const [appReady, setAppReady] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
 
+  const readyRef = useRef({ appReady });
+
   const redirect = () => {
     if (redirectParams) {
       const { navigate } = NavigationService;
@@ -83,7 +85,10 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       if (walletInit) {
-        setTimeout(() => setAppReady(true), 1000);
+        setTimeout(() => {
+          setAppReady(true);
+          readyRef.current.appReady = true;
+        }, 1000);
       }
     },
     [walletInit]
@@ -104,7 +109,7 @@ const App = ({ walletInit, walletAddress }) => {
   };
 
   const changeListener = (appState) => {
-    if (appReady) {
+    if (readyRef.current.appReady) {
       if (appState === 'active') {
         if (oClient.client.open) {
           oClient.client.ws.addEventListener('close', resubscribe);
