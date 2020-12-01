@@ -59,6 +59,24 @@ const ChatScreen = ({
     }))
   };
 
+  const renderTextMessage = (style, text) => (
+    <Text
+      style={style}
+      onLongPress={() => copyText(text)}
+    >
+      {text}
+    </Text>
+  );
+
+  const renderTouchableMessage = (style, parsedText, pressAction) => (
+    <TouchableOpacity
+      onPress={pressAction}
+      onLongPress={() => copyText(parsedText)}
+    >
+      <Text style={style}>{parsedText}</Text>
+    </TouchableOpacity>
+  );
+
   const renderText = ({ currentMessage }) => {
     const { text, user } = currentMessage;
     const { parsedText, type, params } = parseTextMessage(text);
@@ -67,6 +85,10 @@ const ChatScreen = ({
 
     if (type) {
       style = { ...style, ...styles.actionMessage };
+    }
+
+    if (user._id === 1) {
+      style = { ...style, ...styles.textMessageSent };
     }
 
     switch (type) {
@@ -96,13 +118,8 @@ const ChatScreen = ({
         }
         break;
       }
-    }
-
-    if (user._id === 1) {
-      style = { ...style, ...styles.textMessageSent };
-    } else {
-      switch (type) {
-        case 'SIGN_MESSAGE_REQUEST': {
+      case 'SIGN_MESSAGE_REQUEST': {
+        if (user._id !== 1) {
           pressAction = () => {
             Alert.alert('Do you want to sign this message?', '', [
               { text: 'No', style: 'cancel' },
@@ -123,78 +140,76 @@ const ChatScreen = ({
               },
             ]);
           };
-          break;
         }
-        case 'REQUEST_PAYMENT': {
-          const { amount, address } = params;
+        break;
+      }
+      case 'REQUEST_PAYMENT': {
+        if (user._id !== 1) {
+          const {amount, address} = params;
           const paymentAmount = +amount.split("=")[1];
-          pressAction = () => navigation.navigate('MakePayment', { walletAddress: address, amount: paymentAmount });
-          break;
+          pressAction = () => navigation.navigate('MakePayment', {walletAddress: address, amount: paymentAmount});
         }
-        case "WALLET_ADDRESS": {
-          const { address } = params;
-          pressAction = () => navigation.navigate('MakePayment', { walletAddress: address });
-          break;
+        break;
+      }
+      case "WALLET_ADDRESS": {
+        if (user._id !== 1) {
+          const {address} = params;
+          pressAction = () => navigation.navigate('MakePayment', {walletAddress: address});
         }
+        break;
       }
     }
 
-    if (
-      !type
-      || (type === 'WALLET_ADDRESS' && user._id === 1)
-    ) {
-      return (
-        <Text
-          style={style}
-          onLongPress={() => copyText(parsedText)}
-        >
-          {parsedText}
-        </Text>
-      );
-    }
-    if (type === "URL") {
-      return (
-        <TouchableOpacity
-          onPress={() => Linking.openURL(parsedText)}
-          onLongPress={() => copyText(parsedText)}
-        >
-          <Text style={user._id === 1
-            ? { ...style, ...styles.url }
-            : { ...style, ...styles.url, ...styles.blueUrl }}
+    switch (type) {
+      case null: return renderTextMessage(style, parsedText);
+      case 'WALLET_ADDRESS': {
+        if (user._id === 1) {
+          return renderTextMessage(style, parsedText);
+        } else {
+          return renderTouchableMessage(style, parsedText, pressAction);
+        }
+      }
+      case 'URL': {
+        return (
+          <TouchableOpacity
+            onPress={() => Linking.openURL(parsedText)}
+            onLongPress={() => copyText(parsedText)}
           >
-            {parsedText}
-          </Text>
-        </TouchableOpacity>
-      )
+            <Text style={user._id === 1
+              ? { ...style, ...styles.url }
+              : { ...style, ...styles.url, ...styles.blueUrl }}
+            >
+              {parsedText}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+      case "COMMAND":
+      case "SUGGEST_COMMAND": {
+        if (user._id !== 1) {
+          return (
+            <TouchableOpacity
+              onPress={pressAction}
+              onLongPress={() => copyText(params.originText)}
+            >
+              <Text style={{ ...style, ...styles.command }}>
+                {parsedText}
+              </Text>
+              {type === "SUGGEST_COMMAND" && (
+                <View style={styles.dotLineContainer}>
+                  <View style={styles.dotLine} />
+                </View>
+              )}
+            </TouchableOpacity>
+          )
+        } else {
+          return renderTouchableMessage(style, parsedText, pressAction);
+        }
+      }
+      default: {
+        return renderTouchableMessage(style, parsedText, pressAction)
+      }
     }
-    if (
-      user._id !== 1
-      && (type === "COMMAND" || type === "SUGGEST_COMMAND")
-    ) {
-      return (
-        <TouchableOpacity
-          onPress={pressAction}
-          onLongPress={() => copyText(params.originText)}
-        >
-          <Text style={{ ...style, ...styles.command }}>
-            {parsedText}
-          </Text>
-          {type === "SUGGEST_COMMAND" && (
-            <View style={styles.dotLineContainer}>
-              <View style={styles.dotLine} />
-            </View>
-          )}
-        </TouchableOpacity>
-      )
-    }
-    return (
-      <TouchableOpacity
-        onPress={pressAction}
-        onLongPress={() => copyText(parsedText)}
-      >
-        <Text style={style}>{parsedText}</Text>
-      </TouchableOpacity>
-    );
   };
 
   const chatLoading = () => (
