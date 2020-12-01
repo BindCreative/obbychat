@@ -128,6 +128,20 @@ export default StyleSheet.create({
     textDecorationLine: 'underline'
   },
   command: {
-    color: '#0000EE'
+    color: '#0000EE',
+    backgroundColor: 'transparent'
+  },
+  dotLineContainer: {
+    height: 1,
+    overflow: 'hidden',
+    marginLeft: 10,
+    marginRight: 10,
+    top: -6
+  },
+  dotLine: {
+    borderRadius: 1,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#0000EE',
   }
 });

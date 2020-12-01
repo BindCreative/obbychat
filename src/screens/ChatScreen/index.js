@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Fragment } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-native';
@@ -150,6 +150,11 @@ const ChatScreen = ({
           <Text style={{ ...style, ...styles.command }}>
             {parsedText}
           </Text>
+          {type === "SUGGEST_COMMAND" && (
+            <View style={styles.dotLineContainer}>
+              <View style={styles.dotLine} />
+            </View>
+          )}
         </TouchableOpacity>
       )
     } else {
