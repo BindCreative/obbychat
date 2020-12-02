@@ -120,14 +120,16 @@ const ChatScreen = ({
                         text: 'Yes',
                         onPress: () => {
                           const { privateKey } = fromWif(addressWif, testnet);
-                          const signedMessage = signMessage(params.messageToSign, { testnet, privateKey });
+                          const signedMessage = signMessage(data.messageToSign, { testnet, privateKey });
                           const message = Buffer.from(JSON.stringify(signedMessage)).toString('base64');
                           onSend([{ text: `[Signed message](signed-message:${message})` }]);
                         },
                       },
                     ]);
                   }}
-                >{`\"${messageToSign}\"`}</TouchableOpacity>
+                >
+                  <Text style={replacedStyle}>{`\"${messageToSign}\"`}</Text>
+                </TouchableOpacity>
               </Fragment>
             )
             : <Text style={style}>{`Request to sign message: \"${messageToSign}\"`}</Text>
