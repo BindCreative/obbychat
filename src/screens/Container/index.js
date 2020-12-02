@@ -23,14 +23,14 @@ import { selectWalletInit, selectWalletInitAddress } from "../../selectors/walle
 const prefix = 'obyte-tn:|obyte';
 
 setJSExceptionHandler((error, isFatal) => {
-  if (error) {
+  if (error && isFatal) {
     console.log('caught global error');
     Alert.alert(
       "Unexpected error occurred",
       `
-    Error: ${isFatal ? "Fatal" : ""}
-    ${error.name}
-    ${error.message}
+      Fatal Error
+      ${error.name}
+      ${error.message}
     `
     )
   }

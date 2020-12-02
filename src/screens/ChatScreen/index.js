@@ -21,15 +21,23 @@ import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
 import { testnet } from "../../lib/oCustom";
 
+const messageTypes = [
+  "WALLET_ADDRESS",
+  "REQUEST_PAYMENT",
+  "SIGN_MESSAGE_REQUEST",
+  "SIGNED_MESSAGE",
+  "URL",
+  "COMMAND",
+  "SUGGEST_COMMAND"
+];
+
 const ChatScreen = ({
   myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute, addressWif
 }) => {
   const dispatch = useDispatch();
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [text, setText] = useState("");
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
-  const onRemoveMessage = data => dispatch(removeMessage(data));
   const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
 
   const onSend = (messages = []) => {
@@ -51,164 +59,143 @@ const ChatScreen = ({
     // TODO: make pagination from reducer
   };
 
-  const copyText = (text) => {
-    Clipboard.setString(text);
-    dispatch(setToastMessage({
-      message: 'Copied to clipboard',
-      duration: 1000
-    }))
-  };
-
-  const renderTextMessage = (style, text) => (
-    <Text
-      style={style}
-      onLongPress={() => copyText(text)}
-    >
-      {text}
-    </Text>
-  );
-
-  const renderTouchableMessage = (style, parsedText, pressAction) => (
-    <TouchableOpacity
-      onPress={pressAction}
-      onLongPress={() => copyText(parsedText)}
-    >
-      <Text style={style}>{parsedText}</Text>
-    </TouchableOpacity>
-  );
-
   const renderText = ({ currentMessage }) => {
     const { text, user } = currentMessage;
-    const { parsedText, type, params } = parseTextMessage(text);
-    let style = styles.textMessage;
-    let pressAction = () => {};
-
-    if (type) {
-      style = { ...style, ...styles.actionMessage };
-    }
+    const { originalText, parsedText, actions } = parseTextMessage(text);
+    let style = styles.text;
 
     if (user._id === 1) {
       style = { ...style, ...styles.textMessageSent };
     }
 
-    switch (type) {
-      case 'TEXTCOINT':
-      case 'DATA':
-      case 'PAYMENT':
-      case 'VOTE':
-      case 'PROFILE':
-      case 'PROFILE_REQUEST':
-      case 'PROSAIC_CONTRACT': {
-        pressAction = () => copyText(params.originText);
-        break;
-      }
-      case "COMMAND": {
-        if (user._id === 1) {
-          pressAction = () => copyText(params.originText);
-        } else {
-          pressAction = () => onSend([{ text: parsedText }]);
-        }
-        break;
-      }
-      case "SUGGEST_COMMAND": {
-        if (user._id === 1) {
-          pressAction = () => copyText(params.originText);
-        } else {
-          pressAction = () => setText(parsedText);
-        }
-        break;
-      }
-      case 'SIGN_MESSAGE_REQUEST': {
-        if (user._id !== 1) {
-          pressAction = () => {
-            Alert.alert('Do you want to sign this message?', '', [
-              { text: 'No', style: 'cancel' },
-              {
-                text: 'Yes',
-                onPress: () => {
-                  const { privateKey } = fromWif(addressWif, testnet);
-                  const signedMessage = signMessage(
-                    params.messageToSign,
-                    {
-                      testnet,
-                      privateKey
-                    }
-                  );
-                  const message = Buffer.from(JSON.stringify(signedMessage)).toString('base64');
-                  onSend([{ text: `[Signed message](signed-message:${message})` }]);
-                },
-              },
-            ]);
-          };
-        }
-        break;
-      }
-      case 'REQUEST_PAYMENT': {
-        if (user._id !== 1) {
-          const {amount, address} = params;
-          const paymentAmount = +amount.split("=")[1];
-          pressAction = () => navigation.navigate('MakePayment', {walletAddress: address, amount: paymentAmount});
-        }
-        break;
-      }
-      case "WALLET_ADDRESS": {
-        if (user._id !== 1) {
-          const {address} = params;
-          pressAction = () => navigation.navigate('MakePayment', {walletAddress: address});
-        }
-        break;
-      }
-    }
-
-    switch (type) {
-      case null: return renderTextMessage(style, parsedText);
-      case 'WALLET_ADDRESS': {
-        if (user._id === 1) {
-          return renderTextMessage(style, parsedText);
-        } else {
-          return renderTouchableMessage(style, parsedText, pressAction);
-        }
-      }
-      case 'URL': {
-        return (
-          <TouchableOpacity
-            onPress={() => Linking.openURL(parsedText)}
-            onLongPress={() => copyText(parsedText)}
-          >
-            <Text style={user._id === 1
-              ? { ...style, ...styles.url }
-              : { ...style, ...styles.url, ...styles.blueUrl }}
-            >
-              {parsedText}
-            </Text>
-          </TouchableOpacity>
-        );
-      }
-      case "COMMAND":
-      case "SUGGEST_COMMAND": {
-        if (user._id !== 1) {
+    const replaceText = ({ type, ...data }) => {
+      const replacedStyle = { ...style, ...styles.actionMessage, ...styles.command };
+      switch (type) {
+        case "TEXTCOIN":
+        case "DATA":
+        case "PAYMENT":
+        case "VOTE":
+        case "PROFILE":
+        case "PROFILE_REQUEST":
+        case "PROSAIC_CONTRACT": {
+          const { text } = data;
           return (
-            <TouchableOpacity
-              onPress={pressAction}
-              onLongPress={() => copyText(params.originText)}
-            >
-              <Text style={{ ...style, ...styles.command }}>
-                {parsedText}
-              </Text>
-              {type === "SUGGEST_COMMAND" && (
+            <Text style={style}>{text}</Text>
+          )
+        }
+        case "WALLET_ADDRESS": {
+          const { address } = data;
+          return user._id !== 1
+            ? (
+              <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}>
+                <Text style={replacedStyle}>{address}</Text>
+              </TouchableOpacity>
+            )
+            : <Text style={style}>{address}</Text>
+        }
+        case "REQUEST_PAYMENT": {
+          const { amount, address } = data;
+          return user._id !== 1
+            ? (
+              <Fragment>
+                <Text style={style}>Payment request: </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: address, amount: +amount.split("=")[1] })}>
+                  <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
+                </TouchableOpacity>
+              </Fragment>
+            )
+            : <Text style={style}>{`Payment request: ${amount}\n${address}`}</Text>
+        }
+        case "SIGN_MESSAGE_REQUEST": {
+          const { messageToSign } = data;
+          return user._id !== 1
+            ? (
+              <Fragment>
+                <Text style={style}>Request to sign message: </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    Alert.alert('Do you want to sign this message?', '', [
+                      { text: 'No', style: 'cancel' },
+                      {
+                        text: 'Yes',
+                        onPress: () => {
+                          const { privateKey } = fromWif(addressWif, testnet);
+                          const signedMessage = signMessage(params.messageToSign, { testnet, privateKey });
+                          const message = Buffer.from(JSON.stringify(signedMessage)).toString('base64');
+                          onSend([{ text: `[Signed message](signed-message:${message})` }]);
+                        },
+                      },
+                    ]);
+                  }}
+                >{`\"${messageToSign}\"`}</TouchableOpacity>
+              </Fragment>
+            )
+            : <Text style={style}>{`Request to sign message: \"${messageToSign}\"`}</Text>
+        }
+        case "SIGNED_MESSAGE": {
+          return <Text style={style}>{`Signed message: ${data.text}`}</Text>
+        }
+        case "URL": {
+          const { url } = data;
+          return (
+            <TouchableOpacity onPress={() => Linking.openURL(url)}>
+              <Text style={{ ...replacedStyle, ...styles.url }}>{url}</Text>
+            </TouchableOpacity>
+          )
+        }
+        case "COMMAND": {
+          const { command, description } = data;
+          return user._id !== 1
+            ? (
+              <TouchableOpacity onPress={() => onSend([{ text: command }])}>
+                <Text style={replacedStyle}>{description}</Text>
+              </TouchableOpacity>
+            )
+            : <Text style={style}>{description}</Text>
+        }
+        case "SUGGEST_COMMAND": {
+          const { command, description } = data;
+          return user._id !== 1
+            ? (
+              <TouchableOpacity onPress={() => setText(command)}>
+                <Text style={{ ...styles.command, ...styles.suggestCommand }}>{description}</Text>
                 <View style={styles.dotLineContainer}>
                   <View style={styles.dotLine} />
                 </View>
-              )}
-            </TouchableOpacity>
-          )
-        } else {
-          return renderTouchableMessage(style, parsedText, pressAction);
+              </TouchableOpacity>
+            )
+            : <Text style={style}>{description}</Text>
         }
       }
-      default: {
-        return renderTouchableMessage(style, parsedText, pressAction)
-      }
+    };
+
+    if (!Object.keys(actions).length) {
+      return (
+        <Text style={{ ...styles.message, ...style }}>
+          {originalText}
+        </Text>
+      )
+    } else {
+      const separators = Object.keys(actions).map(separator => `\\{${separator.slice(1, separator.length - 1)}\\}`);
+      const separateRegExp = new RegExp(`(${separators.join('|')})`, "g");
+      const splittedText = parsedText.split(separateRegExp);
+
+      Object.keys(actions).map((key) => {
+        const actionIndex = splittedText.indexOf(key);
+        splittedText[actionIndex] = replaceText(actions[key]);
+      });
+
+      return (
+        <Text style={styles.message}>
+          {splittedText.map((text) => {
+            if (typeof text === 'string') {
+              return text ? <Text style={style}>{text}</Text> : null
+            } else {
+              return text
+            }
+          })}
+        </Text>
+      )
     }
   };
 

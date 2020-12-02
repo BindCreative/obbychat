@@ -1,3 +1,5 @@
+import crypto from 'react-native-crypto';
+import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { getSignedMessageInfoFromJsonBase64 } from './oCustom';
 
 export const REG_WALLET_ADDRESS = /^([A-Z0-9]{32})$/g;
@@ -10,7 +12,7 @@ export const REGEX_COMMAND = /\[(.+?)\]\(command:(.+?)\)/g;
 export const REGEX_SUGGEST_COMMAND = /\[(.+?)\]\(suggest-command:(.+?)\)/g;
 
 // Unsupported messages
-export const REG_TEXTCOINT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):textcoin\?([a-z-]+))\)/g;
+export const REGEX_TEXTCOIN = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):textcoin\?([a-z-]+))\)/g;
 export const REGEX_DATA = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):data\?(.+))\)/g;
 export const REGEX_PAYMENT = /\[(.+?)\]\(payment:([\w\/+=]+?)\)/g;
 export const REGEX_VOTE = /\[(.+?)\]\(vote:([\w\/+=]+?)\)/g;
@@ -21,59 +23,60 @@ export const REGEX_PROSAIC_CONTRACT = /\(prosaic-contract:([\w\/+=]+?)\)/g;
 export const parseTextMessage = originalText => {
   let type = null;
   let params = {};
+  const actions = {};
+  let index = crypto.randomBytes(4).readUInt32BE(0);
+  const toDelayedReplacement = (data) => {
+    index++;
+    const key = `{${index}}`;
+    actions[key] = data;
+    return key;
+  };
 
   const parsedText = originalText
-    .replace(REG_TEXTCOINT, (str) => {
-      type = 'TEXTCOINT';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+    .replace(REGEX_TEXTCOIN, () => {
+      type = 'TEXTCOIN';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_DATA, (str) => {
+    .replace(REGEX_DATA, () => {
       type = 'DATA';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PAYMENT, (str) => {
+    .replace(REGEX_PAYMENT, () => {
       type = 'PAYMENT';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_VOTE, (str) => {
+    .replace(REGEX_VOTE, () => {
       type = 'VOTE';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PROFILE, (str) => {
+    .replace(REGEX_PROFILE, () => {
       type = 'PROFILE';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PROFILE_REQUEST, (str) => {
+    .replace(REGEX_PROFILE_REQUEST, () => {
       type = 'PROFILE_REQUEST';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PROSAIC_CONTRACT, (str) => {
+    .replace(REGEX_PROSAIC_CONTRACT, () => {
       type = 'PROSAIC_CONTRACT';
-      params = { originText: str };
-      return '[UNSUPPORTED ACTION]';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
     .replace(REG_WALLET_ADDRESS, (str, address) => {
       type = 'WALLET_ADDRESS';
       params = { address };
-      return address;
+      return toDelayedReplacement({ type, address });
     })
     .replace(REG_REQUEST_PAYMENT, (str, payload, address, amount) => {
       type = 'REQUEST_PAYMENT';
       params = { amount, address };
-      return `Payment request: ${amount}\n${address}`;
+      return toDelayedReplacement({ type, address, amount });
     })
     .replace(
       REGEX_SIGN_MESSAGE_REQUEST,
       (str, description, networkAware, messageToSign) => {
         type = 'SIGN_MESSAGE_REQUEST';
         params = { messageToSign };
-        return `Request to sign message: \"${messageToSign}\"`;
+        return toDelayedReplacement({ type, messageToSign });
       },
     )
     .replace(REGEX_SIGNED_MESSAGE, (str, description, signedMessageBase64) => {
@@ -86,27 +89,20 @@ export const parseTextMessage = originalText => {
           : `\"${JSON.stringify(objSignedMessage.signed_message, null, '\t')}\"`;
 
       text += info.valid ? ' (valid)' : ' (invalid)';
-
-      return `Signed message: ${text}`;
+      return toDelayedReplacement({ type, text });
     })
-    .replace(REGEX_URL, (str, description, url) => {
+    .replace(REGEX_URL, (url) => {
       type = "URL";
-      return url;
+      return toDelayedReplacement({ type, url });
     })
     .replace(REGEX_COMMAND, (str, description, command) => {
       type = "COMMAND";
-      params = { originText: str };
-      return command;
+      return toDelayedReplacement({ type, description, command });
     })
     .replace(REGEX_SUGGEST_COMMAND, (str, description, command) => {
       type = "SUGGEST_COMMAND";
-      params = { originText: str };
-      return command;
-    })
-    .replace(REGEX_URL, (str, description, url) => {
-      type = "URL";
-      return url;
+      return toDelayedReplacement({ type, description, command });
     });
 
-  return { originalText, parsedText, type, params };
+  return { originalText, parsedText, actions };
 };
