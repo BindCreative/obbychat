@@ -84,14 +84,15 @@ const ChatScreen = ({
           )
         }
         case "WALLET_ADDRESS": {
-          const { address } = data;
+          const { address, description } = data;
           return user._id !== 1
             ? (
               <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}>
+                {description ? <Text style={style}>{description}</Text> : null}
                 <Text style={replacedStyle}>{address}</Text>
               </TouchableOpacity>
             )
-            : <Text style={style}>{address}</Text>
+            : <Text style={style}>{description ? `${description}${address}` : address}</Text>
         }
         case "REQUEST_PAYMENT": {
           const { amount, address } = data;
@@ -135,7 +136,7 @@ const ChatScreen = ({
             : <Text style={style}>{`Request to sign message: \"${messageToSign}\"`}</Text>
         }
         case "SIGNED_MESSAGE": {
-          return <Text style={style}>{`Signed message: ${data.text}`}</Text>
+          return <Text style={{ ...style, ...styles.actionMessage }}>{`Signed message: ${data.text}`}</Text>
         }
         case "URL": {
           const { url } = data;

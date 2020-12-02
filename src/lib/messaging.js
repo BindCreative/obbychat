@@ -2,7 +2,7 @@ import crypto from 'react-native-crypto';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { getSignedMessageInfoFromJsonBase64 } from './oCustom';
 
-export const REG_WALLET_ADDRESS = /^([A-Z0-9]{32})$/g;
+export const REG_WALLET_ADDRESS = /(.*?\s|^)([2-7A-Z]{32})([\s.,;!:].*?|$)/g;
 export const REG_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)\)/g;
 export const REGEX_SIGN_MESSAGE_REQUEST = /\[(.+?)\]\(sign-message-request(-network-aware)?:(.+?)\)/g;
 export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:([\w\/+=]+?)\)/g;
@@ -61,21 +61,18 @@ export const parseTextMessage = originalText => {
       type = 'PROSAIC_CONTRACT';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REG_WALLET_ADDRESS, (str, address) => {
+    .replace(REG_WALLET_ADDRESS, (str, description, address) => {
       type = 'WALLET_ADDRESS';
-      params = { address };
-      return toDelayedReplacement({ type, address });
+      return toDelayedReplacement({ type, description, address });
     })
     .replace(REG_REQUEST_PAYMENT, (str, payload, address, amount) => {
       type = 'REQUEST_PAYMENT';
-      params = { amount, address };
       return toDelayedReplacement({ type, address, amount });
     })
     .replace(
       REGEX_SIGN_MESSAGE_REQUEST,
       (str, description, networkAware, messageToSign) => {
         type = 'SIGN_MESSAGE_REQUEST';
-        params = { messageToSign };
         return toDelayedReplacement({ type, messageToSign });
       },
     )
