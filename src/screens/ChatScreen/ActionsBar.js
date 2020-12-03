@@ -17,6 +17,7 @@ const ActionsBar = ({
   myWalletAddress,
   correspondentWalletAddress,
   correspondentAddress,
+  insertAddress
 }) => {
   const actionSheet = useRef();
 
@@ -63,7 +64,7 @@ const ActionsBar = ({
     index => {
       switch (index) {
         case 0:
-          onSend([{ text: myWalletAddress }]);
+          insertAddress(myWalletAddress);
           break;
         case 1:
           handleClearChat();

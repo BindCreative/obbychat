@@ -55,6 +55,11 @@ const ChatScreen = ({
     }
   };
 
+  const insertAddress = (address) => {
+    const separator = text[text.length - 1] === " " ? "" : " ";
+    setText(`${text}${separator}${address} `);
+  };
+
   const onLoadEarlier = () => {
     // TODO: make pagination from reducer
   };
@@ -69,7 +74,10 @@ const ChatScreen = ({
     }
 
     const replaceText = ({ type, ...data }) => {
-      const replacedStyle = { ...style, ...styles.actionMessage, ...styles.command };
+      let replacedStyle = { ...style, ...styles.actionMessage, ...styles.command };
+      if (user._id === 1) {
+        replacedStyle = { ...replacedStyle, ...styles.outComingCommand }
+      }
       switch (type) {
         case "TEXTCOIN":
         case "DATA":
@@ -84,14 +92,14 @@ const ChatScreen = ({
           )
         }
         case "WALLET_ADDRESS": {
-          const { address, pre, post } = data;
+          const { address } = data;
           return user._id !== 1
             ? (
               <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}>
                 <Text style={replacedStyle}>{address}</Text>
               </TouchableOpacity>
             )
-            : <Text style={style}>{address}</Text>
+            : <Text style={replacedStyle}>{address}</Text>
         }
         case "REQUEST_PAYMENT": {
           const { amount, address } = data;
@@ -104,7 +112,12 @@ const ChatScreen = ({
                 </TouchableOpacity>
               </Fragment>
             )
-            : <Text style={style}>{`Payment request: ${amount}\n${address}`}</Text>
+            : (
+              <Text>
+                <Text style={style}>Payment request: </Text>
+                <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
+              </Text>
+            )
         }
         case "SIGN_MESSAGE_REQUEST": {
           const { messageToSign } = data;
@@ -132,7 +145,12 @@ const ChatScreen = ({
                 </TouchableOpacity>
               </Fragment>
             )
-            : <Text style={style}>{`Request to sign message: \"${messageToSign}\"`}</Text>
+            : (
+              <Text>
+                <Text style={style}>Request to sign message: </Text>
+                <Text style={replacedStyle}>{`\"${messageToSign}\"`}</Text>
+              </Text>
+            )
         }
         case "SIGNED_MESSAGE": {
           return <Text style={{ ...style, ...styles.actionMessage }}>{`Signed message: ${data.text}`}</Text>
@@ -153,7 +171,7 @@ const ChatScreen = ({
                 <Text style={replacedStyle}>{description}</Text>
               </TouchableOpacity>
             )
-            : <Text style={style}>{description}</Text>
+            : <Text style={replacedStyle}>{description}</Text>
         }
         case "SUGGEST_COMMAND": {
           const { command, description } = data;
@@ -166,7 +184,14 @@ const ChatScreen = ({
                 </View>
               </TouchableOpacity>
             )
-            : <Text style={style}>{description}</Text>
+            : (
+              <View>
+                <Text style={{ ...styles.command, ...styles.suggestCommand, ...styles.outComingCommand }}>{description}</Text>
+                <View style={styles.dotLineContainer}>
+                  <View style={{ ...styles.dotLine, ...styles.outComingDotLine }} />
+                </View>
+              </View>
+            )
         }
       }
     };
@@ -232,6 +257,7 @@ const ChatScreen = ({
             clearChatHistory={onClearChatHistory}
             removeCorrespondent={onRemoveCorespondent}
             onSend={onSend}
+            insertAddress={insertAddress}
             correspondentWalletAddress={correspondentWalletAddress}
             correspondentAddress={correspondent.address}
           />

@@ -123,19 +123,16 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  blueUrl: {
-    color: colors.blue
-  },
   url: {
-    color: colors.blue,
     textDecorationLine: 'underline'
   },
   command: {
     color: colors.blue,
     fontFamily: 'Lato-Regular',
-    fontStyle: 'italic',
-    fontSize: 13,
     marginBottom: -3
+  },
+  outComingCommand: {
+    color: colors.lightBlue
   },
   suggestCommand: {
     marginBottom: -5
@@ -152,5 +149,8 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderStyle: 'dashed',
     borderColor: colors.blue,
+  },
+  outComingDotLine: {
+    borderColor: colors.lightBlue
   }
 });
