@@ -1,19 +1,23 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import PropTypes from 'prop-types';
-import { StatusBar, TouchableOpacity, View } from 'react-native';
+import { StatusBar, Text, View, ActivityIndicator } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import SafeAreaView from 'react-native-safe-area-view';
+import _ from 'lodash';
 
 import { acceptInvitation } from './../../actions/correspondents';
 import Button from './../../components/Button';
+import LoadingModal from '../../components/LoadingModal';
 import styles from './styles';
+import { colors } from './../../constants';
 
 class QRScannerScreen extends React.Component {
   constructor(props) {
     super(props);
     this.handleBarCodeScanned = this.handleBarCodeScanned.bind(this);
+    this.state = {
+      scanned: false
+    };
   }
 
   componentDidMount() {
@@ -21,15 +25,18 @@ class QRScannerScreen extends React.Component {
   }
 
   handleBarCodeScanned = ({ data }) => {
-    switch (this.props.type) {
+    const type = _.get(this.props.navigation, 'state.params.type');
+    switch (type) {
       case 'WALLET_ADDRESS':
         return this.props.navigation.navigate('MakePayment', {
           walletAddress: data.replace(/^.*:/, ''),
         });
       case 'DEVICE_INVITATION':
-        this.props.acceptInvitation(data);
+        this.setState({ scanned: true });
+        setTimeout(() => this.props.acceptInvitation(data), 0);
         return;
       default:
+        this.setState({ scanned: false });
     }
   };
 
@@ -39,31 +46,26 @@ class QRScannerScreen extends React.Component {
 
   render() {
     return (
-      <QRCodeScanner
-        containerStyle={styles.container}
-        cameraStyle={styles.scanner}
-        onRead={this.handleBarCodeScanned}
-        bottomContent={
-          <SafeAreaView style={styles.bottomContent}>
-            <Button
-              text='Cancel'
-              style={styles.backBtn}
-              onPress={() => this.props.navigation.pop()}
-            />
-          </SafeAreaView>
-        }
-      />
+      <Fragment>
+        {this.state.scanned && (
+          <LoadingModal />
+        )}
+        <QRCodeScanner
+          containerStyle={styles.container}
+          cameraStyle={styles.scanner}
+          onRead={this.handleBarCodeScanned}
+        />
+        <View style={styles.backBtnContainer}>
+          <Button
+            text='Cancel'
+            style={styles.backBtn}
+            onPress={() => this.props.navigation.pop()}
+          />
+        </View>
+      </Fragment>
     );
   }
 }
-
-QRScannerScreen.defaultProps = {
-  type: 'WALLET_ADDRESS',
-};
-
-QRScannerScreen.propTypes = {
-  type: PropTypes.string.isRequired,
-};
 
 const mapStateToProps = createStructuredSelector({});
 

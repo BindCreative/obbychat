@@ -1,10 +1,11 @@
 import { actionTypes } from './../constants';
 
-export const initWallet = () => ({
+export const initWallet = (payload) => ({
   type: actionTypes.WALLET_INIT_START,
+  payload
 });
 
-export const initWalletSuccess = payload => ({
+export const initWalletSuccess = (payload) => ({
   type: actionTypes.WALLET_INIT_SUCCESS,
   payload,
 });
@@ -14,8 +15,9 @@ export const initWalletFail = payload => ({
   payload,
 });
 
-export const createInitialWalletStart = () => ({
+export const createInitialWalletStart = (payload) => ({
   type: actionTypes.INITIAL_WALLET_CREATE_START,
+  payload
 });
 
 export const createInitialWalletSuccess = payload => ({

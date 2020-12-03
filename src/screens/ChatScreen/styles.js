@@ -102,10 +102,12 @@ export default StyleSheet.create({
   chatArea: {
     backgroundColor: 'red',
   },
-  textMessage: {
+  message: {
     marginHorizontal: 10,
     marginTop: 10,
     marginBottom: 5,
+  },
+  text: {
     fontFamily: 'Lato-Regular',
     fontSize: 13,
     color: colors.black,
@@ -116,4 +118,39 @@ export default StyleSheet.create({
   textMessageSent: {
     color: colors.white,
   },
+  chatLoader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  url: {
+    textDecorationLine: 'underline'
+  },
+  command: {
+    color: colors.blue,
+    fontFamily: 'Lato-Regular',
+    marginBottom: -3
+  },
+  outComingCommand: {
+    color: colors.lightBlue
+  },
+  suggestCommand: {
+    marginBottom: -5
+  },
+  dotLineContainer: {
+    // position: 'absolute',
+    width: '100%',
+    height: 1,
+    overflow: 'hidden',
+    bottom: -2
+  },
+  dotLine: {
+    borderRadius: 1,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: colors.blue,
+  },
+  outComingDotLine: {
+    borderColor: colors.lightBlue
+  }
 });

@@ -5,7 +5,13 @@ export const addMessageStart = ({ address, pubKey, message, type }) => ({
   payload: { address, pubKey, message, type },
 });
 
+export const addMessageTemp = ({ id, address, pubKey, message, type }) => ({
+  type: actionTypes.MESSAGE_ADD_TEMP,
+  payload: { id, address, pubKey, message, type },
+});
+
 export const addMessageSuccess = ({
+  id,
   address,
   messageType,
   message,
@@ -14,6 +20,7 @@ export const addMessageSuccess = ({
 }) => ({
   type: actionTypes.MESSAGE_ADD_SUCCESS,
   payload: {
+    id,
     address,
     messageType,
     message,
@@ -23,8 +30,9 @@ export const addMessageSuccess = ({
   },
 });
 
-export const addMessageFail = () => ({
+export const addMessageFail = ({ id }) => ({
   type: actionTypes.MESSAGE_ADD_FAIL,
+  payload: { id },
 });
 
 export const receiveMessageStart = ({
@@ -40,6 +48,7 @@ export const receiveMessageStart = ({
 });
 
 export const receiveMessageSuccess = ({
+  id,
   address,
   message,
   messageType,
@@ -48,7 +57,15 @@ export const receiveMessageSuccess = ({
   timestamp,
 }) => ({
   type: actionTypes.MESSAGE_RECEIVE_SUCCESS,
-  payload: { address, message, messageType, messageHash, handleAs, timestamp },
+  payload: {
+    id,
+    address,
+    message,
+    messageType,
+    messageHash,
+    handleAs,
+    timestamp,
+  },
 });
 
 export const receiveMessageFail = () => ({

@@ -4,7 +4,7 @@ import { actionTypes } from './../constants';
 
 export function* showToastMessage(action) {
   yield call(Toast.show, action.payload.message, {
-    duration: Toast.durations.LONG,
+    duration: action.payload.duration || Toast.durations.LONG,
     position: Toast.positions.BOTTOM,
     shadow: true,
     animation: true,

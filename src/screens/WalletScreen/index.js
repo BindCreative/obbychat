@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import {
   TouchableOpacity,
   Text,
   View,
-  ScrollView,
+  FlatList,
   RefreshControl,
   Dimensions,
+  InteractionManager
 } from 'react-native';
 import ContentLoader, { Rect } from 'react-content-loader/native';
 import Moment from 'react-moment';
@@ -38,19 +39,24 @@ const TX_TYPES = [
 class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.renderTx = this.renderTx.bind(this);
-    this.renderLoadingScreen = this.renderLoadingScreen.bind(this);
     this.state = {
       unit: 'MB',
       txType: 'ALL',
     };
   }
 
-  renderTx(tx, i) {
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({ initialized: true });
+    });
+  }
+
+  renderTx = (data) => {
+    const { item: tx } = data;
+
     if (this.state.txType === 'ALL' || this.state.txType === tx.type) {
       return (
         <TouchableOpacity
-          key={i}
           style={styles.transaction}
           onPress={() =>
             NavigationService.navigate('TransactionInfo', { transaction: tx })
@@ -69,7 +75,13 @@ class WalletScreen extends React.Component {
               {tx.timestamp}
             </Moment>
           </View>
-          <Text style={styles.txType}>{tx.type}</Text>
+          <Text style={styles.txType}>{
+            tx.confirmed
+              ? tx.type
+              : tx.type === 'RECEIVED'
+                ? "RECEIVING"
+                : "SENDING"
+          }</Text>
           <Text style={styles.txAddress}>
             {tx.type === 'RECEIVED' && tx.fromAddress.join(', ')}
             {tx.type === 'SENT' && tx.toAddress.join(', ')}
@@ -77,63 +89,86 @@ class WalletScreen extends React.Component {
         </TouchableOpacity>
       );
     }
-  }
+  };
 
-  renderLoadingScreen() {
-    return (
-      <SafeAreaView
-        forceInset={{ top: 'always', bottom: 'always' }}
-        style={styles.container}
+  renderLoadingScreen = () => (
+    <SafeAreaView
+      forceInset={{ top: 'always', bottom: 'always' }}
+      style={styles.container}
+    >
+      <ContentLoader
+        width={Dimensions.get('window').width - 10}
+        height={Dimensions.get('window').height * 0.75}
       >
-        <ContentLoader
-          width={Dimensions.get('window').width - 10}
-          height={Dimensions.get('window').height * 0.75}
-        >
-          <Rect x='10' y='10' rx='4' ry='4' width='300' height='40' />
-          <Rect x='10' y='62' rx='4' ry='4' width='240' height='32' />
-          <Rect
-            x='10'
-            y='150'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='260'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='370'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-          <Rect
-            x='10'
-            y='480'
-            rx='4'
-            ry='4'
-            width={Dimensions.get('window').width}
-            height='100'
-          />
-        </ContentLoader>
-      </SafeAreaView>
-    );
-  }
+        <Rect x='10' y='10' rx='4' ry='4' width='300' height='40' />
+        <Rect x='10' y='62' rx='4' ry='4' width='240' height='32' />
+        <Rect
+          x='10'
+          y='150'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='260'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='370'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+        <Rect
+          x='10'
+          y='480'
+          rx='4'
+          ry='4'
+          width={Dimensions.get('window').width}
+          height='100'
+        />
+      </ContentLoader>
+    </SafeAreaView>
+  );
 
-  render() {
-    const { loading, loadBalances } = this.props;
+  renderHeader = () => {
     const balanceInDollars = (
       bytesToUnit(this.props.walletBalance, 'GB') *
       this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
+
+    return (
+      <React.Fragment>
+        <View style={styles.balanceRow}>
+          <Text style={styles.balanceText}>
+            {bytesToUnit(this.props.walletBalance, this.state.unit)}
+          </Text>
+          <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
+        </View>
+        <View style={styles.balanceRow}>
+          <Text style={styles.convertedBalanceText}>${balanceInDollars}</Text>
+        </View>
+        <View style={styles.txHeaderBlock}>
+          <Text style={styles.txHeaderText}>Transactions</Text>
+          <ActionSheet
+            currentValue={this.state.txType}
+            onChange={txType => this.setState({ txType })}
+            items={TX_TYPES}
+          />
+        </View>
+      </React.Fragment>
+    );
+  };
+
+  render() {
+    const { loading, loadBalances } = this.props;
 
     return (
       <SafeAreaView
@@ -147,43 +182,22 @@ class WalletScreen extends React.Component {
           titlePosition='left'
           right={<ActionsBar />}
         />
-        {loading && this.renderLoadingScreen()}
-        {!loading && (
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={loading} onRefresh={loadBalances} />
-            }
-          >
-            <View style={styles.content}>
-              <View style={styles.balanceRow}>
-                <Text style={styles.balanceText}>
-                  {bytesToUnit(this.props.walletBalance, this.state.unit)}
-                </Text>
-                <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
-              </View>
-              <View style={styles.balanceRow}>
-                <Text style={styles.convertedBalanceText}>
-                  ${balanceInDollars}
-                </Text>
-              </View>
-              <View style={styles.txHeaderBlock}>
-                <Text style={styles.txHeaderText}>Transactions</Text>
-                <ActionSheet
-                  currentValue={this.state.txType}
-                  onChange={txType => this.setState({ txType })}
-                  items={TX_TYPES}
-                />
-              </View>
-              {this.props.transactions.length > 0 && (
-                <View style={styles.transactions}>
-                  {!!this.props.transactions === true &&
-                    this.props.transactions.map((tx, i) =>
-                      this.renderTx(tx, i),
-                    )}
-                </View>
-              )}
-            </View>
-          </ScrollView>
+        {this.state.initialized && (
+          <Fragment>
+            {loading && this.renderLoadingScreen()}
+            {!loading && (
+              <FlatList
+                data={this.props.transactions}
+                contentContainerStyle={styles.content}
+                keyExtractor={tx => tx.unitId}
+                renderItem={this.renderTx}
+                ListHeaderComponent={this.renderHeader}
+                refreshControl={
+                  <RefreshControl refreshing={loading} onRefresh={loadBalances} />
+                }
+              />
+            )}
+          </Fragment>
         )}
       </SafeAreaView>
     );

@@ -1,5 +1,5 @@
 import React from 'react';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, View } from 'react-native';
@@ -26,7 +26,7 @@ class ActionsBar extends React.Component {
   render() {
     return (
       <View style={styles.actionsBar}>
-        {/** 
+        {/**
         <TouchableOpacity style={styles.iconButton}>
           <AddContactIcon style={styles.icon} width={20} height={20} />
         </TouchableOpacity>
@@ -34,8 +34,9 @@ class ActionsBar extends React.Component {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() =>
-            this.props.navigation.navigate('MyQR', {
+            this.props.navigation.navigate('QrCode', {
               qrData: this._getPairingCode(),
+              type: 'PAIRING_CODE'
             })
           }
         >
@@ -43,7 +44,7 @@ class ActionsBar extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => this.props.navigation.navigate('ContactScanner')}
+          onPress={() => this.props.navigation.navigate('QrScanner', { type: 'DEVICE_INVITATION' })}
         >
           <ScanIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>

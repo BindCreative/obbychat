@@ -14,58 +14,28 @@ const RootNav = createStackNavigator(
   {
     MainStack: {
       screen: MainStack,
+      path: ''
     },
     Chat: {
-      screen: props => <ChatScreen {...props} backRoute='ChatList' />,
-      path: '/chat/contact',
+      screen: props => <ChatScreen {...props} />,
+      path: 'chat/contact',
     },
-    ContactScanner: {
-      screen: props => (
-        <QRScannerScreen
-          {...props}
-          type='DEVICE_INVITATION'
-          backRoute='ChatStack'
-        />
-      ),
-      path: '/chat/scan',
+    QrScanner: {
+      screen: props => <QRScannerScreen {...props} />,
+      path: 'grScanner'
     },
-    MyQR: {
-      screen: (props, compProps) => (
-        <QRCodeScreen
-          {...props}
-          {...compProps}
-          title='Pairing QR code'
-          type='PAIRING_CODE'
-          backRoute='ChatStack'
-        />
-      ),
-      path: '/chat/my-qr',
-    },
-    WalletScanner: {
-      screen: props => (
-        <QRScannerScreen
-          {...props}
-          type='WALLET_ADDRESS'
-          backRoute='WalletStack'
-        />
-      ),
-      path: '/wallet/scan',
-    },
-    MyWalletQR: {
-      screen: (props, compProps) => (
-        <QRCodeScreen
-          {...props}
-          {...compProps}
-          title='Wallet QR code'
-          type='WALLET_ADDRESS'
-          backRoute='WalletStack'
-        />
-      ),
-      path: '/wallet/my-qr',
+    QrCode: {
+      screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} />,
+      path: 'qrCode'
     },
     MakePayment: {
-      screen: props => <PaymentScreen {...props} method={Methods.SEND} />,
-      path: '/wallet/make-payment',
+      screen: props => (
+        <PaymentScreen
+          {...props}
+          method={Methods.SEND}
+        />
+      ),
+      path: 'wallet/make-payment',
       navigationOptions: ({ navigation }) => ({
         tabBarIcon: null,
         tabBarVisible: false,
@@ -73,7 +43,7 @@ const RootNav = createStackNavigator(
     },
     RequestPayment: {
       screen: props => <PaymentScreen {...props} method={Methods.REQUEST} />,
-      path: '/wallet/request-payment',
+      path: 'wallet/request-payment',
       navigationOptions: {
         tabBarIcon: null,
         tabBarVisible: false,
@@ -81,7 +51,7 @@ const RootNav = createStackNavigator(
     },
     SeedWords: {
       screen: props => <SeedWordsScreen {...props} />,
-      path: '/settings/seed-words',
+      path: 'settings/seed-words',
       navigationOptions: {
         headerShown: false,
         tabBarIcon: null,
@@ -90,7 +60,7 @@ const RootNav = createStackNavigator(
     },
     TransactionInfo: {
       screen: props => <TransactionInfoScreen {...props} />,
-      path: '/wallet/transaction',
+      path: 'wallet/transaction',
       navigationOptions: {
         tabBarIcon: null,
         tabBarVisible: false,

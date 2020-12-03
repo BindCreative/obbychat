@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import createSecureStore from 'redux-persist-expo-securestore';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import { persistStore, persistReducer } from 'redux-persist';
 import createSagaMiddleware from '@redux-saga/core';
 import { reducer as formReducer } from 'redux-form';
@@ -13,13 +14,16 @@ import walletHistoryReducer from '../reducers/walletHistory';
 import settingsReducer from '../reducers/settings';
 import messagesReducer from '../reducers/messages';
 
+import { common } from '../constants';
+
 export default function configureStore() {
   // Middleware setup
   const sagaMiddleware = createSagaMiddleware();
   const middlewares = [sagaMiddleware];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const storeEnhancers = [middlewareEnhancer];
-  const composedEnhancer = compose(...storeEnhancers);
+  const composedEnhancer = composeWithDevTools(...storeEnhancers);
+  // const composedEnhancer = compose(...storeEnhancers);
 
   // Secure storage
   const secureStorage = createSecureStore();

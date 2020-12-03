@@ -1,6 +1,7 @@
 import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
+import { Alert } from 'react-native';
 import { REHYDRATE } from 'redux-persist';
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/oCustom';
@@ -18,7 +19,6 @@ import {
   sendPaymentFail,
 } from './../actions/wallet';
 import {
-  loadWalletHistory,
   loadWalletHistorySuccess,
   loadWalletHistoryFail,
 } from '../actions/walletHistory';
@@ -31,16 +31,18 @@ import {
   selectWitnesses,
   selectAddressWif,
 } from './../selectors/wallet';
+import { initDeviceInfo } from "../actions/device";
 
-export function* initWallet() {
+export function* initWallet({ payload }) {
   try {
-    yield put(createInitialWalletStart());
+    yield put(createInitialWalletStart(payload));
+    yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);
-    yield put(loadWalletHistory());
+    yield call(fetchWalletHistory);
     yield put(initWalletSuccess());
   } catch (error) {
     console.log(error);
@@ -54,14 +56,9 @@ export function* initWallet() {
   }
 }
 
-export function* createInitialWallet(action) {
-  // Take two as we have two different persisted stores
-  const { payload: payload1 } = yield take(REHYDRATE);
-  const { payload: payload2 } = yield take(REHYDRATE);
-  const payload = { ...payload1, ...payload2 };
-
+export function* createInitialWallet({ payload }) {
   try {
-    if (!payload?.wallet?.address) {
+    if (!payload.address) {
       const password = '';
       let mnemonic = new Mnemonic();
       while (!Mnemonic.isValid(mnemonic.toString())) {
@@ -159,7 +156,7 @@ export function* fetchWitnesses(action) {
   }
 }
 
-export function* fetchWalletHistory(action) {
+export function* fetchWalletHistory() {
   const walletAddress = yield select(selectWalletAddress());
   if (walletAddress) {
     try {
@@ -200,16 +197,16 @@ export function* sendPayment(action) {
     };
 
     yield call(oClient.post.payment, params, addressWif);
-    yield call(fetchBalances, action);
-    yield call(fetchWalletHistory, action);
-    yield call(NavigationService.navigate, 'Wallet');
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
         type: 'SUCCESS',
-        message: 'Transaction completed',
+        message: 'Transaction broadcasted',
       }),
     );
+    yield call(fetchBalances, action);
+    yield call(fetchWalletHistory, action);
+    yield call(NavigationService.navigate, 'Wallet');
   } catch (error) {
     yield put(sendPaymentFail());
     yield put(
@@ -221,6 +218,12 @@ export function* sendPayment(action) {
   }
 }
 
+export function* updateWalletData() {
+  const address = yield select(selectWalletAddress());
+  yield call(fetchBalances, { address });
+  yield call(fetchWalletHistory, { address });
+}
+
 export default function* watch() {
   yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(
@@ -230,4 +233,5 @@ export default function* watch() {
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
   yield takeLatest(actionTypes.WALLET_HISTORY_GET_START, fetchWalletHistory);
   yield takeLatest(actionTypes.PAYMENT_SEND_START, sendPayment);
+  yield takeLatest(actionTypes.UPDATE_WALLET_DATA, updateWalletData)
 }

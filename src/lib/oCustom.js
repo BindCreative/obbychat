@@ -1,9 +1,12 @@
 import _ from 'lodash';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
 import obyte from 'obyte';
+import { validateSignedMessage } from 'obyte/lib/utils';
 import ecdsa from 'secp256k1';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { common } from './../constants';
+
+let wasClosed = false;
 
 // Conf
 export const testnet = common.network === 'testnet';
@@ -13,8 +16,13 @@ export const hubAddress =
 
 export const oClient =
   common.network === 'testnet'
-    ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: true })
-    : new obyte.Client('wss://obyte.org/bb', { reconnect: true });
+    ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
+    : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
+
+// if (!wasClosed) {
+//   wasClosed = true;
+//   oClient.close();
+// }
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
@@ -277,33 +285,14 @@ export const deliverMessage = async objDeviceMessage => {
 };
 
 export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
-  var signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString(
-    'utf8',
-  );
+  const signedMessageJson = Buffer.from(signedMessageBase64, 'base64').toString('utf8');
   try {
     var objSignedMessage = JSON.parse(signedMessageJson);
   } catch (e) {
     return null;
   }
-  var info = {
+  return {
     objSignedMessage: objSignedMessage,
+    valid: validateSignedMessage(objSignedMessage)
   };
-
-  return info;
-};
-
-export const signMessage = (message, fromAddress) => {
-  const objAuthor = {
-    address: fromAddress,
-    authentifiers: {},
-  };
-
-  const objUnit = {
-    signed_message: message,
-    authors: [objAuthor],
-  };
-
-  const result = Buffer.from(JSON.stringify(objUnit)).toString('base64');
-
-  return `[Signed message](signed-message:${result})`;
 };

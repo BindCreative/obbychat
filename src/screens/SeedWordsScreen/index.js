@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { View, Text } from 'react-native';
-import { Container } from 'native-base';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
@@ -58,7 +57,7 @@ class SeedWordsScreen extends React.Component {
     const { step } = this.state;
     return (
       <React.Fragment>
-        <Container style={styles.content}>
+        <View style={styles.content}>
           <View>
             <Text style={styles.helperText}>
               Write down the following 12 words in given order to back up your
@@ -70,7 +69,7 @@ class SeedWordsScreen extends React.Component {
             <Text style={styles.wordsText}>{this._getStepWords()}</Text>
           </View>
           <View>{/** placeholder for layout */}</View>
-        </Container>
+        </View>
         <View style={styles.buttonArea}>
           {step > 1 && (
             <Button

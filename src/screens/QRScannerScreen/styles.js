@@ -12,7 +12,16 @@ export default StyleSheet.create({
   scanner: {
     flex: 1,
   },
-  bottomContent: {
-    height: 150,
+  backBtnContainer: {
+    position: 'absolute',
+    bottom: 50,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 3,
+    width: '100%'
   },
+  backBtn: {
+    width: 175
+  }
 });

@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { ScrollView, View, TextInput } from 'react-native';
+import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text } from 'react-native';
 import TimeAgo from 'react-native-timeago';
-import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
-import { List, ListItem, Left, Right, Body, Text } from 'native-base';
+import { List } from 'react-native-paper';
 import Dialog from 'react-native-dialog';
 
-import { setCorrespondentName } from '../../actions/correspondents';
+import common from '../../constants/common';
+
+import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
 import { selectCorrespondents } from '../../selectors/messages';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
@@ -18,17 +19,34 @@ import Header from '../../components/Header';
 class ChatListScreen extends React.Component {
   constructor(props) {
     super(props);
-
-    this.changeContactName = this.changeContactName.bind(this);
     this.state = {
       changeNameDialog: {
         visible: false,
         correspondent: {},
       },
+      initialized: false
     };
   }
 
-  changeContactName(e) {
+  componentDidMount() {
+    InteractionManager.runAfterInteractions(() => {
+      this.setState({ initialized: true });
+    });
+  }
+
+  componentDidUpdate(prevProps): void {
+    const { navigation } = this.props;
+    if (
+      navigation.state.params
+      && (!prevProps.navigation.state.params || prevProps.navigation.state !== navigation.state)
+      && navigation.state.params.type
+      && navigation.state.params.type === common.urlTypes.pairing
+    ) {
+      this.props.acceptInvitation(navigation.state.params);
+    }
+  }
+
+  changeContactName = (e) => {
     const { name, address } = this.state.changeNameDialog.correspondent;
     this.props.setCorrespondentName({ name, address });
     this.setState({
@@ -37,11 +55,52 @@ class ChatListScreen extends React.Component {
         correspondent: {},
       },
     });
-  }
+  };
+
+  renderItem = (data) => {
+    const { item: correspondent } = data;
+
+    return (
+      <List.Item
+        key={correspondent.address}
+        style={styles.listItem}
+        onPress={() => {
+          this.props.navigation.navigate('Chat', { correspondent })
+        }}
+        onLongPress={() => {
+          this.setState({ changeNameDialog: { correspondent, visible: true } })
+        }}
+        left={() => (
+          <View style={styles.userAvatarContainer}>
+            <Image
+              style={styles.userAvatar}
+              name={correspondent.name}
+              source={{ uri: makeBlockie(correspondent.address) }}
+            />
+          </View>
+        )}
+        title={correspondent.name}
+        titleStyle={styles.listItemTitle}
+        description={() => (
+          <View style={styles.descriptionContainer}>
+            <Text numberOfLines={1} style={styles.listItemPreview}>{correspondent.lastMessagePreview}</Text>
+            <Text numberOfLines={1} note style={styles.listItemTime}>
+              {correspondent.lastMessageTimestamp !== undefined && (
+                <TimeAgo
+                  time={correspondent.lastMessageTimestamp}
+                  interval={15000}
+                />
+              )}
+            </Text>
+          </View>
+        )}
+      />
+    );
+  };
 
   render() {
     const { correspondents } = this.props;
-    const { changeNameDialog } = this.state;
+    const { changeNameDialog, initialized } = this.state;
 
     return (
       <SafeAreaView
@@ -55,102 +114,60 @@ class ChatListScreen extends React.Component {
           titlePosition='left'
           right={<ActionsBar />}
         />
-        {!correspondents.length && (
-          <View style={styles.noContactsContainer}>
-            <Text style={styles.noContactsText}>
-              Start adding contacts by sharing your QR code or scanning someone
-              else's!
-            </Text>
-          </View>
+        {initialized && (
+          <Fragment>
+            {!correspondents.length && (
+              <View style={styles.noContactsContainer}>
+                <Text style={styles.noContactsText}>
+                  Start adding contacts by sharing your QR code or scanning someone
+                  else's!
+                </Text>
+              </View>
+            )}
+            {!!correspondents.length && (
+              <FlatList
+                data={correspondents}
+                keyExtractor={correspondent => correspondent.address}
+                renderItem={this.renderItem}
+              />
+            )}
+            <Dialog.Container visible={changeNameDialog.visible}>
+              <Dialog.Title>Change contact name</Dialog.Title>
+              <TextInput
+                style={styles.changeNameDialogInput}
+                onChangeText={name =>
+                  this.setState({
+                    changeNameDialog: {
+                      ...changeNameDialog,
+                      correspondent: { ...changeNameDialog.correspondent, name },
+                    },
+                  })
+                }
+                value={changeNameDialog.correspondent.name}
+              />
+              <Dialog.Button
+                label='Cancel'
+                onPress={() =>
+                  this.setState({
+                    changeNameDialog: { ...changeNameDialog, visible: false },
+                  })
+                }
+              />
+              <Dialog.Button label='Rename' onPress={this.changeContactName} />
+            </Dialog.Container>
+          </Fragment>
         )}
-        {!!correspondents.length && (
-          <ScrollView>
-            <List style={styles.list}>
-              {correspondents.map((correspondent, i) => (
-                <ListItem
-                  avatar
-                  style={styles.listItem}
-                  key={i}
-                  onPress={() =>
-                    this.props.navigation.navigate('Chat', {
-                      correspondent,
-                    })
-                  }
-                  onLongPress={() => {
-                    this.setState({
-                      changeNameDialog: {
-                        ...changeNameDialog,
-                        correspondent,
-                        visible: true,
-                      },
-                    });
-                  }}
-                >
-                  <Left style={styles.listItemAvatar}>
-                    <UserAvatar
-                      size={42}
-                      name={correspondent.name}
-                      src={makeBlockie(correspondent.address)}
-                    />
-                  </Left>
-                  <Body style={styles.listItemBody}>
-                    <Text numberOfLines={1} style={styles.listItemTitle}>
-                      {correspondent.name}
-                    </Text>
-                    <Text numberOfLines={1} note style={styles.listItemPreview}>
-                      {correspondent.lastMessagePreview}
-                    </Text>
-                  </Body>
-                  <Right style={styles.listItemBody}>
-                    <Text numberOfLines={1} note style={styles.listItemTime}>
-                      {correspondent.lastMessageTimestamp !== undefined && (
-                        <TimeAgo
-                          time={correspondent.lastMessageTimestamp}
-                          interval={15000}
-                        />
-                      )}
-                    </Text>
-                  </Right>
-                </ListItem>
-              ))}
-            </List>
-          </ScrollView>
-        )}
-        <Dialog.Container visible={changeNameDialog.visible}>
-          <Dialog.Title>Change contact name</Dialog.Title>
-          <TextInput
-            style={styles.changeNameDialogInput}
-            onChangeText={name =>
-              this.setState({
-                changeNameDialog: {
-                  ...changeNameDialog,
-                  correspondent: { ...changeNameDialog.correspondent, name },
-                },
-              })
-            }
-            value={changeNameDialog.correspondent.name}
-          />
-          <Dialog.Button
-            label='Cancel'
-            onPress={() =>
-              this.setState({
-                changeNameDialog: { ...changeNameDialog, visible: false },
-              })
-            }
-          />
-          <Dialog.Button label='Rename' onPress={this.changeContactName} />
-        </Dialog.Container>
       </SafeAreaView>
     );
   }
 }
 const mapStateToProps = createStructuredSelector({
-  correspondents: selectCorrespondents(),
+  correspondents: selectCorrespondents()
 });
 
 const mapDispatchToProps = dispatch => ({
-  setCorrespondentName: ({ name, address }) =>
-    dispatch(setCorrespondentName({ address, name })),
+  setCorrespondentName: ({ name, address }) => dispatch(setCorrespondentName({ address, name })),
+  acceptInvitation: data => dispatch(acceptInvitation({ data }))
 });
 
 ChatListScreen = connect(mapStateToProps, mapDispatchToProps)(ChatListScreen);

@@ -17,6 +17,7 @@ const ActionsBar = ({
   myWalletAddress,
   correspondentWalletAddress,
   correspondentAddress,
+  insertAddress
 }) => {
   const actionSheet = useRef();
 
@@ -51,7 +52,7 @@ const ActionsBar = ({
           text: 'Yes',
           onPress: () => {
             removeCorrespondent(correspondentAddress);
-            navigation.navigate('ChatList');
+            navigation.navigate('ChatStack');
           },
         },
       ],
@@ -63,7 +64,7 @@ const ActionsBar = ({
     index => {
       switch (index) {
         case 0:
-          onSend([{ text: myWalletAddress }]);
+          insertAddress(myWalletAddress);
           break;
         case 1:
           handleClearChat();

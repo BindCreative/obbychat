@@ -12,8 +12,17 @@ export const addCorrespondent = ({
   payload: { address, name, hub, pubKey, pairingSecret, reversePairingSecret },
 });
 
+export const addCorrespondentFail = () => ({
+  type: actionTypes.CORRESPONDENT_DEVICE_ADD_FAIL
+});
+
 export const removeCorrespondent = ({ address }) => ({
   type: actionTypes.CORRESPONDENT_DEVICE_REMOVE,
+  payload: { address },
+});
+
+export const correspondentRemovedDevice = ({ address }) => ({
+  type: actionTypes.CORRESPONDENT_REMOVED_DEVICE,
   payload: { address },
 });
 

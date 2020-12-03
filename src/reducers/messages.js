@@ -5,7 +5,10 @@ import { actionTypes } from './../constants';
 const initialState = {
   correspondents: {},
   unreadMessages: 0,
+  addFetching: false
 };
+
+const isMessageExist = (list, message) => list.some(({ hash }) => hash === message.messageHash);
 
 function reducer(state = initialState, action) {
   switch (action.type) {
@@ -18,8 +21,19 @@ function reducer(state = initialState, action) {
         ...action.payload,
       };
 
-    case actionTypes.MESSAGE_RECEIVE_SUCCESS:
-    case actionTypes.MESSAGE_ADD_SUCCESS:
+    case actionTypes.CORRESPONDENT_INVITATION_ACCEPT:
+      return {
+        ...state,
+        addFetching: true
+      };
+
+    case actionTypes.CORRESPONDENT_DEVICE_ADD_FAIL:
+      return {
+        ...state,
+        addFetching: false
+      };
+
+    case actionTypes.MESSAGE_ADD_TEMP:
       return {
         ...state,
         correspondents: {
@@ -29,16 +43,96 @@ function reducer(state = initialState, action) {
             messages: [
               ...state.correspondents[action.payload.address].messages,
               {
-                type: action.payload.messageType,
+                _id: action.payload.id,
+                address: action.payload.address,
                 message: action.payload.message,
-                hash: action.payload.messageHash,
-                handleAs: action.payload.handleAs,
+                type: action.payload.type,
                 timestamp: action.payload.timestamp,
+                handleAs: 'SENT',
+                pending: true,
               },
             ],
           },
         },
       };
+
+    case actionTypes.MESSAGE_ADD_SUCCESS:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: state.correspondents[action.payload.address].messages.map(
+              (message, i) => {
+                if (message._id === action.payload.id) {
+                  return {
+                    ...message,
+                    type: action.payload.messageType,
+                    message: action.payload.message,
+                    hash: action.payload.messageHash,
+                    handleAs: action.payload.handleAs,
+                    timestamp: action.payload.timestamp,
+                    pending: false,
+                  };
+                }
+                return message;
+              },
+            ),
+          },
+        },
+      };
+
+    case actionTypes.MESSAGE_ADD_FAIL:
+      return {
+        ...state,
+        correspondents: {
+          ...state.correspondents,
+          [action.payload.address]: {
+            ...state.correspondents[action.payload.address],
+            messages: state.correspondents[action.payload.address].messages.map(
+              (message, i) => {
+                if (message._id === action.payload.id) {
+                  return {
+                    ...message,
+                    pending: true,
+                  };
+                }
+                return message;
+              },
+            ),
+          },
+        },
+      };
+
+    case actionTypes.MESSAGE_RECEIVE_SUCCESS: {
+      if (isMessageExist(state.correspondents[action.payload.address].messages, action.payload)) {
+        console.log('message not unique: ', action.payload);
+        return state;
+      } else {
+        return {
+          ...state,
+          correspondents: {
+            ...state.correspondents,
+            [action.payload.address]: {
+              ...state.correspondents[action.payload.address],
+              messages: [
+                ...state.correspondents[action.payload.address].messages,
+                {
+                  _id: action.payload.id,
+                  type: action.payload.messageType,
+                  message: action.payload.message,
+                  hash: action.payload.messageHash,
+                  handleAs: action.payload.handleAs,
+                  timestamp: action.payload.timestamp,
+                  pending: false,
+                },
+              ],
+            },
+          },
+        };
+      }
+    }
 
     case actionTypes.MESSAGE_REMOVE:
       return {
@@ -73,9 +167,11 @@ function reducer(state = initialState, action) {
               state.correspondents[action.payload.address]?.messages ?? [],
           },
         },
+        addFetching: false
       };
 
     case actionTypes.CORRESPONDENT_DEVICE_REMOVE:
+    case actionTypes.CORRESPONDENT_REMOVED_DEVICE:
       return {
         ...state,
         correspondents: {

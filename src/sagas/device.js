@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {
   take,
   takeEvery,
@@ -9,9 +8,11 @@ import {
   delay,
 } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
-import { isValidAddress } from 'obyte/lib/utils';
+import { validateSignedMessage } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
-import Crypto from 'crypto';
+import * as Crypto from 'react-native-crypto';
+import uuid from 'uuid/v4';
+import { Alert } from'react-native';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -30,14 +31,18 @@ import {
   getDeviceAddress,
 } from './../lib/oCustom';
 import { setToastMessage } from './../actions/app';
+import { updateWalletData } from "../actions/balances";
 import {
   addCorrespondent,
   removeCorrespondent,
+  correspondentRemovedDevice,
   updateCorrespondentWalletAddress,
   setCorrespondentName,
+  addCorrespondentFail
 } from '../actions/correspondents';
 import {
   addMessageSuccess,
+  addMessageTemp,
   addMessageFail,
   receiveMessageStart,
   receiveMessageSuccess,
@@ -54,17 +59,27 @@ import {
   selectPermanentDeviceKeyObj,
   selectDeviceTempKeyData,
 } from './../selectors/device';
+import { selectWalletAddress } from "../selectors/wallet";
+
+let heartBeatInterval = 0;
 
 let oChannel;
 
 if (!oChannel) {
-  console.log('oChannel init');
   oChannel = channel();
 }
 
+const deviceInfo = {};
+
+export function* initDeviceInfo() {
+  deviceInfo.deviceAddress = yield select(selectDeviceAddress());
+  deviceInfo.permanentDeviceKeyObj = yield select(selectPermanentDeviceKeyObj());
+  deviceInfo.deviceTempKeyData = yield select(selectDeviceTempKeyData());
+}
+
 export function* loginToHub(challenge) {
-  const permanentDeviceKey = yield select(selectPermanentDeviceKeyObj());
-  const tempDeviceKeyData = yield select(selectDeviceTempKeyData());
+  const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
+  const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
 
   const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
   objLogin.signature = sign(
@@ -83,24 +98,54 @@ export function* loginToHub(challenge) {
     permanentDeviceKey.priv,
   );
 
-  oClient.api
-    .tempPubkey(objTempPubkey)
-    .then(result => console.log('Temp pubkey result:', result))
-    .catch(e => console.log('Temp pubkey error:', e));
+  yield oClient.api.tempPubkey(objTempPubkey);
 
   oClient.justsaying('hub/refresh', null);
 }
 
+const reconnect = () => {
+  setTimeout(() => oClient.client.connect(), 1000);
+};
+
+export function stopSubscribeToHub() {
+  oClient.close();
+  clearInterval(heartBeatInterval);
+  oClient.client.ws.removeEventListener('close', reconnect);
+}
+
+function* resubscribeToHub() {
+  yield call(subscribeToHub);
+  yield put(updateWalletData());
+}
+
+const fetchClientConnection = () => new Promise(resolve => {
+  const onOpen = () => {
+    resolve();
+    oClient.client.ws.removeEventListener('open', onOpen);
+  };
+
+  oClient.client.ws.addEventListener('open', onOpen);
+});
+
 export function* subscribeToHub() {
   try {
-    yield oClient.subscribe((err, result) => {
+    oClient.client.connect();
+    yield call(fetchClientConnection);
+    oClient.subscribe((err, result) => {
       if (err) {
         throw new Error('Hub socket error');
       } else {
         const [type, payload] = result;
+        console.log(type, payload.subject);
         oChannel.put({ type, payload });
       }
     });
+    heartBeatInterval = setInterval(() => {
+      oClient.api.heartbeat();
+    }, 10000);
+    const walletAddress = yield select(selectWalletAddress());
+    oClient.justsaying('light/new_address_to_watch', walletAddress);
+    oClient.client.ws.addEventListener('close', reconnect);
   } catch (error) {
     yield put(
       setToastMessage({
@@ -112,9 +157,9 @@ export function* subscribeToHub() {
 }
 
 export function* watchHubMessages() {
-  try {
-    while (true) {
-      const { type, payload } = yield take(oChannel);
+  while (true) {
+    try {
+      const {type, payload} = yield take(oChannel);
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge' && !!payload.body) {
           yield call(loginToHub, payload.body);
@@ -122,31 +167,29 @@ export function* watchHubMessages() {
           yield call(receiveMessage, payload);
         } else if (payload.subject === 'exchange_rates') {
           yield put(setExchangeRates(payload.body));
-        } else if (
-          payload.subject === 'info' &&
-          /^(\d+) messages? sent$/.test(payload?.body)
-        ) {
+        } else if (payload.subject === 'info' && /^(\d+) messages? sent$/.test(payload?.body)) {
           yield put(
             setUnreadMessages(
               parseInt(/^(\d+) messages? sent$/.exec(payload.body)[1]),
             ),
           );
+        } else if (payload.subject === 'light/have_updates' || payload.subject === 'joint') {
+          yield put(updateWalletData());
         }
       } else if (type === 'request') {
         console.log('UNHANDLED REQUEST FROM HUB: ', payload);
       } else {
         console.log('UNHANDLED PACKAGE FROM HUB: ', type, payload);
       }
+    } catch (error) {
+      console.log('UNHANDLED HUB MESSAGE ERROR', error);
     }
-  } catch (error) {
-    console.log('UNHANDLED HUB MESSAGE ERROR', error);
   }
 }
 
-export function* receiveMessage(message) {
-  const { body } = message;
-  const tempDeviceKey = yield select(selectDeviceTempKeyData());
-  const permDeviceKey = yield select(selectPermanentDeviceKeyObj());
+export function* receiveMessage({ body }) {
+  const tempDeviceKey = deviceInfo.deviceTempKeyData;
+  const permDeviceKey = deviceInfo.permanentDeviceKeyObj;
 
   try {
     const decryptedMessage = yield call(
@@ -157,8 +200,7 @@ export function* receiveMessage(message) {
     );
 
     if (decryptedMessage.subject === 'removed_paired_device') {
-      yield put(removeCorrespondent({ address: decryptedMessage.from }));
-      oClient.justsaying('hub/delete', body.message_hash);
+      yield put(correspondentRemovedDevice({ address: decryptedMessage.from }));
     } else if (decryptedMessage.subject === 'pairing') {
       console.log('Pairing');
       const existingCorrespondent = yield select(
@@ -179,7 +221,14 @@ export function* receiveMessage(message) {
           pubKey: body.message.pubkey,
           pairingSecret: decryptedMessage.body.pairing_secret,
         };
+        const pairedCorrespondent = yield select(selectCorrespondent(decryptedMessage.from));
         yield put(addCorrespondent(correspondent));
+        NavigationService.navigate('Chat', {
+          correspondent: {
+            ...pairedCorrespondent,
+            ...correspondent
+          }
+        });
         yield call(sendPairingMessage, {
           reversePairingSecret,
           hub: correspondent.hub,
@@ -187,7 +236,6 @@ export function* receiveMessage(message) {
           pairingSecret: correspondent.pairingSecret,
           recipientPubKey: body.message.pubkey,
         });
-        oClient.justsaying('hub/delete', body.message_hash);
       } else if (!existingCorrespondent && reversePairingSecret) {
         console.log('I send pairing confirmation');
         // I send pairing confirmation
@@ -199,7 +247,14 @@ export function* receiveMessage(message) {
           pairingSecret: decryptedMessage.body.pairing_secret,
           reversePairingSecret,
         };
+        const pairedCorrespondent = yield select(selectCorrespondent(decryptedMessage.from));
         yield put(addCorrespondent(correspondent));
+        NavigationService.navigate('Chat', {
+          correspondent: {
+            ...pairedCorrespondent,
+            ...correspondent
+          }
+        });
         yield call(sendPairingMessage, {
           reversePairingSecret,
           hub: correspondent.hub,
@@ -207,7 +262,6 @@ export function* receiveMessage(message) {
           pairingSecret: reversePairingSecret,
           recipientPubKey: body.message.pubkey,
         });
-        oClient.justsaying('hub/delete', body.message_hash);
       } else if (
         !reversePairingSecret &&
         existingCorrespondent?.reversePairingSecret ===
@@ -222,7 +276,6 @@ export function* receiveMessage(message) {
           }),
         );
       }
-      oClient.justsaying('hub/delete', body.message_hash);
       const correspondent = yield select(
         selectCorrespondent(decryptedMessage.from),
       );
@@ -230,8 +283,10 @@ export function* receiveMessage(message) {
         console.error("Can't finish pairing, correspondent not stored");
       }
     } else if (decryptedMessage.subject === 'text') {
+      const endSpace = /\s$/;
+      decryptedMessage.body = decryptedMessage.body.replace(endSpace, '');
       // Check if signed message with wallet address info
-      yield call(checkForSigning, decryptedMessage);
+      yield call(checkForSigning, decryptedMessage, body);
       // Persist the message
       yield put(
         receiveMessageStart({
@@ -244,24 +299,27 @@ export function* receiveMessage(message) {
           timestamp: Date.now(),
         }),
       );
-      oClient.justsaying('hub/delete', body.message_hash);
     } else if (decryptedMessage.subject === 'payment_notification') {
       console.log('Payment notification', decryptedMessage);
-      oClient.justsaying('hub/delete', body.message_hash);
+      // const { joint } = yield call(oClient.api.getJoint, decryptedMessage.body);
+      // const { unit } = joint;
+      // console.log(unit);
     }
   } catch (error) {
     console.log('MESSAGE PARSING ERROR:', {
       error,
-      message: message.body.message,
+      message: body.message,
     });
-    oClient.justsaying('hub/delete', message.body.message_hash);
   }
+  oClient.justsaying('hub/delete', body.message_hash);
 }
 
 export function* sendMessage(action) {
+  const id = yield call(uuid);
   try {
-    const myPermKeys = yield select(selectPermanentDeviceKeyObj());
-    const myDeviceAddress = yield select(selectDeviceAddress());
+    yield put(addMessageTemp({ ...action.payload, id, timestamp: Date.now() }));
+    const myPermKeys = deviceInfo.permanentDeviceKeyObj;
+    const myDeviceAddress = deviceInfo.deviceAddress;
     const {
       pubKey: recipientPubKey,
       address: recipientAddress,
@@ -301,6 +359,7 @@ export function* sendMessage(action) {
     yield call(deliverMessage, objDeviceMessage);
     yield put(
       addMessageSuccess({
+        id,
         message,
         messageHash,
         address: recipientAddress,
@@ -309,15 +368,16 @@ export function* sendMessage(action) {
       }),
     );
   } catch (error) {
-    yield put(addMessageFail());
+    yield put(addMessageFail({ id, address: action.payload.address }));
     console.log('UNHANDLED ERROR: ', error);
   }
 }
 
-// Handles incoming chat messages
+// Persists incoming chat messages to store
 export function* handleReceivedMessage(action) {
   try {
-    yield put(receiveMessageSuccess(action.payload));
+    const id = yield call(uuid);
+    yield put(receiveMessageSuccess({ id, ...action.payload }));
     oClient.justsaying('hub/delete', action.payload.messageHash);
   } catch (error) {
     yield put(receiveMessageFail());
@@ -325,72 +385,92 @@ export function* handleReceivedMessage(action) {
 }
 
 export function* acceptInvitation(action) {
-  let cDeviceAddress, cPubKey, cHub, pairingSecret;
-  const { data } = action.payload;
-  data.replace(
-    REGEX_PAIRING,
-    (
-      str,
-      protocol,
-      correspondentPubKey,
-      correspondentHub,
-      correspondentPairingSecret,
-    ) => {
-      cDeviceAddress = getDeviceAddress(correspondentPubKey);
-      cPubKey = correspondentPubKey;
-      cHub = correspondentHub;
-      pairingSecret = correspondentPairingSecret;
-    },
-  );
+  try {
+    const { data } = action.payload;
+    let cDeviceAddress, cPubKey, cHub, pairingSecret;
 
-  if (cDeviceAddress) {
-    const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
-    yield put(
-      addCorrespondent({
-        hub: cHub,
-        pubKey: cPubKey,
+    if (typeof data === 'string') {
+      data.replace(
+        REGEX_PAIRING,
+        (
+          str,
+          protocol,
+          correspondentPubKey,
+          correspondentHub,
+          correspondentPairingSecret,
+        ) => {
+          cDeviceAddress = getDeviceAddress(correspondentPubKey);
+          cPubKey = correspondentPubKey;
+          cHub = correspondentHub;
+          pairingSecret = correspondentPairingSecret;
+        },
+      );
+    } else {
+      const { pubkey, hub, pairing_secret } = data;
+      cDeviceAddress = getDeviceAddress(pubkey);
+      cPubKey = pubkey;
+      cHub = hub;
+      pairingSecret = pairing_secret;
+    }
+
+    if (cDeviceAddress) {
+      const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
+
+      yield call(sendPairingMessage, {
         pairingSecret,
         reversePairingSecret,
         address: cDeviceAddress,
-        name: 'New',
-      }),
-    );
-
-    yield call(sendPairingMessage, {
-      pairingSecret,
-      reversePairingSecret,
-      address: cDeviceAddress,
-      recipientPubKey: cPubKey,
-      hub: cHub,
-    });
-    yield call(NavigationService.navigate, 'ChatList');
-  } else {
+        recipientPubKey: cPubKey,
+        hub: cHub,
+      });
+      yield put(
+        addCorrespondent({
+          hub: cHub,
+          pubKey: cPubKey,
+          pairingSecret,
+          reversePairingSecret,
+          address: cDeviceAddress,
+          name: 'New',
+        }),
+      );
+      yield call(NavigationService.navigate, 'ChatStack');
+    } else {
+      yield call(NavigationService.navigate, 'ChatStack');
+      yield put(addCorrespondentFail());
+      yield put(
+        setToastMessage({
+          type: 'ERROR',
+          message: 'Unable to accept invitation',
+        }),
+      );
+    }
+  } catch(e) {
+    yield call(NavigationService.navigate, 'ChatStack');
+    yield put(addCorrespondentFail());
     yield put(
       setToastMessage({
         type: 'ERROR',
         message: 'Unable to accept invitation',
-      }),
+      })
     );
-    yield call(NavigationService.navifate, 'ChatList');
   }
 }
 
 export function* checkForSigning(decryptedMessage) {
-  let walletAddress;
+  let info;
+
   decryptedMessage.body.replace(
     REGEX_SIGNED_MESSAGE,
     (str, description, signedMessageBase64) => {
-      const info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
-      walletAddress = info.objSignedMessage.authors[0].address ?? null;
-    },
-  );
+      info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
+  });
 
-  if (isValidAddress(walletAddress)) {
+  if (info && info.valid) {
     yield put(
       updateCorrespondentWalletAddress({
         address: decryptedMessage.from,
-        walletAddress,
-      }),
+        walletAddress: info.objSignedMessage.authors[0].address ?? null
+      })
     );
   }
 }
@@ -403,10 +483,9 @@ export function* sendPairingMessage({
   recipientPubKey,
 }) {
   try {
-    const myPermKeys = yield select(selectPermanentDeviceKeyObj());
-    const myDeviceAddress = yield select(selectDeviceAddress());
+    const myPermKeys = deviceInfo.permanentDeviceKeyObj;
+    const myDeviceAddress = deviceInfo.deviceAddress;
     const myDeviceName = yield call(DeviceInfo.getDeviceName);
-
     let body = { pairing_secret: pairingSecret, device_name: myDeviceName };
     if (reversePairingSecret) {
       body.reverse_pairing_secret = reversePairingSecret;
@@ -419,13 +498,11 @@ export function* sendPairingMessage({
       body: body,
     };
 
-    const encryptedPackage = createEncryptedPackage(
-      packageObj,
-      recipientPubKey,
-    );
-
+    // const encryptedPackage = createEncryptedPackage(
+    //   packageObj,
+    //   recipientPubKey,
+    // );
     const tempPubKeyData = yield getTempPubKey(recipientPubKey);
-
     const objEncryptedPackage = createEncryptedPackage(
       packageObj,
       tempPubKeyData.temp_pubkey,
@@ -439,26 +516,55 @@ export function* sendPairingMessage({
       getDeviceMessageHashToSign(objDeviceMessage),
       myPermKeys.priv,
     );
-    yield deliverMessage(objDeviceMessage);
+    const res = yield deliverMessage(objDeviceMessage);
+    console.log('sendPairingMessage: ', res);
   } catch (e) {
     console.log('sendPairingMessage failed', JSON.stringify(e));
+    throw new Error(e);
   }
 }
 
 // Deprecated, as reconnect option was introduced to obyte.js
-export function* startHubHeartbeat() {
-  while (true) {
-    yield delay(10000);
-    yield call(oClient.api.heartbeat);
-    yield console.log('HB');
-  }
+export function* removeCorrespondentSaga(action) {
+  const correspondent = yield select(
+    selectCorrespondent(action.payload.address),
+  );
+  const myPermKeys = deviceInfo.permanentDeviceKeyObj;
+  const myDeviceAddress = deviceInfo.deviceAddress;
+
+  const packageObj = {
+    from: myDeviceAddress,
+    device_hub: hubAddress,
+    subject: 'removed_paired_device',
+    body: 'removed',
+  };
+
+  const tempPubKeyData = yield getTempPubKey(correspondent.pubKey);
+
+  const objEncryptedPackage = createEncryptedPackage(
+    packageObj,
+    tempPubKeyData.temp_pubkey,
+  );
+  const objDeviceMessage = {
+    encrypted_package: objEncryptedPackage,
+    to: action.payload.address,
+    pubkey: myPermKeys.pubB64,
+  };
+  objDeviceMessage.signature = sign(
+    getDeviceMessageHashToSign(objDeviceMessage),
+    myPermKeys.priv,
+  );
+  yield deliverMessage(objDeviceMessage);
 }
 
 export default function* watch() {
   yield all([
     watchHubMessages(),
+    takeEvery(actionTypes.INIT_DEVICE_INFO, initDeviceInfo),
+    takeEvery(actionTypes.RESUBSCRIBE_TO_HUB, resubscribeToHub),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
+    takeEvery(actionTypes.CORRESPONDENT_DEVICE_REMOVE, removeCorrespondentSaga),
   ]);
 }

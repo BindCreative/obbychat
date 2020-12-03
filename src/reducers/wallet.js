@@ -15,17 +15,33 @@ const initialState = {
   privateKey: null,
   walletPirvateKey: null,
   walletPath: null,
+  init: false
 };
 
 function reducer(state = initialState, action) {
   switch (action.type) {
     case REHYDRATE:
-      return _.get(action, 'payload.wallet', state);
+      return {
+        ..._.get(action, 'payload.wallet', state),
+        init: false
+      };
 
     case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
       return {
         ...state,
         ...action.payload,
+      };
+
+    case actionTypes.WALLET_INIT_START:
+      return {
+        ...state,
+        init: false
+      };
+
+    case actionTypes.WALLET_INIT_SUCCESS:
+      return {
+        ...state,
+        init: true
       };
 
     case actionTypes.WITNESSES_GET_SUCCESS:

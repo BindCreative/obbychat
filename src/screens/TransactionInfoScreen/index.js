@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { View, Text, Linking } from 'react-native';
-import { Content } from 'native-base';
+import { View, Text, Linking, ScrollView } from 'react-native';
 import _ from 'lodash';
 import Moment from 'react-moment';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -39,7 +38,7 @@ class TransactionInfoScreen extends React.Component {
           titlePosition='center'
           hasBackButton
         />
-        <Content contentContainerStyle={styles.content}>
+        <View style={styles.content}>
           <View style={styles.amountBlock}>
             <View style={styles.amountRow}>
               <Text style={styles.primaryAmount}>
@@ -53,49 +52,66 @@ class TransactionInfoScreen extends React.Component {
               <Text style={styles.secondaryAmount}>~${amountInDollars}</Text>
             </View>
           </View>
-          <View style={styles.infoBlock}>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>Details</Text>
-              <Text></Text>
+          <ScrollView style={styles.scrollContent}>
+            <View style={styles.infoBlock}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>Details</Text>
+                <Text></Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>
+                  {transaction.type === 'SENT' ? 'To:' : 'From:'}
+                </Text>
+                <Text style={styles.infoRowValue}>
+                  {transaction.type === 'SENT'
+                    ? transaction.toAddress.join(', ')
+                    : transaction.fromAddress.join(', ')}
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>Date:</Text>
+                <Moment
+                  unix
+                  element={Text}
+                  format={'DD/MM/YYYY HH:mm'}
+                  style={styles.infoRowValue}
+                >
+                  {transaction.timestamp}
+                </Moment>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>Fees:</Text>
+                <Text style={styles.infoRowValue}>
+                  {transaction.totalCommission} bytes
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>ID:</Text>
+                <Text
+                  style={{ ...styles.infoRowValue, ...styles.infoRowValueHL }}
+                  onPress={() => Linking.openURL(explorerUrl)}
+                >
+                  {transaction.unitId}
+                </Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>Finality:</Text>
+                {transaction.confirmed
+                  ? (
+                    <Text style={{ ...styles.confirmationText, ...styles.confirmedText }}>
+                      Confirmed
+                    </Text>
+                  )
+                  : (
+                    <Text style={{ ...styles.confirmationText, ...styles.unConfirmedText }}>
+                      Unconfirmed
+                    </Text>
+                  )
+                }
+              </View>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>
-                {transaction.type === 'SENT' ? 'To:' : 'From:'}
-              </Text>
-              <Text style={styles.infoRowValue}>
-                {transaction.type === 'SENT'
-                  ? transaction.toAddress.join(', ')
-                  : transaction.fromAddress.join(', ')}
-              </Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>Date:</Text>
-              <Moment
-                unix
-                element={Text}
-                format={'DD/MM/YYYY HH:mm'}
-                style={styles.infoRowValue}
-              >
-                {transaction.timestamp}
-              </Moment>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>Fees:</Text>
-              <Text style={styles.infoRowValue}>
-                {transaction.totalCommission} bytes
-              </Text>
-            </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>ID:</Text>
-              <Text
-                style={{ ...styles.infoRowValue, ...styles.infoRowValueHL }}
-                onPress={() => Linking.openURL(explorerUrl)}
-              >
-                {transaction.unitId}
-              </Text>
-            </View>
-          </View>
-        </Content>
+          </ScrollView>
+        </View>
       </SafeAreaView>
     );
   }

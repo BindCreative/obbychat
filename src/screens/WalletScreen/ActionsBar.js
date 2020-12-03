@@ -22,8 +22,9 @@ class ActionsBar extends React.Component {
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() =>
-            this.props.navigation.navigate('MyWalletQR', {
+            this.props.navigation.navigate('QrCode', {
               qrData: this.props.walletAddress,
+              type: 'WALLET_ADDRESS'
             })
           }
         >
@@ -31,7 +32,7 @@ class ActionsBar extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconButton}
-          onPress={() => this.props.navigation.navigate('WalletScanner')}
+          onPress={() => this.props.navigation.navigate('QrScanner', { type: 'WALLET_ADDRESS' })}
         >
           <ScanIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>

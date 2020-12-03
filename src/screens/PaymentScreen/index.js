@@ -51,18 +51,46 @@ class PaymentScreen extends React.Component {
       secondaryUnit: 'USD',
       primaryValue: 0,
       secondaryValue: 0,
+      disabledInputs: false
     };
   }
 
   componentDidMount() {
     if (_.get(this.props, 'navigation.state.params.walletAddress', false)) {
       this.props.navigation.setParams({ title: 'Enter amount' });
+      const amount = this.props.navigation.state.params.amount;
       this.setState({
         address: this.props.navigation.state.params.walletAddress,
-        step: 2,
+        step: 2
       });
+      if (amount) {
+        this.changePrimaryUnit('BYTE')
+          .then(() => this.changeValue(amount, 'primary'));
+      } else {
+        this.changePrimaryUnit('MBYTE')
+          .then(() => this.changeValue(0, 'primary'));
+      }
     } else {
       this.props.navigation.setParams({ title: 'Enter address' });
+    }
+  }
+
+  componentDidUpdate(prevProps): void {
+    const { navigation } = this.props;
+    if (navigation.state.params.walletAddress
+      && navigation.state.params !== prevProps.navigation.state.params) {
+      const { walletAddress, amount } = navigation.state.params;
+      this.setState({
+        address: walletAddress,
+        step: 2
+      });
+      if (amount) {
+        this.changePrimaryUnit('BYTE')
+          .then(() => this.changeValue(amount, 'primary'));
+      } else {
+        this.changePrimaryUnit('MBYTE')
+          .then(() => this.changeValue(0, 'primary'));
+      }
     }
   }
 
@@ -259,7 +287,7 @@ class PaymentScreen extends React.Component {
                   style={styles.addressInput}
                   onChangeText={this.onChangeAddress}
                   value={address ? address : ''}
-                  autoFocus={true}
+                  autofocus={false}
                 />
                 {!address && (
                   <View style={styles.addressInputPaste}>
@@ -293,7 +321,7 @@ class PaymentScreen extends React.Component {
                   onChangeText={value => this.changeValue(value, 'primary')}
                   value={!primaryValue ? '' : String(primaryValue)}
                   keyboardType='decimal-pad'
-                  autoFocus={true}
+                  autofocus={false}
                 />
                 <ActionSheet
                   currentValue={primaryUnit}
@@ -310,6 +338,7 @@ class PaymentScreen extends React.Component {
                   onChangeText={value => this.changeValue(value, 'secondary')}
                   value={!secondaryValue ? '' : String(secondaryValue)}
                   keyboardType='decimal-pad'
+                  autofocus={false}
                 />
                 <ActionSheet
                   currentValue={secondaryUnit}
