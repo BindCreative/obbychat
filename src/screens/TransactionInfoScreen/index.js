@@ -38,7 +38,7 @@ class TransactionInfoScreen extends React.Component {
           titlePosition='center'
           hasBackButton
         />
-        <View contentContainerStyle={styles.content}>
+        <View style={styles.content}>
           <View style={styles.amountBlock}>
             <View style={styles.amountRow}>
               <Text style={styles.primaryAmount}>

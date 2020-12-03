@@ -84,15 +84,14 @@ const ChatScreen = ({
           )
         }
         case "WALLET_ADDRESS": {
-          const { address, description } = data;
+          const { address, pre, post } = data;
           return user._id !== 1
             ? (
               <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}>
-                {description ? <Text style={style}>{description}</Text> : null}
                 <Text style={replacedStyle}>{address}</Text>
               </TouchableOpacity>
             )
-            : <Text style={style}>{description ? `${description}${address}` : address}</Text>
+            : <Text style={style}>{address}</Text>
         }
         case "REQUEST_PAYMENT": {
           const { amount, address } = data;
