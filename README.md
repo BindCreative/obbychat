@@ -47,3 +47,24 @@ Want to join or share your thoughts, [send us a letter](mailto:support@obby.chat
 #### iOS
 
 Run `yarn ios`
+
+
+### Steps to run project
+#### In project folder
+
+1. Run `npm install` or `yarn install` to install all dependencies
+2. Run `cd ios && pod install && cd ../` to install ios pods
+
+#### Run android
+
+1. Run `npm start` or `yarn start` to run metro bundle.
+2. Run android emulator from Android Studio or connect device to computer
+3. Run `npm run android` or `yarn android` (if installing will failed, check line 38 in MainApplication.java if it will looks like "new RandomBytesPackage(), new VectorIconsPackage());" comment it and try to run again)
+
+#### Run ios
+
+1. Run `npm start` or `yarn start` to run metro bundle.
+2. Open "./ios/Obby Chat.xcworkspace" in xCode.
+3. Follow nex steps:
+    ![alt text](https://github.com/BindCreative/obbychat/blob/development/instruction.png)
+
