@@ -66,5 +66,5 @@ Run `yarn ios`
 1. Run `npm start` or `yarn start` to run metro bundle.
 2. Open "./ios/Obby Chat.xcworkspace" in xCode.
 3. Follow nex steps:
-    ![alt text](https://github.com/BindCreative/obbychat/blob/master/instruction.png)
+    ![alt text](https://github.com/BindCreative/obbychat/blob/development/instruction.png)
 
