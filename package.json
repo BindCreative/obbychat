@@ -6,7 +6,7 @@
     "android": "adb reverse tcp:8081 tcp:8081 && react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start --reset-cache",
-    "postinstall": "npx ./node_modules/.bin/rn-nodeify --hack --install",
+    "postinstall": "./node_modules/.bin/rn-nodeify --hack --install",
     "clear": "yarn cache clean && watchman watch-del-all && rm -rf /tmp/metro-*",
     "clean": "rm -rf node_modules/"
   },
