@@ -1,4 +1,4 @@
-## '
+## Obby chat
 
 Instant messaging app for Obyte. Offering secure end-to-end encryption, cryptocurrency payments, and smart contracts for fun & profit.
 
@@ -9,13 +9,18 @@ Building the new era chat that is from the ground up closer to its users in a sl
 The mobile-only messaging app doesn’t need to be fully featured Obyte demonstration, and it should only focus on those users who use chatting apps. The new app is being written in React Native, and initially, we would only need the following features for the MVP
 (minimum viable product):
 
+#### Completed features:
 - Generating seed words for new users.
 - List of chats and individual chats
-- Pairing with QR code, NFC tag (Android) and deep-link on website
-- Generating new address for every new payment request
-- Sending payment to contact, QR code, NFC tag (Android) or deep-link on website
+- Pairing with QR code and deep-link on website
+- Sending payment to contact via QR code or deep-link on website
 - Receiving payment from anyone, wallet balance, and history
 - Sign message feature (also for request address function)
+
+#### In-development:
+- Pairing with NFC tag (Android)
+- Generating new address for every new payment request
+- Sending payment to contact via NFC tag (Android)
 - Ability to do P2P Bitcoin exchange smart-contract
 - Ability to do P2P cryptocurrency price bet smart-contract
 - Ability to do P2P sports bet smart-contract
