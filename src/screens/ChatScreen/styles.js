@@ -152,5 +152,21 @@ export default StyleSheet.create({
   },
   outComingDotLine: {
     borderColor: colors.lightBlue
+  },
+  errorMessageContainer: {
+    paddingHorizontal: 8,
+    paddingBottom: 4,
+    display: 'flex',
+    flexWrap: 'nowrap',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+  },
+  errorMessage: {
+    color: colors.darkRed,
+    paddingLeft: 4
+  },
+  errorImage: {
+    color: colors.darkRed
   }
 });

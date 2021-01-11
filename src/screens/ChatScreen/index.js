@@ -1,10 +1,11 @@
-import React, { useState, useMemo, Fragment } from 'react';
+import React, { useState, useMemo, Fragment, useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
+import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
 
 import styles from './styles';
 import { signMessage, fromWif } from 'obyte/lib/utils';
@@ -21,6 +22,8 @@ import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
 import { testnet } from "../../lib/oCustom";
 
+import WarningIcon from '../../assets/images/warning.svg';
+
 const messageTypes = [
   "WALLET_ADDRESS",
   "REQUEST_PAYMENT",
@@ -36,6 +39,7 @@ const ChatScreen = ({
 }) => {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
+  const netInfo = useNetInfo();
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
@@ -46,11 +50,13 @@ const ChatScreen = ({
         navigation,
         'state.params.correspondent',
       );
+      const { isConnected } = netInfo;
       dispatch(addMessageStart({
         address,
         pubKey,
         type: 'text',
         message: messages[0].text,
+        isConnected
       }));
     }
   };
@@ -65,13 +71,28 @@ const ChatScreen = ({
   };
 
   const renderText = ({ currentMessage }) => {
-    const { text, user } = currentMessage;
+    const { text, user, sendingError, hash } = currentMessage;
     const { originalText, parsedText, actions } = parseTextMessage(text);
     let style = styles.text;
 
     if (user._id === 1) {
       style = { ...style, ...styles.textMessageSent };
     }
+
+    const resendMessage = () => {
+      const { address } = _.get(navigation, 'state.params.correspondent');
+      dispatch(removeMessage({ messageHash: hash, address }));
+      onSend([{ text }]);
+    };
+
+    const sendingErrorText = () => (
+      <TouchableOpacity onPress={resendMessage}>
+        <View style={styles.errorMessageContainer}>
+          <WarningIcon style={styles.errorImage} width={18} height={18} />
+          <Text style={styles.errorMessage}>Couldn't send. Tap to try again</Text>
+        </View>
+      </TouchableOpacity>
+    );
 
     const replaceText = ({ type, ...data }) => {
       let replacedStyle = { ...style, ...styles.actionMessage, ...styles.command };
@@ -198,9 +219,12 @@ const ChatScreen = ({
 
     if (!Object.keys(actions).length) {
       return (
-        <Text style={{ ...styles.message, ...style }}>
-          {originalText}
-        </Text>
+        <Fragment>
+          <Text style={{ ...styles.message, ...style }}>
+            {originalText}
+          </Text>
+          {sendingError && sendingErrorText()}
+        </Fragment>
       )
     } else {
       const separators = Object.keys(actions).map(separator => `\\{${separator.slice(1, separator.length - 1)}\\}`);
@@ -213,15 +237,18 @@ const ChatScreen = ({
       });
 
       return (
-        <Text style={styles.message}>
-          {splittedText.map((text) => {
-            if (typeof text === 'string') {
-              return text ? <Text style={style}>{text}</Text> : null
-            } else {
-              return text
-            }
-          })}
-        </Text>
+        <Fragment>
+          <Text style={styles.message}>
+            {splittedText.map((text) => {
+              if (typeof text === 'string') {
+                return text ? <Text style={style}>{text}</Text> : null
+              } else {
+                return text
+              }
+            })}
+          </Text>
+          {sendingError && sendingErrorText()}
+        </Fragment>
       )
     }
   };

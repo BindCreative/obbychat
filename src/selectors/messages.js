@@ -71,7 +71,6 @@ export const selectCorrespondentMessages = ({ address }) =>
       state.correspondents[address].name
         ? state.correspondents[address].name
         : 'New';
-
     allMessages = allMessages.map(message => {
       const unhandled =
         message.type !== 'text' || typeof message.message !== 'string';
@@ -81,6 +80,8 @@ export const selectCorrespondentMessages = ({ address }) =>
         text: unhandled
           ? 'This message type is not yet supported.'
           : message.message ?? '',
+        sendingError: message.sendingError,
+        hash: message.hash,
         system: false,
         createdAt: message.timestamp,
         user:
