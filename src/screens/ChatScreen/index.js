@@ -5,7 +5,7 @@ import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-n
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
-import NetInfo, { useNetInfo } from "@react-native-community/netinfo";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 import styles from './styles';
 import { signMessage, fromWif } from 'obyte/lib/utils';
