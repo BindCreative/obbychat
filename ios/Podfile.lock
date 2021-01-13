@@ -207,6 +207,8 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
+  - react-native-netinfo (5.9.10):
+    - React-Core
   - react-native-randombytes (3.6.0):
     - React-Core
   - react-native-safe-area-context (0.7.3):
@@ -343,6 +345,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-udp (from `../node_modules/react-native-udp`)
@@ -438,6 +441,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-safe-area-context:
@@ -555,6 +560,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
   react-native-camera: 5c1fbfecf63b802b8ca4a71c60d30a71550fb348
+  react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
   react-native-randombytes: 45ae693012df24c9a07a5e578b3b567c01468581
   react-native-safe-area-context: 8260e5157617df4b72865f44006797f895b2ada7
   react-native-udp: ccbd878f0f3b968217fc7e3d5eb5839fcaab8b6c

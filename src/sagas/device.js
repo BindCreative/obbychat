@@ -324,6 +324,7 @@ export function* sendMessage(action) {
       pubKey: recipientPubKey,
       address: recipientAddress,
       message,
+      isConnected
     } = action.payload;
 
     const packageObj = {
@@ -332,6 +333,7 @@ export function* sendMessage(action) {
       subject: 'text',
       body: message,
     };
+
     const encryptedPackage = createEncryptedPackage(
       packageObj,
       recipientPubKey,
@@ -340,32 +342,38 @@ export function* sendMessage(action) {
     const deviceMessage = {
       encrypted_package: encryptedPackage,
     };
-    const messageHash = getBase64Hash(deviceMessage);
-    const tempPubKeyData = yield getTempPubKey(recipientPubKey);
 
-    const objEncryptedPackage = createEncryptedPackage(
-      packageObj,
-      tempPubKeyData.temp_pubkey,
-    );
-    const objDeviceMessage = {
-      encrypted_package: objEncryptedPackage,
-      to: recipientAddress,
-      pubkey: myPermKeys.pubB64,
+    const messageHash = getBase64Hash(deviceMessage);
+
+    const messageData = {
+      id,
+      message,
+      messageHash,
+      address: recipientAddress,
+      messageType: 'text'
     };
-    objDeviceMessage.signature = sign(
-      getDeviceMessageHashToSign(objDeviceMessage),
-      myPermKeys.priv,
-    );
-    yield call(deliverMessage, objDeviceMessage);
+    if (isConnected) {
+      messageData.timestamp = Date.now();
+      const tempPubKeyData = yield getTempPubKey(recipientPubKey);
+      const objEncryptedPackage = createEncryptedPackage(
+        packageObj,
+        tempPubKeyData.temp_pubkey,
+      );
+      const objDeviceMessage = {
+        encrypted_package: objEncryptedPackage,
+        to: recipientAddress,
+        pubkey: myPermKeys.pubB64,
+      };
+      objDeviceMessage.signature = sign(
+        getDeviceMessageHashToSign(objDeviceMessage),
+        myPermKeys.priv,
+      );
+      yield call(deliverMessage, objDeviceMessage);
+    } else {
+      messageData.sendingError = true;
+    }
     yield put(
-      addMessageSuccess({
-        id,
-        message,
-        messageHash,
-        address: recipientAddress,
-        messageType: 'text',
-        timestamp: Date.now(),
-      }),
+      addMessageSuccess(messageData),
     );
   } catch (error) {
     yield put(addMessageFail({ id, address: action.payload.address }));

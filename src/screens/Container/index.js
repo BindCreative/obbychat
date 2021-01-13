@@ -4,6 +4,7 @@ import { useDispatch, connect } from "react-redux";
 import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
+import { useNetInfo } from "@react-native-community/netinfo";
 
 import common from '../../constants/common';
 import { oClient } from '../../lib/oCustom';
@@ -36,13 +37,14 @@ setJSExceptionHandler((error, isFatal) => {
   }
 }, true);
 
+let wasConnected = true;
+
 const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
-
   const [appReady, setAppReady] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
-
   const readyRef = useRef({ appReady });
+  const netInfo = useNetInfo();
 
   const redirect = () => {
     if (redirectParams) {
@@ -58,6 +60,32 @@ const App = ({ walletInit, walletAddress }) => {
       }
     }
   };
+
+  const reconnectToHub = () => {
+    if (oClient.client.open) {
+      oClient.client.ws.addEventListener('close', resubscribe);
+      oClient.close();
+    } else {
+      dispatch(reSubscribeToHub());
+    }
+  };
+
+  useEffect(
+    () => {
+      const { isConnected } = netInfo;
+      if (appReady) {
+        if (!isConnected) {
+          wasConnected = false;
+        } else {
+          if (!wasConnected) {
+            reconnectToHub();
+          }
+          wasConnected = true;
+        }
+      }
+    },
+    [netInfo]
+  );
 
   const handleLinkingUrl = (url) => {
     if (url) {
@@ -111,12 +139,7 @@ const App = ({ walletInit, walletAddress }) => {
   const changeListener = (appState) => {
     if (readyRef.current.appReady) {
       if (appState === 'active') {
-        if (oClient.client.open) {
-          oClient.client.ws.addEventListener('close', resubscribe);
-          oClient.close();
-        } else {
-          dispatch(reSubscribeToHub());
-        }
+        reconnectToHub();
       } else {
         oClient.client.ws.onclose = () => null;
         stopSubscribeToHub();

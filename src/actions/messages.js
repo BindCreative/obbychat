@@ -1,8 +1,8 @@
 import { actionTypes } from './../constants';
 
-export const addMessageStart = ({ address, pubKey, message, type }) => ({
+export const addMessageStart = (payload) => ({
   type: actionTypes.MESSAGE_ADD_START,
-  payload: { address, pubKey, message, type },
+  payload
 });
 
 export const addMessageTemp = ({ id, address, pubKey, message, type }) => ({
@@ -10,23 +10,11 @@ export const addMessageTemp = ({ id, address, pubKey, message, type }) => ({
   payload: { id, address, pubKey, message, type },
 });
 
-export const addMessageSuccess = ({
-  id,
-  address,
-  messageType,
-  message,
-  messageHash,
-  timestamp,
-}) => ({
+export const addMessageSuccess = (messageData) => ({
   type: actionTypes.MESSAGE_ADD_SUCCESS,
   payload: {
-    id,
-    address,
-    messageType,
-    message,
-    messageHash,
-    handleAs: 'SENT',
-    timestamp,
+    ...messageData,
+    handleAs: 'SENT'
   },
 });
 

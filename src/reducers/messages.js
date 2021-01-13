@@ -73,6 +73,7 @@ function reducer(state = initialState, action) {
                     hash: action.payload.messageHash,
                     handleAs: action.payload.handleAs,
                     timestamp: action.payload.timestamp,
+                    sendingError: action.payload.sendingError,
                     pending: false,
                   };
                 }
@@ -141,11 +142,11 @@ function reducer(state = initialState, action) {
           ...state.correspondents,
           [action.payload.address]: {
             ...state.correspondents[action.payload.address],
-            messages: {
+            messages: [
               ...state.correspondents[action.payload.address].messages.filter(
                 message => message.hash !== action.payload.messageHash,
               ),
-            },
+            ],
           },
         },
       };
