@@ -103,14 +103,9 @@ export function* loginToHub(challenge) {
   oClient.justsaying('hub/refresh', null);
 }
 
-const reconnect = () => {
-  setTimeout(() => oClient.client.connect(), 1000);
-};
-
 export function stopSubscribeToHub() {
   oClient.close();
   clearInterval(heartBeatInterval);
-  oClient.client.ws.removeEventListener('close', reconnect);
 }
 
 function* resubscribeToHub() {
@@ -145,7 +140,6 @@ export function* subscribeToHub() {
     }, 10000);
     const walletAddress = yield select(selectWalletAddress());
     oClient.justsaying('light/new_address_to_watch', walletAddress);
-    oClient.client.ws.addEventListener('close', reconnect);
   } catch (error) {
     yield put(
       setToastMessage({

@@ -5,13 +5,12 @@ import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-n
 import SafeAreaView from 'react-native-safe-area-view';
 import { GiftedChat } from 'react-native-gifted-chat';
 import _ from 'lodash';
-import { useNetInfo } from "@react-native-community/netinfo";
+import NetInfo from "@react-native-community/netinfo";
 
 import styles from './styles';
 import { signMessage, fromWif } from 'obyte/lib/utils';
 import { parseTextMessage } from '../../lib/messaging';
 import { addMessageStart, removeMessage } from '../../actions/messages';
-import { setToastMessage } from '../../actions/app';
 import {
   clearChatHistory,
   removeCorrespondent,
@@ -39,7 +38,6 @@ const ChatScreen = ({
 }) => {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
-  const netInfo = useNetInfo();
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
@@ -50,14 +48,16 @@ const ChatScreen = ({
         navigation,
         'state.params.correspondent',
       );
-      const { isConnected } = netInfo;
-      dispatch(addMessageStart({
-        address,
-        pubKey,
-        type: 'text',
-        message: messages[0].text,
-        isConnected
-      }));
+      NetInfo.fetch().then(state => {
+        const { isConnected } = state;
+        dispatch(addMessageStart({
+          address,
+          pubKey,
+          type: 'text',
+          message: messages[0].text,
+          isConnected
+        }));
+      });
     }
   };
 
