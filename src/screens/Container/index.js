@@ -72,7 +72,7 @@ const App = ({ walletInit, walletAddress }) => {
   const reconnectToHub = () => {
     if (oClient.client.open) {
       oClient.client.ws.addEventListener('close', resubscribe);
-      oClient.close();
+      oClient.client.ws.close();
     } else {
       dispatch(reSubscribeToHub());
     }
@@ -128,16 +128,9 @@ const App = ({ walletInit, walletAddress }) => {
   useEffect(
     () => {
       oClient.client.ws.addEventListener('close', init);
-      oClient.close();
+      oClient.client.ws.close();
       Linking.getInitialURL().then(handleLinkingUrl);
       Linking.addEventListener('url', handleIosLinkingUrl);
-      oClient.client.onConnectCallback = () => {
-        oClient.client.ws.addEventListener('close', () => {
-          if (inFocusRef.current && netInfoRef.current) {
-            reconnectToHub();
-          }
-        })
-      };
       AppState.addEventListener('change', changeListener);
       return () => {
         AppState.removeEventListener('change', changeListener);
