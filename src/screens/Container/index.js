@@ -43,8 +43,11 @@ const App = ({ walletInit, walletAddress }) => {
   const dispatch = useDispatch();
   const [appReady, setAppReady] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
-  const readyRef = useRef({ appReady });
   const netInfo = useNetInfo();
+  const readyRef = useRef({ appReady });
+  const inFocusRef = useRef(true);
+  const netInfoRef = useRef(netInfo.isConnected);
+  const lastInfocusRef = useRef('active');
 
   const redirect = () => {
     if (redirectParams) {
@@ -61,31 +64,19 @@ const App = ({ walletInit, walletAddress }) => {
     }
   };
 
+  const resubscribe = () => {
+    setTimeout(() => dispatch(reSubscribeToHub()), 100);
+    oClient.client.ws.removeEventListener('close', resubscribe);
+  };
+
   const reconnectToHub = () => {
     if (oClient.client.open) {
       oClient.client.ws.addEventListener('close', resubscribe);
-      oClient.close();
+      oClient.client.ws.close();
     } else {
       dispatch(reSubscribeToHub());
     }
   };
-
-  useEffect(
-    () => {
-      const { isConnected } = netInfo;
-      if (appReady) {
-        if (!isConnected) {
-          wasConnected = false;
-        } else {
-          if (!wasConnected) {
-            reconnectToHub();
-          }
-          wasConnected = true;
-        }
-      }
-    },
-    [netInfo]
-  );
 
   const handleLinkingUrl = (url) => {
     if (url) {
@@ -103,12 +94,50 @@ const App = ({ walletInit, walletAddress }) => {
     oClient.client.ws.removeEventListener('close', init);
   };
 
-  useEffect(() => {
-    oClient.client.ws.addEventListener('close', init);
-    oClient.close();
-    Linking.getInitialURL().then(handleLinkingUrl);
-    Linking.addEventListener('url', handleIosLinkingUrl);
-  }, []);
+  useEffect(
+    () => {
+      const { isConnected } = netInfo;
+      netInfoRef.current = isConnected;
+      if (appReady) {
+        if (!isConnected) {
+          wasConnected = false;
+          stopSubscribeToHub();
+        } else {
+          if (!wasConnected) {
+            reconnectToHub();
+          }
+          wasConnected = true;
+        }
+      }
+    },
+    [netInfo]
+  );
+
+  const changeListener = (appState) => {
+    if (readyRef.current.appReady) {
+      inFocusRef.current = appState !== 'background';
+      if (appState === 'active' && lastInfocusRef.current === 'background') {
+        reconnectToHub();
+      } else if (appState === 'background') {
+        stopSubscribeToHub();
+      }
+      lastInfocusRef.current = appState;
+    }
+  };
+
+  useEffect(
+    () => {
+      oClient.client.ws.addEventListener('close', init);
+      oClient.client.ws.close();
+      Linking.getInitialURL().then(handleLinkingUrl);
+      Linking.addEventListener('url', handleIosLinkingUrl);
+      AppState.addEventListener('change', changeListener);
+      return () => {
+        AppState.removeEventListener('change', changeListener);
+      };
+    },
+    []
+  );
 
   useEffect(
     () => {
@@ -130,29 +159,6 @@ const App = ({ walletInit, walletAddress }) => {
     },
     [walletInit, redirectParams]
   );
-
-  const resubscribe = () => {
-    setTimeout(() => dispatch(reSubscribeToHub()), 100);
-    oClient.client.ws.removeEventListener('close', resubscribe)
-  };
-
-  const changeListener = (appState) => {
-    if (readyRef.current.appReady) {
-      if (appState === 'active') {
-        reconnectToHub();
-      } else {
-        oClient.client.ws.onclose = () => null;
-        stopSubscribeToHub();
-      }
-    }
-  };
-
-  useEffect(() => {
-    AppState.addEventListener('change', changeListener);
-    return () => {
-      AppState.removeEventListener('change', changeListener);
-    };
-  }, []);
 
   return (
     <SafeAreaProvider>

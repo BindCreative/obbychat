@@ -12,7 +12,8 @@ import { validateSignedMessage } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
-import { Alert } from'react-native';
+import NetInfo from "@react-native-community/netinfo";
+import { AppState } from'react-native';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -103,14 +104,9 @@ export function* loginToHub(challenge) {
   oClient.justsaying('hub/refresh', null);
 }
 
-const reconnect = () => {
-  setTimeout(() => oClient.client.connect(), 1000);
-};
-
 export function stopSubscribeToHub() {
-  oClient.close();
+  oClient.client.ws.close();
   clearInterval(heartBeatInterval);
-  oClient.client.ws.removeEventListener('close', reconnect);
 }
 
 function* resubscribeToHub() {
@@ -118,34 +114,32 @@ function* resubscribeToHub() {
   yield put(updateWalletData());
 }
 
-const fetchClientConnection = () => new Promise(resolve => {
-  const onOpen = () => {
-    resolve();
-    oClient.client.ws.removeEventListener('open', onOpen);
-  };
-
-  oClient.client.ws.addEventListener('open', onOpen);
-});
-
 export function* subscribeToHub() {
   try {
-    oClient.client.connect();
-    yield call(fetchClientConnection);
-    oClient.subscribe((err, result) => {
-      if (err) {
-        throw new Error('Hub socket error');
-      } else {
-        const [type, payload] = result;
-        console.log(type, payload.subject);
-        oChannel.put({ type, payload });
-      }
-    });
-    heartBeatInterval = setInterval(() => {
-      oClient.api.heartbeat();
-    }, 10000);
     const walletAddress = yield select(selectWalletAddress());
-    oClient.justsaying('light/new_address_to_watch', walletAddress);
-    oClient.client.ws.addEventListener('close', reconnect);
+    oClient.client.connect();
+    oClient.client.onConnectCallback = () => {
+      oClient.subscribe((err, result) => {
+        if (err) {
+          throw new Error('Hub socket error');
+        } else {
+          const [type, payload] = result;
+          console.log(type, payload.subject);
+          oChannel.put({ type, payload });
+        }
+      });
+      heartBeatInterval = setInterval(() => {
+        oClient.api.heartbeat();
+      }, 10000);
+      oClient.justsaying('light/new_address_to_watch', walletAddress);
+      oClient.client.ws.addEventListener('close', () => {
+        NetInfo.fetch().then(({ isConnected }) => {
+          if (isConnected && AppState.currentState !== 'background') {
+            call(resubscribeToHub)
+          }
+        });
+      })
+    };
   } catch (error) {
     yield put(
       setToastMessage({
