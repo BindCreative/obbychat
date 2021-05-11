@@ -99,8 +99,6 @@ class PaymentScreen extends React.Component {
       return;
     }
 
-    debugger;
-
     let primaryValue, secondaryValue;
     const { primaryUnit, secondaryUnit } = this.state;
     const { exchangeRates } = this.props;
