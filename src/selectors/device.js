@@ -7,25 +7,17 @@ import { getWalletState } from './wallet';
 
 export const getDeviceState = state => state.main.device;
 
-let deviceWif = '';
-
 export const selectPrivKey = () =>
   createSelector(getDeviceState, state => Buffer.from(state.deviceTempKeys.privKey));
 
 export const selectDeviceWif = () =>
   createSelector(getWalletState, state => {
-    if (deviceWif) {
-      return deviceWif;
-    } else {
-      const mnemonic = new Mnemonic(state.seedWords);
-      const xPrivKey = mnemonic.toHDPrivateKey();
-      const path = testnet ? "m/44'/1'" : "m/44'/0'";
-      const { privateKey } = xPrivKey.derive(path);
-      const walletPrivKeyBuf = privateKey.bn.toBuffer({ size: 32 });
-      const walletWif = toWif(walletPrivKeyBuf, testnet);
-      deviceWif = walletWif;
-      return walletWif;
-    }
+    const mnemonic = new Mnemonic(state.seedWords);
+    const xPrivKey = mnemonic.toHDPrivateKey();
+    const path = testnet ? "m/44'/1'" : "m/44'/0'";
+    const { privateKey } = xPrivKey.derive(path);
+    const walletPrivKeyBuf = privateKey.bn.toBuffer({ size: 32 });
+    return toWif(walletPrivKeyBuf, testnet);
   });
 
 export const selectDeviceAddress = () =>
@@ -34,8 +26,7 @@ export const selectDeviceAddress = () =>
     const devicePubKey = publicKeyCreate(devicePrivKey, true).toString(
       'base64',
     );
-    const myDeviceAddress = `0${getChash160(devicePubKey)}`;
-    return myDeviceAddress;
+    return `0${getChash160(devicePubKey)}`;
   });
 
 export const selectDevicePrivKey = () =>

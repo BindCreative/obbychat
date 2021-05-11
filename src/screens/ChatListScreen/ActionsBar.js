@@ -9,6 +9,7 @@ import { hubAddress, urlHost } from './../../lib/oCustom';
 import AddContactIcon from './../../assets/images/icon-person-add.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
+import PersonAddIcon from './../../assets/images/icon-person-add.svg';
 import styles from './styles';
 
 class ActionsBar extends React.Component {
@@ -26,11 +27,14 @@ class ActionsBar extends React.Component {
   render() {
     return (
       <View style={styles.actionsBar}>
-        {/**
-        <TouchableOpacity style={styles.iconButton}>
-          <AddContactIcon style={styles.icon} width={20} height={20} />
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() =>
+            this.props.navigation.navigate('PairInput')
+          }
+        >
+          <AddContactIcon style={styles.icon} width={15} height={15} />
         </TouchableOpacity>
-        */}
         <TouchableOpacity
           style={styles.iconButton}
           onPress={() =>

@@ -23,7 +23,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from './../../selectors/exchangeRates';
 import { selectWalletAddress } from './../../selectors/wallet';
 import { sendPaymentStart } from './../../actions/wallet';
-import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes } from './../../lib/utils';
+import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
 
 export const Methods = {
@@ -99,6 +99,8 @@ class PaymentScreen extends React.Component {
       return;
     }
 
+    debugger;
+
     let primaryValue, secondaryValue;
     const { primaryUnit, secondaryUnit } = this.state;
     const { exchangeRates } = this.props;
@@ -149,9 +151,16 @@ class PaymentScreen extends React.Component {
     });
   }
 
+  convertPrimaryValue = (nextUnit) => {
+    const { primaryUnit, primaryValue } = this.state;
+    const bytes = unitToBytes(primaryValue, primaryUnit);
+    return bytesToUnit(bytes, nextUnit);
+  };
+
   async changePrimaryUnit(primaryUnit) {
+    const convertedPrimaryValue = this.convertPrimaryValue(primaryUnit);
     await this.setState({ primaryUnit });
-    this.changeValue(this.state.primaryValue, 'primary');
+    this.changeValue(convertedPrimaryValue, 'primary');
   }
 
   async changeSecondaryUnit(secondaryUnit) {
@@ -325,7 +334,7 @@ class PaymentScreen extends React.Component {
                 />
                 <ActionSheet
                   currentValue={primaryUnit}
-                  onChange={value => this.changePrimaryUnit(value)}
+                  onChange={this.changePrimaryUnit}
                   items={PRIMARY_UNITS.map(({ label, altValue }) => ({
                     label,
                     value: altValue,
@@ -343,9 +352,9 @@ class PaymentScreen extends React.Component {
                 <ActionSheet
                   currentValue={secondaryUnit}
                   onChange={value => this.changeSecondaryUnit(value)}
-                  items={SECONDARY_UNITS.map(({ label, altValue }) => ({
+                  items={SECONDARY_UNITS.map(({ label, value }) => ({
                     label,
-                    value: altValue,
+                    value
                   }))}
                 />
               </View>

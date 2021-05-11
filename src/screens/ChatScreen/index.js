@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Fragment, useEffect } from 'react';
+import React, { useState, useMemo, Fragment } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-native';
@@ -22,16 +22,6 @@ import Header from '../../components/Header';
 import { testnet } from "../../lib/oCustom";
 
 import WarningIcon from '../../assets/images/warning.svg';
-
-const messageTypes = [
-  "WALLET_ADDRESS",
-  "REQUEST_PAYMENT",
-  "SIGN_MESSAGE_REQUEST",
-  "SIGNED_MESSAGE",
-  "URL",
-  "COMMAND",
-  "SUGGEST_COMMAND"
-];
 
 const ChatScreen = ({
   myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute, addressWif
@@ -58,6 +48,15 @@ const ChatScreen = ({
           isConnected
         }));
       });
+      setText("");
+    }
+  };
+
+  const onRequestSignMessage = () => {
+    if (!text) {
+      Alert.alert('', 'Text field is empty');
+    } else {
+      onSend([{ text: `[Data request](sign-message-request:${text})` }]);
     }
   };
 
@@ -284,6 +283,7 @@ const ChatScreen = ({
             clearChatHistory={onClearChatHistory}
             removeCorrespondent={onRemoveCorespondent}
             onSend={onSend}
+            onRequestSignMessage={onRequestSignMessage}
             insertAddress={insertAddress}
             correspondentWalletAddress={correspondentWalletAddress}
             correspondentAddress={correspondent.address}

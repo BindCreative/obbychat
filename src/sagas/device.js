@@ -13,7 +13,7 @@ import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
 import NetInfo from "@react-native-community/netinfo";
-import { AppState } from'react-native';
+import { AppState, Alert } from 'react-native';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';

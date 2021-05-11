@@ -17,7 +17,8 @@ const ActionsBar = ({
   myWalletAddress,
   correspondentWalletAddress,
   correspondentAddress,
-  insertAddress
+  insertAddress,
+  onRequestSignMessage
 }) => {
   const actionSheet = useRef();
 
@@ -60,6 +61,11 @@ const ActionsBar = ({
     );
   }, [correspondentAddress]);
 
+  const handleRequestToSignMessage = useCallback(
+    () => {},
+    []
+  );
+
   const handleActionPress = useCallback(
     index => {
       switch (index) {
@@ -71,6 +77,9 @@ const ActionsBar = ({
           break;
         case 2:
           handleDeleteContact();
+          break;
+        case 3:
+          onRequestSignMessage();
           break;
         default:
       }
@@ -149,10 +158,11 @@ const ActionsBar = ({
           'Insert my address',
           'Clear chat history',
           'Delete contact',
+          'Request to Sign a Message',
           'Cancel',
         ]}
-        cancelButtonIndex={3}
-        destructiveButtonIndex={3}
+        cancelButtonIndex={4}
+        destructiveButtonIndex={4}
         onPress={handleActionPress}
       />
     </View>

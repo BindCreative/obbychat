@@ -1,7 +1,6 @@
 import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
-import { Alert } from 'react-native';
 import { REHYDRATE } from 'redux-persist';
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/oCustom';

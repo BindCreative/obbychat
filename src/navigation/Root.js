@@ -9,6 +9,7 @@ import PaymentScreen, { Methods } from './../screens/PaymentScreen';
 import SeedWordsScreen from './../screens/SeedWordsScreen';
 import TransactionInfoScreen from './../screens/TransactionInfoScreen';
 import ChatScreen from '../screens/ChatScreen';
+import PairInputScreen from '../screens/PairInput';
 
 const RootNav = createStackNavigator(
   {
@@ -27,6 +28,10 @@ const RootNav = createStackNavigator(
     QrCode: {
       screen: (props, compProps) => <QRCodeScreen {...props} {...compProps} />,
       path: 'qrCode'
+    },
+    PairInput: {
+      screen: (props, compProps) => <PairInputScreen {...props} {...compProps} />,
+      path: 'pairInput'
     },
     MakePayment: {
       screen: props => (
