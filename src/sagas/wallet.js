@@ -31,6 +31,7 @@ import {
   selectAddressWif,
 } from './../selectors/wallet';
 import { initDeviceInfo } from "../actions/device";
+import { botsAddSuccess } from "../actions/messages";
 
 export function* initWallet({ payload }) {
   try {
@@ -41,6 +42,7 @@ export function* initWallet({ payload }) {
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);
+    yield call(initDefaultBots);
     yield call(fetchWalletHistory);
     yield put(initWalletSuccess());
   } catch (error) {
@@ -134,6 +136,24 @@ export function* fetchBalances(action) {
         }),
       );
     }
+  }
+}
+
+export function* initDefaultBots() {
+  try {
+    const botsPromise = new Promise((resolve, reject) =>
+      oClient.api.getBots((err, bots) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(bots);
+        }
+      }),
+    );
+    const bots = yield botsPromise;
+    yield put(botsAddSuccess(bots));
+  } catch (error) {
+    // console.log({ error });
   }
 }
 

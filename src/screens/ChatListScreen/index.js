@@ -2,19 +2,23 @@ import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text } from 'react-native';
-import TimeAgo from 'react-native-timeago';
-import makeBlockie from 'ethereum-blockies-base64';
 import SafeAreaView from 'react-native-safe-area-view';
-import { List } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import Dialog from 'react-native-dialog';
 
 import common from '../../constants/common';
 
 import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
-import { selectCorrespondents } from '../../selectors/messages';
+import { selectCorrespondents, selectUnpairedBots } from '../../selectors/messages';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
+import CorrespondentItem from './CorrespondentItem';
+import BotItem from './BotItem';
+
+const listSeparator = {
+  type: 'separator'
+};
 
 class ChatListScreen extends React.Component {
   constructor(props) {
@@ -53,53 +57,43 @@ class ChatListScreen extends React.Component {
       changeNameDialog: {
         visible: false,
         correspondent: {},
-      },
+      }
     });
   };
 
   renderItem = (data) => {
     const { item: correspondent } = data;
 
-    return (
-      <List.Item
-        key={correspondent.address}
-        style={styles.listItem}
-        onPress={() => {
-          this.props.navigation.navigate('Chat', { correspondent })
-        }}
-        onLongPress={() => {
-          this.setState({ changeNameDialog: { correspondent, visible: true } })
-        }}
-        left={() => (
-          <View style={styles.userAvatarContainer}>
-            <Image
-              style={styles.userAvatar}
-              name={correspondent.name}
-              source={{ uri: makeBlockie(correspondent.address) }}
-            />
+    const { type } = correspondent;
+
+    switch (type) {
+      case 'bot':
+        return (
+          <BotItem
+            navigation={this.props.navigation}
+            bot={correspondent}
+          />
+        );
+      case 'separator':
+        return (
+          <View style={styles.dividerView}>
+            <Divider style={styles.divider} />
+            <Text style={styles.dividerText}>Free Bots</Text>
           </View>
-        )}
-        title={correspondent.name}
-        titleStyle={styles.listItemTitle}
-        description={() => (
-          <View style={styles.descriptionContainer}>
-            <Text numberOfLines={1} style={styles.listItemPreview}>{correspondent.lastMessagePreview}</Text>
-            <Text numberOfLines={1} note style={styles.listItemTime}>
-              {correspondent.lastMessageTimestamp !== undefined && (
-                <TimeAgo
-                  time={correspondent.lastMessageTimestamp}
-                  interval={15000}
-                />
-              )}
-            </Text>
-          </View>
-        )}
-      />
-    );
+        );
+      default:
+        return (
+          <CorrespondentItem
+            setState={this.setState}
+            navigation={this.props.navigation}
+            correspondent={correspondent}
+          />
+        );
+    }
   };
 
   render() {
-    const { correspondents } = this.props;
+    const { correspondents, unpairedBots } = this.props;
     const { changeNameDialog, initialized } = this.state;
 
     return (
@@ -116,7 +110,7 @@ class ChatListScreen extends React.Component {
         />
         {initialized && (
           <Fragment>
-            {!correspondents.length && (
+            {!correspondents.length && !unpairedBots.length && (
               <View style={styles.noContactsContainer}>
                 <Text style={styles.noContactsText}>
                   Start adding contacts by sharing your QR code or scanning someone
@@ -124,9 +118,9 @@ class ChatListScreen extends React.Component {
                 </Text>
               </View>
             )}
-            {!!correspondents.length && (
+            {(!!correspondents.length || !!unpairedBots.length) && (
               <FlatList
-                data={correspondents}
+                data={!!unpairedBots.length ? [...correspondents, listSeparator, ...unpairedBots] : correspondents}
                 keyExtractor={correspondent => correspondent.address}
                 renderItem={this.renderItem}
               />
@@ -162,7 +156,8 @@ class ChatListScreen extends React.Component {
   }
 }
 const mapStateToProps = createStructuredSelector({
-  correspondents: selectCorrespondents()
+  correspondents: selectCorrespondents(),
+  unpairedBots: selectUnpairedBots()
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -5,7 +5,8 @@ import { actionTypes } from './../constants';
 const initialState = {
   correspondents: {},
   unreadMessages: 0,
-  addFetching: false
+  addFetching: false,
+  bots: []
 };
 
 const isMessageExist = (list, message) => list.some(({ hash }) => hash === message.messageHash);
@@ -220,6 +221,20 @@ function reducer(state = initialState, action) {
           },
         },
       };
+
+    case actionTypes.BOTS_ADD_SUCCESS: {
+      const botsIds = state.bots.map(({ id }) => id);
+      const newBots = action.payload.filter(({ id }) => !botsIds.includes(id));
+      const bots = [...state.bots, ...newBots].map(bot => ({ ...bot, type: 'bot' }));
+      return { ...state, bots };
+    }
+
+    case actionTypes.BOT_PAIR_SUCCESS:
+      return {
+        ...state,
+        bots: state.bots.map(bot => bot.id === action.payload ? { ...bot, paired: true } : bot)
+      };
+
 
     default:
       return state;

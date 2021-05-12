@@ -4,9 +4,9 @@ import ActionSheet from 'react-native-actionsheet';
 import UserAvatar from 'react-native-user-avatar';
 import makeBlockie from 'ethereum-blockies-base64';
 
-import MoreIcon from './../../assets/images/icon-more.svg';
-import ReceiveIcon from './../../assets/images/icon-receive.svg';
-import SendIcon from './../../assets/images/icon-send.svg';
+import MoreIcon from '../../../assets/images/icon-more.svg';
+import ReceiveIcon from '../../../assets/images/icon-receive.svg';
+import SendIcon from '../../../assets/images/icon-send.svg';
 import styles from './styles';
 
 const ActionsBar = ({

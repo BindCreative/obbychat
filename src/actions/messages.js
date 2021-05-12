@@ -69,3 +69,13 @@ export const setUnreadMessages = unreadMessages => ({
   type: actionTypes.UNREAD_MESSAGE_COUNT_SET,
   payload: { unreadMessages },
 });
+
+export const botsAddSuccess = bots => ({
+  type: actionTypes.BOTS_ADD_SUCCESS,
+  payload: bots
+});
+
+export const botPairSuccess = id => ({
+  type: actionTypes.BOT_PAIR_SUCCESS,
+  payload: id
+});
