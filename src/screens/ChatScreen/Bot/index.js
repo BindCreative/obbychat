@@ -22,7 +22,7 @@ const BotScreen = ({
   const pairChatBot = () => {
     setFetching(true);
     const { id, pairing_code } = correspondent;
-    dispatch(acceptInvitation({ data: `obyte-tn:${pairing_code}` }));
+    dispatch(acceptInvitation({ data: pairing_code }));
     dispatch(botPairSuccess(id))
   };
 

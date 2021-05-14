@@ -101,7 +101,8 @@ const ChatScreen = ({
         case "VOTE":
         case "PROFILE":
         case "PROFILE_REQUEST":
-        case "PROSAIC_CONTRACT": {
+        case "PROSAIC_CONTRACT":
+        case "PAIRING_CHAT": {
           const { text } = data;
           return (
             <Text style={style}>{text}</Text>

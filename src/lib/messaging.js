@@ -6,7 +6,7 @@ export const REGEX_WALLET_ADDRESS = /(.*?\b|^)([2-7A-Z]{32})([\s.,;!:].*?|$)/g;
 export const REGEX_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)\)/g;
 export const REGEX_SIGN_MESSAGE_REQUEST = /\[(.+?)\]\(sign-message-request(-network-aware)?:(.+?)\)/g;
 export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:([\w\/+=]+?)\)/g;
-export const REGEX_PAIRING = /(byteball-tn|byteball|obyte-tn|obyte):([\w\/+]{44})@([\w.:\/-]+)#(.+)/g;
+export const REGEX_PAIRING = /(?:(?:byteball-tn|byteball|obyte-tn|obyte):)?(([\w\/+]{44})@([\w.:\/-]+)#(.+))/g;
 export const REGEX_URL = /\bhttps?:\/\/[\w+&@#/%?=~|!:,.;-]+[\w+&@#/%=~|-]/g;
 export const REGEX_COMMAND = /\[(.+?)\]\(command:(.+?)\)/g;
 export const REGEX_SUGGEST_COMMAND = /\[(.+?)\]\(suggest-command:(.+?)\)/g;
@@ -19,6 +19,7 @@ export const REGEX_VOTE = /\[(.+?)\]\(vote:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE = /\[(.+?)\]\(profile:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE_REQUEST = /\[(.+?)\]\(profile-request:([\w,]+?)\)/g;
 export const REGEX_PROSAIC_CONTRACT = /\(prosaic-contract:([\w\/+=]+?)\)/g;
+export const REGEX_PAIRING_CHAT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([\w\/+]{44})@([\w.:\/-]+)#(.+))\)/g;
 
 export const parseTextMessage = originalText => {
   let type = null;
@@ -59,6 +60,10 @@ export const parseTextMessage = originalText => {
     })
     .replace(REGEX_PROSAIC_CONTRACT, () => {
       type = 'PROSAIC_CONTRACT';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
+    })
+    .replace(REGEX_PAIRING_CHAT, () => {
+      type = 'PAIRING_CHAT';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
     .replace(REGEX_WALLET_ADDRESS, (str, pre, address, post) => {

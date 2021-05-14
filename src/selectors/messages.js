@@ -37,8 +37,10 @@ export const selectCorrespondents = () =>
       );
   });
 
+const emptyArray = [];
+
 export const selectUnpairedBots = () =>
-  createSelector(getMessagesState, state => state.bots.filter(({ paired }) => !paired));
+  createSelector(getMessagesState, state => state.bots ? state.bots.filter(({ paired }) => !paired) : emptyArray);
 
 export const selectCorrespondent = address =>
   createSelector(getMessagesState, state => {

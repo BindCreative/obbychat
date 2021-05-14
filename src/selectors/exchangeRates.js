@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import _ from 'lodash';
 
 export const getExchangeRatesState = state => state.main.exchangeRates;
 
