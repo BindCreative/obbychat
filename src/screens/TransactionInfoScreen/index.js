@@ -25,9 +25,7 @@ class TransactionInfoScreen extends React.Component {
       bytesToUnit(transaction.amount, 'GB') * this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
 
-    var explorerUrl = `https://${
-      common.network === 'testnet' ? 'testnet' : ''
-    }explorer.obyte.org/#${transaction.unitId}`;
+    var explorerUrl = `https://${common.network === 'testnet' ? 'testnet' : ''}explorer.obyte.org/#${transaction.unitId}`;
 
     return (
       <SafeAreaView style={styles.container}>
@@ -56,7 +54,7 @@ class TransactionInfoScreen extends React.Component {
             <View style={styles.infoBlock}>
               <View style={styles.infoRow}>
                 <Text style={styles.infoRowLabel}>Details</Text>
-                <Text></Text>
+                <Text />
               </View>
               <View style={styles.infoRow}>
                 <Text style={styles.infoRowLabel}>
@@ -121,10 +119,6 @@ const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
 });
 
-const mapDispatchToProps = dispatch => ({});
+TransactionInfoScreen = connect(mapStateToProps, null)(TransactionInfoScreen);
 
-TransactionInfoScreen = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(TransactionInfoScreen);
 export default TransactionInfoScreen;

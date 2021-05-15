@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import _ from 'lodash';
 
+import { selectTransactions } from "./walletHistory";
+
 export const getMessagesState = state => state.main.messages;
 
 export const selectCorrespondents = () =>
@@ -68,32 +70,47 @@ export const selectCorrespondentWalletAddress = address =>
   });
 
 export const selectCorrespondentMessages = ({ address }) =>
-  createSelector(getMessagesState, state => {
-    let allMessages = _.get(state, `correspondents[${address}].messages`, []);
-    const correspondentName =
-      state.correspondents &&
-      state.correspondents[address] &&
-      state.correspondents[address].name
-        ? state.correspondents[address].name
-        : 'New';
-    allMessages = allMessages.map(message => {
-      const unhandled =
-        message.type !== 'text' || typeof message.message !== 'string';
-      return {
-        _id: message._id,
-        type: 'text',
-        text: unhandled
-          ? 'This message type is not yet supported.'
-          : message.message ?? '',
-        sendingError: message.sendingError,
-        hash: message.hash,
-        system: false,
-        createdAt: message.timestamp,
-        user:
-          message.handleAs === 'SENT'
-            ? { _id: 1, name: 'Me' }
-            : { _id: address, name: correspondentName },
-      };
+  createSelector(
+    [getMessagesState, selectTransactions()],
+    (state, transactions) => {
+      let allMessages = _.get(state, `correspondents[${address}].messages`, []);
+      const correspondentName =
+        state.correspondents &&
+        state.correspondents[address] &&
+        state.correspondents[address].name
+          ? state.correspondents[address].name
+          : 'New';
+      allMessages = allMessages.map(message => {
+        const unhandled = !['text', 'payment_notification'].includes(message.type) || typeof message.message !== 'string';
+        let messageData = {
+          _id: message._id,
+          type: message.type,
+          text: unhandled ? 'This message type is not yet supported.' : message.message ?? '',
+          sendingError: message.sendingError,
+          hash: message.hash,
+          system: false,
+          createdAt: message.timestamp,
+          user: message.handleAs === 'SENT' ? { _id: 1, name: 'Me' } : { _id: address, name: correspondentName },
+        };
+
+        if (message.type === 'payment_notification') {
+          let transaction = null;
+          transactions.some((joint) => {
+            if (joint.unitId === message.message) {
+              transaction = joint;
+              return true;
+            }
+            return false;
+          });
+          if (transaction) {
+            messageData.text = `[Payment notification](payment:${message.message} ${transaction.amount})`
+          } else {
+            messageData = null;
+          }
+        }
+
+        return messageData;
+      });
+      allMessages = allMessages.filter(message => !!message);
+      return _.uniqBy(allMessages, message => message._id).reverse();
     });
-    return _.uniqBy(allMessages, message => message._id).reverse();
-  });

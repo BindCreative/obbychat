@@ -78,9 +78,7 @@ class WalletScreen extends React.Component {
           <Text style={styles.txType}>{
             tx.confirmed
               ? tx.type
-              : tx.type === 'RECEIVED'
-                ? "RECEIVING"
-                : "SENDING"
+              : tx.type === 'RECEIVED' ? "RECEIVING" : "SENDING"
           }</Text>
           <Text style={styles.txAddress}>
             {tx.type === 'RECEIVED' && tx.fromAddress.join(', ')}
@@ -102,38 +100,10 @@ class WalletScreen extends React.Component {
       >
         <Rect x='10' y='10' rx='4' ry='4' width='300' height='40' />
         <Rect x='10' y='62' rx='4' ry='4' width='240' height='32' />
-        <Rect
-          x='10'
-          y='150'
-          rx='4'
-          ry='4'
-          width={Dimensions.get('window').width}
-          height='100'
-        />
-        <Rect
-          x='10'
-          y='260'
-          rx='4'
-          ry='4'
-          width={Dimensions.get('window').width}
-          height='100'
-        />
-        <Rect
-          x='10'
-          y='370'
-          rx='4'
-          ry='4'
-          width={Dimensions.get('window').width}
-          height='100'
-        />
-        <Rect
-          x='10'
-          y='480'
-          rx='4'
-          ry='4'
-          width={Dimensions.get('window').width}
-          height='100'
-        />
+        <Rect x='10' y='150' rx='4' ry='4' width={Dimensions.get('window').width} height='100' />
+        <Rect x='10' y='260' rx='4' ry='4' width={Dimensions.get('window').width} height='100' />
+        <Rect x='10' y='370' rx='4' ry='4' width={Dimensions.get('window').width} height='100' />
+        <Rect x='10' y='480' rx='4' ry='4' width={Dimensions.get('window').width} height='100' />
       </ContentLoader>
     </SafeAreaView>
   );
@@ -168,7 +138,7 @@ class WalletScreen extends React.Component {
   };
 
   render() {
-    const { loading, loadBalances } = this.props;
+    const { loading, loadBalances, transactions } = this.props;
 
     return (
       <SafeAreaView
@@ -187,7 +157,7 @@ class WalletScreen extends React.Component {
             {loading && this.renderLoadingScreen()}
             {!loading && (
               <FlatList
-                data={this.props.transactions}
+                data={transactions}
                 contentContainerStyle={styles.content}
                 keyExtractor={tx => tx.unitId}
                 renderItem={this.renderTx}

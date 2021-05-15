@@ -153,7 +153,7 @@ export function* initDefaultBots() {
     const bots = yield botsPromise;
     yield put(botsAddSuccess(bots));
   } catch (error) {
-    // console.log({ error });
+    console.log({ error });
   }
 }
 

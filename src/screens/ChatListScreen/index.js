@@ -78,7 +78,7 @@ class ChatListScreen extends React.Component {
         return (
           <View style={styles.dividerView}>
             <Divider style={styles.divider} />
-            <Text style={styles.dividerText}>Free Bots</Text>
+            <Text style={styles.dividerText}>Available bots</Text>
           </View>
         );
       default:
@@ -110,7 +110,7 @@ class ChatListScreen extends React.Component {
         />
         {initialized && (
           <Fragment>
-            {!correspondents.length && !unpairedBots.length && (
+            {!correspondents.length && (
               <View style={styles.noContactsContainer}>
                 <Text style={styles.noContactsText}>
                   Start adding contacts by sharing your QR code or scanning someone

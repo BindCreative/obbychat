@@ -79,3 +79,8 @@ export const botPairSuccess = id => ({
   type: actionTypes.BOT_PAIR_SUCCESS,
   payload: id
 });
+
+export const openPaymentFromChat = id => ({
+  type: actionTypes.OPEN_PAYMENT_FROM_CHAT,
+  payload: id
+});

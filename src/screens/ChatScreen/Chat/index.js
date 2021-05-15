@@ -9,7 +9,7 @@ import NetInfo from "@react-native-community/netinfo";
 import styles from './styles';
 import { signMessage, fromWif } from 'obyte/lib/utils';
 import { parseTextMessage } from '../../../lib/messaging';
-import { addMessageStart, removeMessage } from '../../../actions/messages';
+import { addMessageStart, removeMessage, openPaymentFromChat } from '../../../actions/messages';
 import {
   clearChatHistory,
   removeCorrespondent,
@@ -57,7 +57,7 @@ const ChatScreen = ({
   };
 
   const insertAddress = (address) => {
-    const separator = text[text.length - 1] === " " ? "" : " ";
+    const separator = text[text.length - 1] === " " || !text ? "" : " ";
     setText(`${text}${separator}${address} `);
   };
 
@@ -97,7 +97,6 @@ const ChatScreen = ({
       switch (type) {
         case "TEXTCOIN":
         case "DATA":
-        case "PAYMENT":
         case "VOTE":
         case "PROFILE":
         case "PROFILE_REQUEST":
@@ -106,6 +105,14 @@ const ChatScreen = ({
           const { text } = data;
           return (
             <Text style={style}>{text}</Text>
+          )
+        }
+        case "PAYMENT": {
+          const { unitId, amount } = data;
+          return (
+            <TouchableOpacity onPress={() => dispatch(openPaymentFromChat(unitId))}>
+              <Text style={replacedStyle}>{`Payment: ${amount} bytes`}</Text>
+            </TouchableOpacity>
           )
         }
         case "WALLET_ADDRESS": {

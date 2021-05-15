@@ -61,6 +61,7 @@ import {
   selectDeviceTempKeyData,
 } from './../selectors/device';
 import { selectWalletAddress } from "../selectors/wallet";
+import { selectTransactionByUnitId } from "../selectors/walletHistory";
 
 let heartBeatInterval = 0;
 
@@ -294,10 +295,19 @@ export function* receiveMessage({ body }) {
         }),
       );
     } else if (decryptedMessage.subject === 'payment_notification') {
-      console.log('Payment notification', decryptedMessage);
-      // const { joint } = yield call(oClient.api.getJoint, decryptedMessage.body);
-      // const { unit } = joint;
-      // console.log(unit);
+      yield call(checkForSigning, decryptedMessage, body);
+      console.log(decryptedMessage, body);
+      yield put(
+        receiveMessageStart({
+          address: decryptedMessage.from,
+          messageType: decryptedMessage.subject,
+          message: decryptedMessage.body,
+          messageHash: body.message_hash,
+          handleAs: 'RECEIVED',
+          hub: decryptedMessage.device_hub,
+          timestamp: Date.now(),
+        }),
+      );
     }
   } catch (error) {
     console.log('MESSAGE PARSING ERROR:', {
@@ -396,7 +406,7 @@ export function* acceptInvitation(action) {
         REGEX_PAIRING,
         (
           str,
-          protocol,
+          pairingCode,
           correspondentPubKey,
           correspondentHub,
           correspondentPairingSecret,
@@ -559,6 +569,12 @@ export function* removeCorrespondentSaga(action) {
   yield deliverMessage(objDeviceMessage);
 }
 
+export function* openPaymentFromChat(action) {
+  const unitId = action.payload;
+  const transaction = yield select(selectTransactionByUnitId(unitId));
+  NavigationService.navigate('TransactionInfo', { transaction })
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
@@ -568,5 +584,6 @@ export default function* watch() {
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
     takeEvery(actionTypes.CORRESPONDENT_DEVICE_REMOVE, removeCorrespondentSaga),
+    takeEvery(actionTypes.OPEN_PAYMENT_FROM_CHAT, openPaymentFromChat),
   ]);
 }

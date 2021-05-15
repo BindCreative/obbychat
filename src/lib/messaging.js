@@ -14,7 +14,7 @@ export const REGEX_SUGGEST_COMMAND = /\[(.+?)\]\(suggest-command:(.+?)\)/g;
 // Unsupported messages
 export const REGEX_TEXTCOIN = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):textcoin\?([a-z-]+))\)/g;
 export const REGEX_DATA = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):data\?(.+))\)/g;
-export const REGEX_PAYMENT = /\[(.+?)\]\(payment:([\w\/+=]+?)\)/g;
+export const REGEX_PAYMENT = /\[(.+?)\]\(payment:([\w\/+=]+?) (.+?)\)/g;
 export const REGEX_VOTE = /\[(.+?)\]\(vote:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE = /\[(.+?)\]\(profile:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE_REQUEST = /\[(.+?)\]\(profile-request:([\w,]+?)\)/g;
@@ -42,10 +42,6 @@ export const parseTextMessage = originalText => {
       type = 'DATA';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PAYMENT, () => {
-      type = 'PAYMENT';
-      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
-    })
     .replace(REGEX_VOTE, () => {
       type = 'VOTE';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
@@ -65,6 +61,10 @@ export const parseTextMessage = originalText => {
     .replace(REGEX_PAIRING_CHAT, () => {
       type = 'PAIRING_CHAT';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
+    })
+    .replace(REGEX_PAYMENT, (str, pre, unitId, amount) => {
+      type = 'PAYMENT';
+      return toDelayedReplacement({ type, amount, unitId });
     })
     .replace(REGEX_WALLET_ADDRESS, (str, pre, address, post) => {
       type = 'WALLET_ADDRESS';

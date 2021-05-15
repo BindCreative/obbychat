@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from './../constants';
+import { REGEX_PAIRING } from "../lib/messaging";
+import {getDeviceAddress} from "../lib/oCustom";
 
 const initialState = {
   correspondents: {},
@@ -173,8 +175,25 @@ function reducer(state = initialState, action) {
       };
 
     case actionTypes.CORRESPONDENT_DEVICE_REMOVE:
-    case actionTypes.CORRESPONDENT_REMOVED_DEVICE:
-      return {
+    case actionTypes.CORRESPONDENT_REMOVED_DEVICE: {
+      const correspondentPubKey = state.correspondents[action.payload.address].pubKey;
+      let botId = null;
+      if (state.bots) {
+        state.bots.some((bot) => {
+          const { pairing_code } = bot;
+          const pubKey = pairing_code.replace(
+            REGEX_PAIRING,
+            (str, pairingCode, correspondentPubKey) => correspondentPubKey,
+          );
+          if (pubKey === correspondentPubKey) {
+            botId = bot.id;
+            return true;
+          }
+          return false;
+        });
+      }
+
+      const newState = {
         ...state,
         correspondents: {
           ...state.correspondents,
@@ -185,6 +204,13 @@ function reducer(state = initialState, action) {
           },
         },
       };
+
+      if (botId !== null && state.bots) {
+        newState.bots = state.bots.map((bot) => bot.id === botId ? ({ ...bot, paired: false }) : bot);
+      }
+
+      return newState;
+    }
 
     case actionTypes.CORRESPONDENT_WALLET_ADDRESS_UPDATE:
       return {
@@ -223,9 +249,10 @@ function reducer(state = initialState, action) {
       };
 
     case actionTypes.BOTS_ADD_SUCCESS: {
-      const botsIds = state.bots.map(({ id }) => id);
+      const stateBots = state.bots || [];
+      const botsIds = stateBots.map(({ id }) => id);
       const newBots = action.payload.filter(({ id }) => !botsIds.includes(id));
-      const bots = [...state.bots, ...newBots].map(bot => ({ ...bot, type: 'bot' }));
+      const bots = [...stateBots, ...newBots].map(bot => ({ ...bot, type: 'bot' }));
       return { ...state, bots };
     }
 

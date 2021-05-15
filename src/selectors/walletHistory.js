@@ -56,3 +56,18 @@ export const selectTransactions = () =>
       return transactions;
     },
   );
+
+export const selectTransactionByUnitId = (unitId) =>
+  createSelector(
+    [selectTransactions()],
+    (transactions) => {
+      let transaction = null;
+      transactions.some((joint) => {
+        if (joint.unitId === unitId) {
+          transaction = joint;
+          return true;
+        }
+        return false;
+      });
+      return transaction;
+    })

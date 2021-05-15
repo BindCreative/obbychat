@@ -29,7 +29,8 @@ export default function configureStore() {
   const secureStorage = createSecureStore();
   const securePersistConfig = {
     key: 'secure',
-    storage: secureStorage,
+    // storage: secureStorage,
+    storage: AsyncStorage,
   };
 
   // Non-secure storage

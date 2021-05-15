@@ -98,7 +98,8 @@ export default StyleSheet.create({
     lineHeight: 16
   },
   dividerView: {
-    height: 24
+    height: 24,
+    marginVertical: 16
   },
   divider: {
     margin: 12
@@ -108,8 +109,8 @@ export default StyleSheet.create({
     textAlign: 'center',
     lineHeight: 24,
     backgroundColor: colors.white,
-    width: 100,
-    left: windowWidth / 2 - 50,
+    width: 120,
+    left: windowWidth / 2 - 60,
     color: colors.grey.main
   }
 });
