@@ -14,8 +14,8 @@ import {
   clearChatHistory,
   removeCorrespondent,
 } from '../../../actions/correspondents';
-import { selectCorrespondentMessages, selectCorrespondentWalletAddress } from '../../../selectors/messages';
-import { selectWalletAddress, selectAddressWif } from '../../../selectors/wallet';
+import { selectCorrespondentMessages, selectCorrespondentWalletAddress } from "../../../selectors/main";
+import { selectWalletAddress, selectAddressWif } from "../../../selectors/temporary";
 import ActionsBar from './ActionsBar';
 import Header from '../../../components/Header';
 import { testnet } from "../../../lib/oCustom";
@@ -57,7 +57,10 @@ const ChatScreen = ({
   };
 
   const insertAddress = (address) => {
-    const separator = text[text.length - 1] === " " || !text ? "" : " ";
+    let separator = "";
+    if (text) {
+      separator = text[text.length - 1] === " " ? "\n" : " \n"
+    }
     setText(`${text}${separator}${address} `);
   };
 

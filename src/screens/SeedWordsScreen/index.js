@@ -6,7 +6,7 @@ import { View, Text } from 'react-native';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
-import { selectSeedWordsArray } from './../../selectors/wallet';
+import { selectSeedWordsArray } from './../../selectors/secure';
 import styles from './styles';
 
 class SeedWordsScreen extends React.Component {

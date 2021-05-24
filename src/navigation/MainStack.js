@@ -1,12 +1,14 @@
 import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
-import SettingsScreen from '../screens/SettingsScreen';
-import ChatListScreen from '../screens/ChatListScreen';
-import WalletScreen from '../screens/WalletScreen';
 import ChatIcon from './../assets/images/icon-chat-bubble.svg';
 import WalletIcon from './../assets/images/icon-wallet.svg';
 import MenuIcon from './../assets/images/icon-menu.svg';
+
+import SettingsScreen from '../screens/SettingsScreen';
+import ChatListScreen from '../screens/ChatListScreen';
+import WalletScreen from '../screens/WalletScreen';
+
 import { colors } from '../constants';
 
 const MainStack = createBottomTabNavigator(

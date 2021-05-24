@@ -10,7 +10,7 @@ import makeBlockie from 'ethereum-blockies-base64';
 
 import ArrowLeftIcon from '../../assets/images/icon-arrow-left.svg';
 
-import { selectWalletAddress } from './../../selectors/wallet';
+import { selectWalletAddress } from "../../selectors/temporary";
 import styles from './styles';
 
 class SettingsScreen extends React.Component {

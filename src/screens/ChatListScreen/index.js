@@ -9,7 +9,7 @@ import Dialog from 'react-native-dialog';
 import common from '../../constants/common';
 
 import { setCorrespondentName, acceptInvitation } from '../../actions/correspondents';
-import { selectCorrespondents, selectUnpairedBots } from '../../selectors/messages';
+import { selectCorrespondents, selectUnpairedBots } from '../../selectors/main';
 import styles from './styles';
 import ActionsBar from './ActionsBar';
 import Header from '../../components/Header';
@@ -78,7 +78,7 @@ class ChatListScreen extends React.Component {
         return (
           <View style={styles.dividerView}>
             <Divider style={styles.divider} />
-            <Text style={styles.dividerText}>Available bots</Text>
+            <Text style={styles.dividerText}>Available chatbots</Text>
           </View>
         );
       default:

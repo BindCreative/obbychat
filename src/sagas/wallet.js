@@ -1,11 +1,14 @@
 import { takeLatest, take, call, put, select } from '@redux-saga/core/effects';
 import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
-import { REHYDRATE } from 'redux-persist';
+import { Alert } from 'react-native';
+import * as Crypto from 'react-native-crypto';
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/oCustom';
 import { actionTypes } from './../constants';
+
 import { subscribeToHub } from './device';
+
 import { setToastMessage } from './../actions/app';
 import {
   createInitialWalletStart,
@@ -16,6 +19,7 @@ import {
   initWalletSuccess,
   sendPaymentSuccess,
   sendPaymentFail,
+  initAccountSuccess
 } from './../actions/wallet';
 import {
   loadWalletHistorySuccess,
@@ -25,17 +29,23 @@ import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
 } from './../actions/balances';
-import {
-  selectWalletAddress,
-  selectWitnesses,
-  selectAddressWif,
-} from './../selectors/wallet';
-import { initDeviceInfo } from "../actions/device";
+import { initDeviceInfo, initDeviceSuccess } from "../actions/device";
 import { botsAddSuccess } from "../actions/messages";
+import { setSeedWords } from "../actions/secure";
 
-export function* initWallet({ payload }) {
+import { selectSeedWords, selectPasswordProtected } from "../selectors/secure";
+import { selectWalletAddress, selectWitnesses, selectAddressWif } from "../selectors/temporary";
+import { selectMainReducer } from "../selectors/main";
+
+const isEmpty = obj => Object.keys(obj).length === 1;
+
+export function* init({ payload }) {
   try {
-    yield put(createInitialWalletStart(payload));
+    const seedWords = yield select(selectSeedWords());
+    if (!seedWords) {
+      yield call(generateSeedWords);
+    }
+    yield call(checkExistWallets, payload);
     yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
@@ -44,7 +54,7 @@ export function* initWallet({ payload }) {
     yield call(fetchWitnesses);
     yield call(initDefaultBots);
     yield call(fetchWalletHistory);
-    yield put(initWalletSuccess());
+    yield put(initAccountSuccess());
   } catch (error) {
     console.log(error);
     yield put(initWalletFail());
@@ -57,51 +67,137 @@ export function* initWallet({ payload }) {
   }
 }
 
+export function* initWallet({ payload }) {
+  try {
+    yield put(createInitialWalletStart(payload));
+    yield put(initDeviceInfo());
+    // Handle websocket traffic
+    yield call(subscribeToHub);
+    // Fetch wallet data from hub
+    yield call(fetchBalances);
+    yield call(fetchWitnesses);
+    yield call(initDefaultBots);
+    yield call(fetchWalletHistory);
+    yield put(initAccountSuccess());
+  } catch (error) {
+    console.log(error);
+    yield put(initWalletFail());
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: 'Unable to init wallet.',
+      }),
+    );
+  }
+}
+
+export function* generateSeedWords() {
+  let mnemonic = new Mnemonic();
+  while (!Mnemonic.isValid(mnemonic.toString())) {
+    mnemonic = new Mnemonic();
+  }
+  yield put(setSeedWords(mnemonic.phrase))
+}
+
+export function* checkExistWallets(payload) {
+  const mainReducer = yield select(selectMainReducer());
+  const seedWords = yield select(selectSeedWords());
+  const { password } = payload;
+
+  if (isEmpty(mainReducer)) {
+    yield put(createInitialWalletStart(payload));
+  } else {
+    let mnemonic = new Mnemonic(seedWords);
+    const xPrivKey = mnemonic.toHDPrivateKey(password);
+
+    const devicePath = testnet ? "m/44'/1'" : "m/44'/0'";
+    const { privateKey: devicePrivateKey } = yield xPrivKey.derive(devicePath);
+    const devicePrivateKeyBuf = yield devicePrivateKey.bn.toBuffer({ size: 32 });
+    const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);
+    const deviceWifSha = Crypto.createHash('sha256').update(deviceWif).digest("hex");
+    if (mainReducer[deviceWifSha]) {
+      yield put(createInitialWalletStart(payload));
+    } else {
+      const checkUserSelect = new Promise((resolve, reject) => {
+        Alert.alert(
+          'Warning',
+          'Wallet with current password do not exist. Do you want to create a new one?',
+          [
+            {
+              text: "Cancel",
+              onPress: () => reject(false),
+              style: "cancel"
+            },
+            {
+              text: "OK",
+              onPress: () => resolve(true)
+            }
+          ]
+        )
+      });
+
+      const userSelect = yield checkUserSelect;
+      if (userSelect) {
+        yield put(createInitialWalletStart(payload));
+      }
+    }
+  }
+}
+
 export function* createInitialWallet({ payload }) {
   try {
-    if (!payload.address) {
-      const password = '';
-      let mnemonic = new Mnemonic();
-      while (!Mnemonic.isValid(mnemonic.toString())) {
-        mnemonic = new Mnemonic();
-      }
-      const xPrivKey = mnemonic.toHDPrivateKey();
+    const { password } = payload;
+    const seedWords = yield select(selectSeedWords());
+    const mainReducer = yield select(selectMainReducer());
+    let mnemonic = new Mnemonic(seedWords);
+    while (!Mnemonic.isValid(mnemonic.toString())) {
+      mnemonic = new Mnemonic(seedWords);
+    }
 
-      // Wallet wif
-      const walletPath = testnet ? "m/44'/1'/0'/0'" : "m/44'/0'/0'/0";
-      const { privateKey: walletPirvateKey } = yield xPrivKey.derive(
+    const xPrivKey = mnemonic.toHDPrivateKey(password);
+
+    // Wallet wif
+    const walletPath = testnet ? "m/44'/1'/0'/0'" : "m/44'/0'/0'/0";
+    const { privateKey: walletPirvateKey } = yield xPrivKey.derive(walletPath);
+    const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({ size: 32 });
+    const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
+
+    // DeviceWif
+    const devicePath = testnet ? "m/44'/1'" : "m/44'/0'";
+    const { privateKey: devicePrivateKey } = yield xPrivKey.derive(devicePath);
+    const devicePrivateKeyBuf = yield devicePrivateKey.bn.toBuffer({ size: 32 });
+    const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);
+
+    // Address and address wif
+    const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+    const { privateKey } = yield xPrivKey.derive(addressPath);
+    const publicKeyBuffer = yield privateKey.publicKey.toBuffer();
+    const publicKey = yield publicKeyBuffer.toString('base64');
+    const addressPrivKeyBuf = yield privateKey.bn.toBuffer({ size: 32 });
+    const addressWif = yield call(toWif, addressPrivKeyBuf, testnet);
+    const address = yield call(getChash160, ['sig', { pubkey: publicKey }]);
+
+    const currentWif = Crypto.createHash('sha256').update(deviceWif).digest("hex");
+
+    yield put(
+      createInitialWalletSuccess({
+        address,
+        addressPath,
+        deviceWif,
+        walletWif,
+        addressWif,
+        xPrivKey,
+        publicKey,
+        privateKey,
+        walletPirvateKey,
         walletPath,
-      );
-      const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({
-        size: 32,
-      });
-      const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
+        currentWif,
+        walletInit: true
+      }),
+    );
 
-      // Address and address wif
-      const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
-      const { privateKey } = yield xPrivKey.derive(addressPath);
-      const publicKeyBuffer = yield privateKey.publicKey.toBuffer();
-      const publicKey = yield publicKeyBuffer.toString('base64');
-      const addressPrivKeyBuf = yield privateKey.bn.toBuffer({ size: 32 });
-      const addressWif = yield call(toWif, addressPrivKeyBuf, testnet);
-      const address = yield call(getChash160, ['sig', { pubkey: publicKey }]);
-
-      yield put(
-        createInitialWalletSuccess({
-          password,
-          address,
-          addressPath,
-          walletWif,
-          addressWif,
-          xPrivKey,
-          publicKey,
-          privateKey,
-          walletPirvateKey,
-          walletPath,
-          seedWords: mnemonic.phrase,
-        }),
-      );
-
+    if (!mainReducer[currentWif]) {
+      yield put(initDeviceSuccess(currentWif));
       yield put(
         setToastMessage({
           type: 'SUCCESS',
@@ -244,11 +340,9 @@ export function* updateWalletData() {
 }
 
 export default function* watch() {
-  yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
-  yield takeLatest(
-    actionTypes.INITIAL_WALLET_CREATE_START,
-    createInitialWallet,
-  );
+  // yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
+  yield takeLatest(actionTypes.WALLET_INIT_START, init);
+  yield takeLatest(actionTypes.INITIAL_WALLET_CREATE_START, createInitialWallet);
   yield takeLatest(actionTypes.WALLET_BALANCES_FETCH_START, fetchBalances);
   yield takeLatest(actionTypes.WALLET_HISTORY_GET_START, fetchWalletHistory);
   yield takeLatest(actionTypes.PAYMENT_SEND_START, sendPayment);

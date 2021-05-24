@@ -70,4 +70,4 @@ export const selectTransactionByUnitId = (unitId) =>
         return false;
       });
       return transaction;
-    })
+    });

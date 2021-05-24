@@ -1,0 +1,70 @@
+import { actionTypes } from '../constants';
+
+const initialState = {
+  witnesses: [],
+  address: null,
+  addressPath: null,
+  walletWif: null,
+  addressWif: null,
+  deviceWif: null,
+  xPrivKey: null,
+  publicKey: null,
+  privateKey: null,
+  walletPirvateKey: null,
+  walletPath: null,
+  currentWif: null,
+  walletInit: false,
+  accountInit: false,
+  connectedToHub: false
+};
+
+function reducer(state = initialState, action) {
+  switch (action.type) {
+    case actionTypes.INITIAL_WALLET_CREATE_SUCCESS:
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    case actionTypes.WALLET_INIT_START:
+      return {
+        ...state,
+        walletInit: false
+      };
+
+    case actionTypes.WALLET_INIT_SUCCESS:
+      return {
+        ...state,
+        walletInit: true
+      };
+
+    case actionTypes.ACCOUNT_INIT_SUCCESS:
+      return {
+        ...state,
+        accountInit: true
+      };
+
+    case actionTypes.WITNESSES_GET_SUCCESS:
+      return {
+        ...state,
+        witnesses: action.payload,
+      };
+
+    case actionTypes.WITNESSES_RESET:
+      return {
+        ...state,
+        witnesses: initialState.witnesses,
+      };
+
+    case actionTypes.SET_CONNECTION_STATUS:
+      return {
+        ...state,
+        connectedToHub: action.payload,
+      };
+
+    default:
+      return state;
+  }
+}
+
+export default reducer;

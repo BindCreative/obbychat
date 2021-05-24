@@ -5,17 +5,20 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import { persistStore, persistReducer } from 'redux-persist';
 import createSagaMiddleware from '@redux-saga/core';
 import rootSaga from './../sagas';
+import deviceReducer from '../reducers/device';
+import walletReducer from '../reducers/wallet';
+import balancesReducer from '../reducers/balances';
+import exchangeRatesReducer from '../reducers/exchangeRates';
+import walletHistoryReducer from '../reducers/walletHistory';
+import settingsReducer from '../reducers/settings';
+import messagesReducer from '../reducers/messages';
 
-import secureReducer from '../reducers/secureReducer';
-import mainReducer from '../reducers/mainReducer';
-import temporaryReducer from '../reducers/temporaryReducer';
-
-import customMiddleware from './customMiddleware';
+import { common } from '../constants';
 
 export default function configureStore() {
   // Middleware setup
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware, customMiddleware];
+  const middlewares = [sagaMiddleware];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const storeEnhancers = [middlewareEnhancer];
   const composedEnhancer = composeWithDevTools(...storeEnhancers);
@@ -38,13 +41,21 @@ export default function configureStore() {
   const rootReducer = combineReducers({
     main: persistReducer(
       mainPersistConfig,
-      mainReducer
+      combineReducers({
+        device: deviceReducer,
+        balances: balancesReducer,
+        exchangeRates: exchangeRatesReducer,
+        walletHistory: walletHistoryReducer,
+        settings: settingsReducer,
+        messages: messagesReducer,
+      }),
     ),
     secure: persistReducer(
       securePersistConfig,
-      secureReducer
+      combineReducers({
+        wallet: walletReducer,
+      }),
     ),
-    temporary: temporaryReducer
   });
 
   const store = createStore(rootReducer, undefined, composedEnhancer);

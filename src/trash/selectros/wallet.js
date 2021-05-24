@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-export const getWalletState = state => state.secure.wallet;
+export const getWalletState = state => state.temporary;
 
 export const selectWallet = () =>
   createSelector(getWalletState, state => {
@@ -22,8 +22,10 @@ export const selectAddressWif = () =>
 export const selectWitnesses = () =>
   createSelector(getWalletState, state => state.witnesses);
 
-export const selectWalletInit = createSelector(getWalletState, ({ init }) => init);
+export const selectWalletInit = () =>
+  createSelector(getWalletState, ({ init }) => init);
 
-export const selectWalletInitAddress = createSelector(getWalletState, ({ address }) => address);
+export const selectWalletInitAddress = () =>
+  createSelector(getWalletState, ({ address }) => address);
 
 

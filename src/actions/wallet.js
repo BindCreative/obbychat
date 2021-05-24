@@ -10,6 +10,11 @@ export const initWalletSuccess = (payload) => ({
   payload,
 });
 
+export const initAccountSuccess = (payload) => ({
+  type: actionTypes.ACCOUNT_INIT_SUCCESS,
+  payload,
+});
+
 export const initWalletFail = payload => ({
   type: actionTypes.WALLET_INIT_FAILED,
   payload,

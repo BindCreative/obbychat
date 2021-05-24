@@ -8,7 +8,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 
 import { common } from '../../constants';
 import Header from '../../components/Header';
-import { selectExchangeRates } from './../../selectors/exchangeRates';
+import { selectExchangeRates } from "../../selectors/main";
 import { bytesToUnit } from './../../lib/utils';
 import styles from './styles';
 

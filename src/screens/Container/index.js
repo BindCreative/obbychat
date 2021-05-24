@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
+import { createStructuredSelector } from 'reselect';
 import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
@@ -12,14 +13,15 @@ import { oClient } from '../../lib/oCustom';
 import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
+import PasswordScreen from '../../screens/PasswordScreen';
 import { initWallet } from '../../actions/wallet';
 import { setToastMessage } from '../../actions/app';
-import { reSubscribeToHub } from "../../actions/device";
-import { stopSubscribeToHub } from "../../sagas/device";
+import { reSubscribeToHub, stopSubscribeToHub } from "../../actions/device";
 
 import parseUrl from '../../lib/parseUrl';
 
-import { selectWalletInit, selectWalletInitAddress } from "../../selectors/wallet";
+import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
+import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
 
 const prefix = 'obyte-tn:|obyte';
 
@@ -39,7 +41,9 @@ setJSExceptionHandler((error, isFatal) => {
 
 let wasConnected = true;
 
-const App = ({ walletInit, walletAddress }) => {
+const App = ({
+  walletAddress, seedWords, passwordProtected, walletInit, accountInit, connectedToHub
+}) => {
   const dispatch = useDispatch();
   const [appReady, setAppReady] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
@@ -101,7 +105,7 @@ const App = ({ walletInit, walletAddress }) => {
       if (appReady) {
         if (!isConnected) {
           wasConnected = false;
-          stopSubscribeToHub();
+          dispatch(stopSubscribeToHub());
         } else {
           if (!wasConnected) {
             reconnectToHub();
@@ -119,19 +123,29 @@ const App = ({ walletInit, walletAddress }) => {
       if (appState === 'active' && lastInfocusRef.current === 'background') {
         reconnectToHub();
       } else if (appState === 'background') {
-        stopSubscribeToHub();
+        dispatch(stopSubscribeToHub());
       }
       lastInfocusRef.current = appState;
     }
   };
 
+  const passwordNeeded = useMemo(
+    () =>
+      !seedWords
+      || (passwordProtected && !walletInit)
+      || (!passwordProtected && !seedWords && !walletInit),
+    [seedWords, passwordProtected, walletInit]
+  );
+
   useEffect(
     () => {
-      oClient.client.ws.addEventListener('close', init);
-      oClient.client.ws.close();
+      if (!passwordNeeded) {
+        oClient.client.ws.addEventListener('close', init);
+      }
       Linking.getInitialURL().then(handleLinkingUrl);
       Linking.addEventListener('url', handleIosLinkingUrl);
       AppState.addEventListener('change', changeListener);
+      oClient.client.ws.close();
       return () => {
         AppState.removeEventListener('change', changeListener);
       };
@@ -141,51 +155,61 @@ const App = ({ walletInit, walletAddress }) => {
 
   useEffect(
     () => {
-      if (walletInit) {
+      if (accountInit) {
         setTimeout(() => {
           setAppReady(true);
           readyRef.current.appReady = true;
         }, 1000);
       }
     },
-    [walletInit]
+    [accountInit]
   );
 
   useEffect(
     () => {
-      if (walletInit && redirectParams) {
-        redirect()
+      if (accountInit && redirectParams && connectedToHub) {
+        redirect();
       }
     },
-    [walletInit, redirectParams]
+    [accountInit, redirectParams, connectedToHub]
   );
 
   return (
     <SafeAreaProvider>
       {!appReady && <LoadingScreen />}
+      {passwordNeeded && <PasswordScreen />}
+      {accountInit && (
+        <Navigator
+          ref={navigatorRef => {
+            NavigationService.setTopLevelNavigator(navigatorRef);
+          }}
+          uriPrefix={prefix}
+        />
+      )}
       <StatusBar backgroundColor='#ffffff' barStyle='dark-content' />
-      <Navigator
-        ref={navigatorRef => {
-          NavigationService.setTopLevelNavigator(navigatorRef);
-        }}
-        uriPrefix={prefix}
-      />
     </SafeAreaProvider>
   );
 };
 
 App.propTypes = {
+  walletAddress: PropTypes.string,
+  seedWords: PropTypes.string.isRequired,
+  passwordProtected: PropTypes.bool.isRequired,
   walletInit: PropTypes.bool.isRequired,
-  walletAddress: PropTypes.string
+  accountInit: PropTypes.bool.isRequired
 };
 
 App.defaultProps = {
   walletAddress: ''
 };
 
-const mapStateToProps = state => ({
-  walletInit: selectWalletInit(state),
-  walletAddress: selectWalletInitAddress(state)
+const mapStateToProps = createStructuredSelector({
+  walletAddress: selectWalletInitAddress(),
+  seedWords: selectSeedWords(),
+  passwordProtected: selectPasswordProtected(),
+  walletInit: selectWalletInit(),
+  accountInit: selectAccountInit(),
+  connectedToHub: selectConnectionStatus()
 });
 
 export default connect(mapStateToProps, null)(App);

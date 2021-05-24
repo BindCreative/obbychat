@@ -20,8 +20,8 @@ import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { selectExchangeRates } from './../../selectors/exchangeRates';
-import { selectWalletAddress } from './../../selectors/wallet';
+import { selectExchangeRates } from "../../selectors/main";
+import { selectWalletAddress } from "../../selectors/temporary";
 import { sendPaymentStart } from './../../actions/wallet';
 import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
@@ -38,9 +38,10 @@ const splitDecimals = (value, maxDecimals, showZeros = false) => {
   const splittedValue = `${value}`.split('.');
   const integer = splittedValue[0];
   let fraction = splittedValue[1] ? splittedValue[1].slice(0, maxDecimals) : '';
-  if (!Number(integer) && (fraction && !Number(fraction)) && !showZeros) {
-    return '';
-  } else if (!fraction && (value && value.includes('.')) && maxDecimals) {
+  // if (!Number(integer) && (fraction && !Number(fraction)) && !showZeros) {
+  //   return '';
+  // } else
+  if (!fraction && (value && value.includes('.')) && maxDecimals) {
     return value;
   } else {
     return fraction ? `${integer}.${fraction}` : integer;
@@ -153,7 +154,7 @@ class PaymentScreen extends React.Component {
   changePrimaryUnit = async(primaryUnit) => {
     const convertedPrimaryValue = this.convertPrimaryValue(primaryUnit);
     await this.setState({ primaryUnit });
-    this.changeValue(convertedPrimaryValue, 'primary');
+    this.changeValue(`${convertedPrimaryValue}`, 'primary');
   };
 
   changeSecondaryUnit = async(secondaryUnit) => {

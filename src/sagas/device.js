@@ -1,14 +1,5 @@
-import {
-  take,
-  takeEvery,
-  call,
-  put,
-  select,
-  all,
-  delay,
-} from '@redux-saga/core/effects';
+import { take, takeEvery, call, put, select, all } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
-import { validateSignedMessage } from 'obyte/lib/utils';
 import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
@@ -18,6 +9,7 @@ import { AppState, Alert } from 'react-native';
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
 import { REGEX_SIGNED_MESSAGE, REGEX_PAIRING } from './../lib/messaging';
+
 import {
   sign,
   oClient,
@@ -31,11 +23,12 @@ import {
   getSignedMessageInfoFromJsonBase64,
   getDeviceAddress,
 } from './../lib/oCustom';
+
+import { setConnectionStatus } from "../actions/device";
 import { setToastMessage } from './../actions/app';
 import { updateWalletData } from "../actions/balances";
 import {
   addCorrespondent,
-  removeCorrespondent,
   correspondentRemovedDevice,
   updateCorrespondentWalletAddress,
   setCorrespondentName,
@@ -51,17 +44,19 @@ import {
   setUnreadMessages,
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
+
 import {
   selectCorrespondentByPairingSecret,
   selectCorrespondent,
-} from './../selectors/messages';
+  selectDeviceTempKeyData,
+  selectTransactionByUnitId
+} from "../selectors/main";
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
-  selectDeviceTempKeyData,
-} from './../selectors/device';
-import { selectWalletAddress } from "../selectors/wallet";
-import { selectTransactionByUnitId } from "../selectors/walletHistory";
+  selectWalletAddress
+} from "../selectors/temporary";
+
 
 let heartBeatInterval = 0;
 
@@ -105,9 +100,14 @@ export function* loginToHub(challenge) {
   oClient.justsaying('hub/refresh', null);
 }
 
-export function stopSubscribeToHub() {
+function* handleSetConnectionStatus(status) {
+  yield put(setConnectionStatus(status))
+}
+
+function* stopSubscribeToHub() {
   oClient.client.ws.close();
   clearInterval(heartBeatInterval);
+  yield put(setConnectionStatus(false));
 }
 
 function* resubscribeToHub() {
@@ -118,29 +118,35 @@ function* resubscribeToHub() {
 export function* subscribeToHub() {
   try {
     const walletAddress = yield select(selectWalletAddress());
-    oClient.client.connect();
-    oClient.client.onConnectCallback = () => {
-      oClient.subscribe((err, result) => {
-        if (err) {
-          throw new Error('Hub socket error');
-        } else {
-          const [type, payload] = result;
-          console.log(type, payload.subject);
-          oChannel.put({ type, payload });
-        }
-      });
-      heartBeatInterval = setInterval(() => {
-        oClient.api.heartbeat();
-      }, 10000);
-      oClient.justsaying('light/new_address_to_watch', walletAddress);
-      oClient.client.ws.addEventListener('close', () => {
-        NetInfo.fetch().then(({ isConnected }) => {
-          if (isConnected && AppState.currentState !== 'background') {
-            call(resubscribeToHub)
+    const fetchConnection = new Promise((resolve) => {
+      oClient.client.connect();
+      oClient.client.onConnectCallback = () => {
+        console.log('client connected');
+        oClient.subscribe((err, result) => {
+          if (err) {
+            throw new Error('Hub socket error');
+          } else {
+            const [type, payload] = result;
+            console.log(type, payload.subject);
+            oChannel.put({ type, payload });
           }
         });
-      })
-    };
+        heartBeatInterval = setInterval(() => {
+          oClient.api.heartbeat();
+        }, 10000);
+        oClient.justsaying('light/new_address_to_watch', walletAddress);
+        oClient.client.ws.addEventListener('close', () => {
+          NetInfo.fetch().then(({ isConnected }) => {
+            if (isConnected && AppState.currentState !== 'background') {
+              call(resubscribeToHub)
+            }
+          });
+        });
+        resolve(true);
+      };
+    });
+    const connected = yield fetchConnection;
+    yield put(setConnectionStatus(connected));
   } catch (error) {
     yield put(
       setToastMessage({
@@ -277,26 +283,12 @@ export function* receiveMessage({ body }) {
       if (!correspondent) {
         console.error("Can't finish pairing, correspondent not stored");
       }
-    } else if (decryptedMessage.subject === 'text') {
+    } else if (decryptedMessage.subject === 'text' || decryptedMessage.subject === 'payment_notification') {
       const endSpace = /\s$/;
       decryptedMessage.body = decryptedMessage.body.replace(endSpace, '');
       // Check if signed message with wallet address info
       yield call(checkForSigning, decryptedMessage, body);
       // Persist the message
-      yield put(
-        receiveMessageStart({
-          address: decryptedMessage.from,
-          messageType: decryptedMessage.subject,
-          message: decryptedMessage.body,
-          messageHash: body.message_hash,
-          handleAs: 'RECEIVED',
-          hub: decryptedMessage.device_hub,
-          timestamp: Date.now(),
-        }),
-      );
-    } else if (decryptedMessage.subject === 'payment_notification') {
-      yield call(checkForSigning, decryptedMessage, body);
-      console.log(decryptedMessage, body);
       yield put(
         receiveMessageStart({
           address: decryptedMessage.from,
@@ -580,6 +572,7 @@ export default function* watch() {
     watchHubMessages(),
     takeEvery(actionTypes.INIT_DEVICE_INFO, initDeviceInfo),
     takeEvery(actionTypes.RESUBSCRIBE_TO_HUB, resubscribeToHub),
+    takeEvery(actionTypes.STOP_SUBSCRIBE_TO_HUB, stopSubscribeToHub),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
     takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),

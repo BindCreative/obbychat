@@ -3,10 +3,13 @@ import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import { TouchableOpacity, View } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { selectWalletAddress } from './../../selectors/wallet';
+
+import { selectWalletAddress } from "../../selectors/temporary";
+
 import SendIcon from './../../assets/images/icon-send.svg';
 import ScanIcon from './../../assets/images/icon-scan.svg';
 import QRIcon from './../../assets/images/icon-qr.svg';
+
 import styles from './styles';
 
 class ActionsBar extends React.Component {

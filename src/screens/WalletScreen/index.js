@@ -18,17 +18,20 @@ import ActionSheet from '../../components/ActionSheet';
 import NavigationService from './../../navigation/service';
 import { loadWalletBalances } from './../../actions/balances';
 import { loadWalletHistory } from './../../actions/walletHistory';
+
 import {
   selectWalletBalances,
   selectBalancesLoading,
-} from './../../selectors/balances';
-import { selectExchangeRates } from './../../selectors/exchangeRates';
-import { selectTransactions } from './../../selectors/walletHistory';
+  selectExchangeRates,
+  selectTransactions
+} from "../../selectors/main";
+
 import { bytesToUnit } from './../../lib/utils';
+
 import styles from './styles';
+
 import Header from '../../components/Header';
 import ActionsBar from './ActionsBar';
-import { colors } from '../../constants';
 
 const TX_TYPES = [
   { label: 'All', value: 'ALL' },

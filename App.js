@@ -10,7 +10,7 @@ import Container from './src/screens/Container';
 
 import configureStore from './src/store/configureStore';
 
-const storeSetup = configureStore();
+export const storeSetup = configureStore();
 
 const App = () => (
   <RootSiblingParent>
