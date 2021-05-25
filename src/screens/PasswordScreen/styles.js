@@ -50,5 +50,8 @@ export default StyleSheet.create({
   },
   descriptionContainer: {
     marginVertical: 30
+  },
+  seedWordsContainer: {
+    flex: 1
   }
 });

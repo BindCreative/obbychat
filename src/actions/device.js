@@ -25,3 +25,17 @@ export const initDeviceSuccess = payload => ({
   type: actionTypes.INIT_DEVICE_SUCCESS,
   payload
 });
+
+export const generateSeedWords = payload => ({
+  type: actionTypes.GENERATE_SEED_WORDS,
+  payload
+});
+
+export const restoreAccount = payload => ({
+  type: actionTypes.RESTORE_ACCOUNT,
+  payload
+});
+
+export const resetAccount = () => ({
+  type: actionTypes.RESET_ACCOUNT
+});

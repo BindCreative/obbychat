@@ -486,6 +486,10 @@ function reducer(state = initialState, action) {
         }
       };
 
+    case actionTypes.RESET_ACCOUNT:
+    case actionTypes.RESTORE_ACCOUNT:
+      return initialState;
+
     default: return state;
   }
 }

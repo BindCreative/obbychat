@@ -12,7 +12,7 @@ const initialState = {
   privateKey: null,
   walletPirvateKey: null,
   walletPath: null,
-  currentWif: null,
+  hashedWif: null,
   walletInit: false,
   accountInit: false,
   connectedToHub: false
@@ -61,6 +61,9 @@ function reducer(state = initialState, action) {
         ...state,
         connectedToHub: action.payload,
       };
+    case actionTypes.RESTORE_ACCOUNT:
+    case actionTypes.RESET_ACCOUNT:
+      return initialState;
 
     default:
       return state;

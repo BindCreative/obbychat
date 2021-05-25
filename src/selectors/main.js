@@ -13,7 +13,7 @@ export const selectMainReducer = () =>
     main => main
   );
 
-export const getMainKey = state => state.temporary.currentWif;
+export const getMainKey = state => state.temporary.hashedWif;
 
 export const getCurrentMain = state => state.main[getMainKey(state)] || accountTemplate;
 

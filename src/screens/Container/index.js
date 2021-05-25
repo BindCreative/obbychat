@@ -130,11 +130,8 @@ const App = ({
   };
 
   const passwordNeeded = useMemo(
-    () =>
-      !seedWords
-      || (passwordProtected && !walletInit)
-      || (!passwordProtected && !seedWords && !walletInit),
-    [seedWords, passwordProtected, walletInit]
+    () => passwordProtected && !walletInit,
+    [passwordProtected, walletInit]
   );
 
   useEffect(

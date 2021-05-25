@@ -3,7 +3,7 @@ import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
 
 const initialState = {
-  passwordProtected: false,
+  passwordProtected: true,
   seedWords: ''
 };
 
@@ -20,11 +20,16 @@ function reducer(state = initialState, action) {
       }
     }
     case actionTypes.SET_PASSWORD_PROTECTED:
-      return { ...state, passwordProtected: true };
-    case actionTypes.SET_PASSWORD_NOT_PROTECTED:
-      return { ...state, passwordProtected: true };
+      return { ...state, passwordProtected: action.payload };
     case actionTypes.SET_SEED_WORDS:
       return { ...state, seedWords: action.payload };
+    case actionTypes.RESTORE_ACCOUNT:
+      return {
+        ...initialState,
+        seedWords: action.payload
+      };
+    case actionTypes.RESET_ACCOUNT:
+      return initialState;
     default:
       return state;
   }

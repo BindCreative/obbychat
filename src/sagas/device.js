@@ -411,6 +411,7 @@ export function* acceptInvitation(action) {
       );
     } else {
       const { pubkey, hub, pairing_secret } = data;
+      console.log(data);
       cDeviceAddress = getDeviceAddress(pubkey);
       cPubKey = pubkey;
       cHub = hub;

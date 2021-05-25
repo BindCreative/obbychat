@@ -28,13 +28,17 @@ export default StyleSheet.create({
     height: 64,
     borderRadius: 32
   },
-  listItem: {
-    borderBottomColor: 'transparent',
-  },
   listItemText: {
     color: 'black',
     fontFamily: 'Agenda-Medium',
-    fontSize: 22,
+    fontSize: 22
+  },
+  listArrowIcon: {
+    color: colors.black,
+    transform: [{
+      rotate: '180deg'
+    }],
+    marginTop: 10
   },
   listItemHeader: {
     borderBottomColor: 'transparent',
@@ -43,11 +47,5 @@ export default StyleSheet.create({
     fontFamily: 'Agenda-Light',
     fontSize: 16,
     color: colors.grey.main,
-  },
-  listArrowIcon: {
-    color: colors.black,
-    transform: [{
-      rotate: '180deg'
-    }]
   },
 });

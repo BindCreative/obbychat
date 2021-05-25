@@ -10,6 +10,7 @@ import SeedWordsScreen from './../screens/SeedWordsScreen';
 import TransactionInfoScreen from './../screens/TransactionInfoScreen';
 import ChatScreen from '../screens/ChatScreen';
 import PairInputScreen from '../screens/PairInput';
+import RestoreWallet from '../screens/RestoreWalletScreen';
 
 const RootNav = createStackNavigator(
   {
@@ -57,6 +58,15 @@ const RootNav = createStackNavigator(
     SeedWords: {
       screen: props => <SeedWordsScreen {...props} />,
       path: 'settings/seed-words',
+      navigationOptions: {
+        headerShown: false,
+        tabBarIcon: null,
+        tabBarVisible: false,
+      },
+    },
+    RestoreWallet: {
+      screen: props => <RestoreWallet {...props} />,
+      path: 'settings/restore-wallet',
       navigationOptions: {
         headerShown: false,
         tabBarIcon: null,

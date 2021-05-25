@@ -5,10 +5,7 @@ export const setSeedWords = seedWords => ({
   payload: seedWords
 });
 
-export const setPasswordProtected = () => ({
-  type: actionTypes.SET_PASSWORD_PROTECTED
-});
-
-export const setPasswordNotProtected = () => ({
-  type: actionTypes.SET_PASSWORD_NOT_PROTECTED
+export const setPasswordProtected = payload => ({
+  type: actionTypes.SET_PASSWORD_PROTECTED,
+  payload
 });

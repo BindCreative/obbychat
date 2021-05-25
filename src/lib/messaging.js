@@ -4,6 +4,7 @@ import { getSignedMessageInfoFromJsonBase64 } from './oCustom';
 
 export const REGEX_WALLET_ADDRESS = /(.*?\b|^)([2-7A-Z]{32})([\s.,;!:].*?|$)/g;
 export const REGEX_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)\)/g;
+export const REGEXP_QR_REQUEST_PAYMENT = /((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32}))/g;
 export const REGEX_SIGN_MESSAGE_REQUEST = /\[(.+?)\]\(sign-message-request(-network-aware)?:(.+?)\)/g;
 export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:([\w\/+=]+?)\)/g;
 export const REGEX_PAIRING = /(?:(?:byteball-tn|byteball|obyte-tn|obyte):)?(([\w\/+]{44})@([\w.:\/-]+)#(.+))/g;
