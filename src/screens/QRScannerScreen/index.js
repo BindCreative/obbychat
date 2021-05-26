@@ -10,7 +10,7 @@ import LoadingModal from '../../components/LoadingModal';
 import styles from './styles';
 
 import { setToastMessage } from "../../actions/app";
-import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT, REGEX_REQUEST_PAYMENT } from "../../lib/messaging";
+import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
 
 const QRScannerScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -30,23 +30,16 @@ const QRScannerScreen = ({ navigation }) => {
     setScanned(true);
     const { navigate } = navigation;
     let matches = false;
+    console.log(data);
     data
       .replace(REGEX_PAIRING, () => {
-        console.log('pairing');
         matches = true;
         return dispatch(acceptInvitation({ data }));
       })
-      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
-        console.log('qr_payment');
+      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, amount) => {
         matches = true;
         navigation.pop();
-        return navigate('MakePayment', { walletAddress });
-      })
-      .replace(REGEX_REQUEST_PAYMENT, (str, payload, address, amount) => {
-        console.log('payment');
-        matches = true;
-        navigation.pop();
-        return navigate('MakePayment', { walletAddress: address, amount });
+        return navigate('MakePayment', { walletAddress, amount: amount ? +amount.split("=")[1] : '' });
       });
 
     if (!matches) {

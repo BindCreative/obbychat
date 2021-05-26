@@ -8,9 +8,14 @@ import Mnemonic from 'bitcore-mnemonic';
 
 import { restoreAccount } from "../../actions/device";
 
+import IconVisible from '../../assets/images/icon-visible.svg';
+import IconVisibleOff from '../../assets/images/icon-visible-off.svg';
+
 import Button from '../../components/Button';
 
 import styles from './styles';
+
+import { colors } from "../../constants";
 
 const RestoreWalletScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -18,6 +23,7 @@ const RestoreWalletScreen = ({ navigation }) => {
   const [seedWords, setSeedWords] = useState([]);
   const [stepWords, setStepWords] = useState([]);
   const [inputValue, setInputValue] = useState("");
+  const [inputValueVisible, setInputValueVisible] = useState(false);
 
   const mnemonic = useMemo(
     () => new Mnemonic(),
@@ -36,7 +42,7 @@ const RestoreWalletScreen = ({ navigation }) => {
       if (Mnemonic.isValid(wordsString)) {
         Alert.alert(
           "Warning",
-          "Next step will remove all data from current wallets. Are you sure to continue?",
+          "Next step will remove all data. Are you sure to continue?",
           [
             { text: 'No', style: 'cancel' },
             { text: 'Yes', onPress: () => dispatch(restoreAccount(wordsString)) }
@@ -96,6 +102,10 @@ const RestoreWalletScreen = ({ navigation }) => {
     setStepWords(newWords);
   };
 
+  const toggleInputValueVisibility = () => {
+    setInputValueVisible(!inputValueVisible);
+  };
+
   return (
     <Fragment
       style={styles.container}
@@ -104,8 +114,7 @@ const RestoreWalletScreen = ({ navigation }) => {
       <KeyboardAvoidingView style={styles.content} behavior="height">
         <View>
           <Text style={styles.helperText}>
-            Write down the following 12 words in given order to back up your
-            account.
+            Pick 3 words from auto-complete list in correct order and then click Next.
           </Text>
         </View>
         <View>
@@ -121,19 +130,40 @@ const RestoreWalletScreen = ({ navigation }) => {
               </TouchableOpacity>
             ))}
           </View>
-          <View style={styles.wordInputBox}>
+          <View style={styles.addressInputBox}>
             <TextInput
-              style={styles.wordInput}
+              type="password"
+              style={styles.addressInput}
               value={inputValue}
               onChangeText={setInputValue}
-              autoFocus={true}
               autoCorrect={false}
-              autoCapitalize="none"
-              editable={stepWords.length < 3}
+              secureTextEntry={!inputValueVisible}
+              placeholder="Search"
             />
+            <View style={styles.addressInputPaste}>
+              <TouchableOpacity onPress={toggleInputValueVisibility}>
+                {inputValueVisible
+                  ? (
+                    <IconVisibleOff
+                      style={styles.addressInputPasteIcon}
+                      width={26}
+                      height={26}
+                      fill={colors.grey.dark}
+                    />
+                  )
+                  : (
+                    <IconVisible
+                      style={styles.addressInputPasteIcon}
+                      width={26}
+                      height={26}
+                      fill={colors.grey.dark}
+                    />
+                  )}
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.autocompleteContainer}>
-            {autocompleteVariants.map(word => (
+            {!!autocompleteVariants.length && autocompleteVariants.map(word => (
               <TouchableOpacity
                 key={word}
                 onPress={() => addToStepWords(word)}
@@ -143,6 +173,9 @@ const RestoreWalletScreen = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             ))}
+            {!!!autocompleteVariants.length && !!inputValue && (
+              <Text style={styles.autocompleteNoMatchText}>No matching words</Text>
+            )}
           </View>
           <Text style={styles.stepText}>{step}/4</Text>
         </View>

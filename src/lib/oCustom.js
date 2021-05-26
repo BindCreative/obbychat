@@ -291,3 +291,46 @@ export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {
     valid: validateSignedMessage(objSignedMessage)
   };
 };
+
+// export const parsePaymentRequestQueryString = (query_string) => {
+//   if (!query_string)
+//     return null;
+//   var URI = require('ocore/uri.js');
+//   var assocParams = URI.parseQueryString(query_string, '&amp;');
+//   var strAmount = assocParams['amount'];
+//   if (!strAmount)
+//     return null;
+//   var amount = parseInt(strAmount);
+//   if (amount + '' !== strAmount)
+//     return null;
+//   if (!ValidationUtils.isPositiveInteger(amount))
+//     return null;
+//   var asset = assocParams['asset'] || 'base';
+//   console.log("asset="+asset);
+//   if (asset !== 'base' && !ValidationUtils.isValidBase64(asset, constants.HASH_LENGTH)) // invalid asset
+//     return null;
+//   var device_address = assocParams['device_address'] || '';
+//   if (device_address && !ValidationUtils.isValidDeviceAddress(device_address))
+//     return null;
+//   var base64data = assocParams['base64data'] || '';
+//   if (base64data && !ValidationUtils.isValidBase64(base64data))
+//     return null;
+//   var from_address = from_address = assocParams['from_address'] || '';
+//   var single_address = assocParams['single_address'] || 0;
+//   if (single_address)
+//     single_address = single_address.replace(/^single/, ''); // backward compatibility
+//   if (single_address && ValidationUtils.isValidAddress(single_address)) {
+//     from_address = String(single_address);
+//     single_address = 1;
+//   }
+//   var amountStr = 'Payment request'+(from_address ? ' for '+from_address: (single_address ? ' for single-address wallet': ''))+(base64data ? ' with data': '')+': ' + getAmountText(amount, asset);
+//   return {
+//     amount: amount,
+//     asset: asset,
+//     device_address: device_address,
+//     base64data: base64data,
+//     from_address: from_address,
+//     single_address: single_address,
+//     amountStr: amountStr
+//   };
+// };

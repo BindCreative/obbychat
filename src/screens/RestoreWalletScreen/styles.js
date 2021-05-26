@@ -94,6 +94,11 @@ export default StyleSheet.create({
     textDecorationLine: 'underline',
     textDecorationColor: colors.cyan.main
   },
+  autocompleteNoMatchText: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center'
+  },
   stepWordsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -112,5 +117,27 @@ export default StyleSheet.create({
     lineHeight: 20,
     textAlign: 'center',
     textDecorationLine: 'underline'
+  },
+  addressInputBox: {
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: colors.grey.lightest,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addressInput: {
+    padding: 10,
+    fontSize: 18,
+    color: colors.black,
+    backgroundColor: 'transparent',
+    flex: 1
+  },
+  addressInputPaste: {
+    marginLeft: 'auto',
+    marginRight: 10,
+    marginVertical: 10
+  },
+  addressInputPasteIcon: {
+    marginLeft: 'auto'
   }
 });

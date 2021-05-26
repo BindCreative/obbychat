@@ -75,7 +75,7 @@ const SettingsScreen = ({ navigation, walletAddress }) => {
             onPress={() => navigation.navigate('RestoreWallet')}
           />
           <List.Item
-            title="Start fresh account"
+            title="Reset wallet data"
             titleStyle={styles.listItemText}
             onPress={handleResetAccount}
           />

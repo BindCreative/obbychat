@@ -320,14 +320,15 @@ export function* sendMessage(action) {
       pubKey: recipientPubKey,
       address: recipientAddress,
       message,
-      isConnected
+      isConnected,
+      messageType = text
     } = action.payload;
 
     const packageObj = {
       from: myDeviceAddress,
       device_hub: hubAddress,
-      subject: 'text',
-      body: message,
+      subject: messageType,
+      body: message
     };
 
     const encryptedPackage = createEncryptedPackage(
@@ -346,7 +347,7 @@ export function* sendMessage(action) {
       message,
       messageHash,
       address: recipientAddress,
-      messageType: 'text'
+      messageType
     };
     if (isConnected) {
       messageData.timestamp = Date.now();

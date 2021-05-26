@@ -78,7 +78,8 @@ class PaymentScreen extends React.Component {
       secondaryUnit: 'USD',
       primaryValue: '',
       secondaryValue: '',
-      disabledInputs: false
+      disabledInputs: false,
+      correspondent: null
     };
   }
 
@@ -92,7 +93,7 @@ class PaymentScreen extends React.Component {
       });
       if (amount) {
         this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(amount, 'primary'));
+          .then(() => this.changeValue(`${amount}`, 'primary'));
       } else {
         this.changePrimaryUnit('MBYTE')
           .then(() => this.changeValue('', 'primary'));
@@ -106,17 +107,18 @@ class PaymentScreen extends React.Component {
     const { navigation } = this.props;
     if (navigation.state.params.walletAddress
       && navigation.state.params !== prevProps.navigation.state.params) {
-      const { walletAddress, amount } = navigation.state.params;
+      const { walletAddress, amount, correspondent } = navigation.state.params;
       this.setState({
         address: walletAddress,
-        step: 2
+        step: 2,
+        correspondent
       });
       if (amount) {
         this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(amount, 'primary'));
+          .then(() => this.changeValue(`${amount}`, 'primary'));
       } else {
         this.changePrimaryUnit('MBYTE')
-          .then(() => this.changeValue(0, 'primary'));
+          .then(() => this.changeValue('', 'primary'));
       }
     }
   }
@@ -183,7 +185,9 @@ class PaymentScreen extends React.Component {
         this.props.navigation.setParams({ title: 'Enter amount' });
       } else if (this.state.step === 2 && method === Methods.SEND) {
         this.sendPayment();
-        this.props.navigation.navigate('WalletStack');
+        if (!this.state.correspondent) {
+          this.props.navigation.navigate('WalletStack');
+        }
       } else if (this.state.step === 2 && method === Methods.REQUEST) {
         this.requestPayment();
         this.props.navigation.pop();
@@ -199,15 +203,21 @@ class PaymentScreen extends React.Component {
   };
 
   sendPayment = () => {
-    const params = {
-      outputs: [
-        {
-          address: this.state.address,
-          amount: unitToBytes(this.state.primaryValue, this.state.primaryUnit),
-        },
-      ],
+    const {
+      address, correspondent, primaryValue, primaryUnit
+    } = this.state;
+    const data = {
+      params: {
+        outputs: [
+          {
+            address,
+            amount: unitToBytes(primaryValue, primaryUnit)
+          },
+        ],
+      },
+      correspondent
     };
-    this.props.sendPayment(params);
+    this.props.sendPayment(data);
   };
 
   requestPayment = () => {

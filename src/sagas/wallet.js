@@ -3,6 +3,7 @@ import Mnemonic from 'bitcore-mnemonic';
 import { toWif, getChash160 } from 'obyte/lib/utils';
 import { Alert } from 'react-native';
 import * as Crypto from 'react-native-crypto';
+import NetInfo from "@react-native-community/netinfo";
 import NavigationService from './../navigation/service';
 import { oClient, testnet } from './../lib/oCustom';
 import { actionTypes } from './../constants';
@@ -29,7 +30,7 @@ import {
   loadWalletBalancesFail,
 } from './../actions/balances';
 import { initDeviceInfo, initDeviceSuccess } from "../actions/device";
-import { botsAddSuccess } from "../actions/messages";
+import { botsAddSuccess, addMessageStart } from "../actions/messages";
 import { setSeedWords, setPasswordProtected } from "../actions/secure";
 
 import { selectSeedWords } from "../selectors/secure";
@@ -300,11 +301,9 @@ export function* fetchWalletHistory() {
 export function* sendPayment(action) {
   try {
     const addressWif = yield select(selectAddressWif());
-    const params = {
-      ...action.payload,
-    };
+    const { correspondent, params } = action.payload;
 
-    yield call(oClient.post.payment, params, addressWif);
+    const unitId = yield call(oClient.post.payment, params, addressWif);
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
@@ -314,8 +313,22 @@ export function* sendPayment(action) {
     );
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
-    yield call(NavigationService.navigate, 'Wallet');
+    if (correspondent) {
+      const { address, pubKey } = correspondent;
+      const { isConnected } = yield call(NetInfo.fetch);
+      yield put(addMessageStart({
+        address,
+        pubKey,
+        messageType: 'payment_notification',
+        message: unitId,
+        isConnected
+      }));
+      yield call(NavigationService.back);
+    } else {
+      yield call(NavigationService.navigate, 'Wallet');
+    }
   } catch (error) {
+    console.log(error);
     yield put(sendPaymentFail());
     yield put(
       setToastMessage({

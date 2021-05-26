@@ -134,7 +134,15 @@ const ChatScreen = ({
             ? (
               <Fragment>
                 <Text style={style}>Payment request: </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: address, amount: +amount.split("=")[1] })}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('MakePayment', {
+                      walletAddress: address,
+                      amount: +amount.split("=")[1],
+                      correspondent
+                    })
+                  }}
+                >
                   <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
                 </TouchableOpacity>
               </Fragment>
