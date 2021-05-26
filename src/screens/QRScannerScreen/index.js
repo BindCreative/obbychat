@@ -11,6 +11,7 @@ import styles from './styles';
 
 import { setToastMessage } from "../../actions/app";
 import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
+import { parseQueryString } from "../../lib/oCustom";
 
 const QRScannerScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -30,16 +31,21 @@ const QRScannerScreen = ({ navigation }) => {
     setScanned(true);
     const { navigate } = navigation;
     let matches = false;
-    console.log(data);
     data
       .replace(REGEX_PAIRING, () => {
         matches = true;
         return dispatch(acceptInvitation({ data }));
       })
-      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, amount) => {
+      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
+        const params = parseQueryString(query);
+        const { amount, asset } = params;
         matches = true;
         navigation.pop();
-        return navigate('MakePayment', { walletAddress, amount: amount ? +amount.split("=")[1] : '' });
+        if (asset && asset !== 'base') {
+          dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet do not support custom assets' }));
+        } else {
+          navigate('MakePayment', { walletAddress, amount: amount || '' });
+        }
       });
 
     if (!matches) {

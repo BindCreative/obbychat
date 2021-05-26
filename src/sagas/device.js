@@ -321,7 +321,7 @@ export function* sendMessage(action) {
       address: recipientAddress,
       message,
       isConnected,
-      messageType = text
+      messageType = "text"
     } = action.payload;
 
     const packageObj = {
