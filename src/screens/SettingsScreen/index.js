@@ -21,7 +21,7 @@ const SettingsScreen = ({ navigation, walletAddress }) => {
   const handleResetAccount = () => {
     Alert.alert(
       "Warning",
-      "Next step will remove all data from current wallets. Are you sure to continue?",
+      "Next step will remove all data. Are you sure to continue?",
       [
         {
           text: 'No',

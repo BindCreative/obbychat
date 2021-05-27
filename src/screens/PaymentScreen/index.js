@@ -31,41 +31,35 @@ export const Methods = {
   REQUEST: 'REQUEST',
 };
 
-const splitDecimals = (value, maxDecimals, showZeros = false) => {
-  if (!value) {
-    return '';
+const getMaxDecimalsLength = (unit) => {
+  switch (unit) {
+    case 'BYTE':
+      return 0;
+    case 'kBYTE':
+      return 3;
+    case 'MBYTE':
+      return 6;
+    case 'GBYTE':
+      return 9;
+    case 'USD':
+      return 2;
+    case 'BTC':
+      return 8;
   }
-  const splittedValue = `${value}`.split('.');
-  const integer = splittedValue[0];
-  let fraction = splittedValue[1] ? splittedValue[1].slice(0, maxDecimals) : '';
-  // if (!Number(integer) && (fraction && !Number(fraction)) && !showZeros) {
-  //   return '';
-  // } else
-  if (!fraction && (value && value.includes('.')) && maxDecimals) {
-    return value;
+};
+
+const zeroValueToEmptyString = value => value.replace(/^[0]*\.?[0]*$/, "");
+
+const getMaxLength = (value, unit) => {
+  let maxLength = 0;
+  if (value.includes('.')) {
+    const valueInt = value.split(".")[0];
+    maxLength += (valueInt.length + 1);
+    maxLength += getMaxDecimalsLength(unit);
   } else {
-    return fraction ? `${integer}.${fraction}` : integer;
+    maxLength = 20;
   }
-};
-
-const convertPrimaryDecimals = (value, unit, showZeros) => {
-  if (unit === 'BYTE') {
-    return splitDecimals(value, 0, showZeros);
-  } else if (unit === 'kBYTE') {
-    return splitDecimals(value, 3, showZeros);
-  } else if (unit === 'MBYTE') {
-    return splitDecimals(value, 6, showZeros);
-  } else if (unit === 'GBYTE') {
-    return splitDecimals(value, 9, showZeros);
-  }
-};
-
-const convertSecondaryDecimals = (value, unit, showZeros) => {
-  if (unit === 'USD') {
-    return splitDecimals(value, 2, showZeros);
-  } else if (unit === 'BTC') {
-    return splitDecimals(value, 8, showZeros);
-  }
+  return maxLength;
 };
 
 class PaymentScreen extends React.Component {
@@ -123,23 +117,34 @@ class PaymentScreen extends React.Component {
     }
   }
 
+  changePrimaryValue = value => this.changeValue(value, 'primary');
+
+  changeSecondaryValue = value => this.changeValue(value, 'secondary');
+
   changeValue = (value, type) => {
-    if (isNaN(value) || !['primary', 'secondary'].includes(type)) {
+    const commaValue = value.replace(",", ".");
+    if (isNaN(commaValue) || !['primary', 'secondary'].includes(type)) {
       return;
     }
-    let parsedValue = value;
-    if (Number(value) && Number.isInteger(Number(value))) {
-      parsedValue = value.replace(/^0+/, '');
+    let parsedValue = commaValue;
+    if (Number(commaValue) && Number.isInteger(Number(commaValue))) {
+      parsedValue = commaValue.replace(/^0+/, '');
     }
     let primaryValue, secondaryValue;
     const { primaryUnit, secondaryUnit } = this.state;
     const { exchangeRates } = this.props;
     if (type === 'primary') {
-      primaryValue = convertPrimaryDecimals(parsedValue, primaryUnit);
-      secondaryValue = convertSecondaryDecimals((parsedValue * exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(8), secondaryUnit, !!primaryValue);
+      primaryValue = parsedValue;
+      secondaryValue = (parsedValue * exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(getMaxDecimalsLength(secondaryUnit));
+      if (!primaryValue) {
+        secondaryValue = zeroValueToEmptyString(secondaryValue);
+      }
     } else if (type === 'secondary') {
-      secondaryValue = convertSecondaryDecimals(parsedValue, secondaryUnit);
-      primaryValue = convertPrimaryDecimals((parsedValue / exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(9), primaryUnit, !!secondaryValue);
+      secondaryValue = parsedValue;
+      primaryValue = (parsedValue / exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(getMaxDecimalsLength(primaryUnit));
+      if (!secondaryValue) {
+        primaryValue = zeroValueToEmptyString(primaryValue);
+      }
     }
     this.setState({
       primaryValue: primaryValue,
@@ -262,6 +267,16 @@ class PaymentScreen extends React.Component {
     return true;
   };
 
+  getMaxPrimaryLength = () => {
+    const { primaryValue, primaryUnit } = this.state;
+    return getMaxLength(primaryValue, primaryUnit);
+  };
+
+  getMaxSecondaryLength = () => {
+    const { secondaryValue, secondaryUnit } = this.state;
+    return getMaxLength(secondaryValue, secondaryUnit);
+  };
+
   render() {
     const {
       step, address, primaryValue,
@@ -323,11 +338,12 @@ class PaymentScreen extends React.Component {
               <View style={{ ...styles.field, ...styles.primaryField }}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={value => this.changeValue(value, 'primary')}
-                  value={String(primaryValue)}
+                  onChangeText={this.changePrimaryValue}
+                  value={primaryValue}
                   keyboardType='decimal-pad'
                   autofocus={false}
                   selectTextOnFocus={true}
+                  maxLength={this.getMaxPrimaryLength()}
                 />
                 <ActionSheet
                   currentValue={primaryUnit}
@@ -338,11 +354,12 @@ class PaymentScreen extends React.Component {
               <View style={styles.field}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={value => this.changeValue(value, 'secondary')}
-                  value={String(secondaryValue)}
+                  onChangeText={this.changeSecondaryValue}
+                  value={secondaryValue}
                   keyboardType='decimal-pad'
                   autofocus={false}
                   selectTextOnFocus={true}
+                  maxLength={this.getMaxSecondaryLength()}
                 />
                 <ActionSheet
                   currentValue={secondaryUnit}

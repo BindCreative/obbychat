@@ -47,6 +47,7 @@ const PairInputScreen = ({ navigation, backRoute }) => {
           navigation={navigation}
           size='compact'
           titlePosition='center'
+          title="Add contact"
           backRoute={backRoute}
           hasBackButton
         />

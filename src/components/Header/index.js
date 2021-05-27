@@ -27,48 +27,55 @@ const Header = ({
           {hasBackButton === true && (
             <TouchableOpacity
               style={styles.backBtn}
-              onPress={() =>
-                backRoute ? navigation.navigate(backRoute) : navigation.pop()
-              }
+              onPress={() => backRoute ? navigation.navigate(backRoute) : navigation.pop()}
             >
               <ArrowLeftIcon color={colors.black} height={18} width={18} />
             </TouchableOpacity>
           )}
-          {left !== undefined && left}
-          {left === undefined && titlePosition === 'left' && (
-            <Text
-              numberOfLines={1}
-              style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
-            >
-              {title}
-            </Text>
-          )}
+          {!!left
+            ? left
+            : titlePosition === 'left'
+              ? (
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+                >
+                  {title}
+                </Text>
+              )
+              : <View />}
         </View>
 
         {hasCenter && (
           <View style={styles.headerCenter}>
-            {center !== undefined && center}
-            {center === undefined && titlePosition === 'center' && (
-              <Text
-                numberOfLines={1}
-                style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
-              >
-                {title}
-              </Text>
-            )}
+            {!!center
+              ? center
+              : titlePosition === 'center'
+                ? (
+                  <Text
+                    numberOfLines={1}
+                    style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+                  >
+                    {title}
+                  </Text>
+                )
+                : <View />}
           </View>
         )}
 
         <View style={styles.headerRight}>
-          {right !== undefined && right}
-          {right === undefined && titlePosition === 'right' && (
-            <Text
-              numberOfLines={1}
-              style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
-            >
-              {title}
-            </Text>
-          )}
+          {!!right
+            ? right
+            : titlePosition === 'right'
+              ? (
+                <Text
+                  numberOfLines={1}
+                  style={{ ...styles.headerTitle, ...styles.headerTitleSmall }}
+                >
+                  {title}
+                </Text>
+              )
+              : <View />}
         </View>
       </View>
     );
@@ -84,32 +91,41 @@ const Header = ({
               <ArrowLeftIcon color={colors.black} height={18} width={18} />
             </TouchableOpacity>
           )}
-          {left !== undefined && left}
-          {left === undefined && titlePosition === 'left' && (
-            <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
-              {title}
-            </Text>
-          )}
+          {!!left
+            ? left
+            : titlePosition === 'left'
+              ? (
+                <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
+                  {title}
+                </Text>
+              )
+              : <View />}
         </View>
 
         {hasCenter && (
           <View style={styles.headerCenter}>
-            {center !== undefined && center}
-            {center === undefined && titlePosition === 'center' && (
-              <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
-                {title}
-              </Text>
-            )}
+            {!!center
+              ? center
+              : titlePosition === 'center'
+                ? (
+                  <Text numberOfLines={1} style={{ ...styles.headerTitle }}>
+                    {title}
+                  </Text>
+                )
+                : <View />}
           </View>
         )}
 
         <View style={styles.headerRight}>
-          {right !== undefined && right}
-          {right === undefined && titlePosition === 'right' && (
-            <Text numberOfLines={1} style={styles.headerTitle}>
-              {title}
-            </Text>
-          )}
+          {!!right
+            ? right
+            : titlePosition === 'right'
+              ? (
+                <Text numberOfLines={1} style={styles.headerTitle}>
+                  {title}
+                </Text>
+              )
+              : <View />}
         </View>
       </View>
     );
