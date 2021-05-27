@@ -1,9 +1,9 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { TouchableOpacity, Text, Clipboard, Alert, View, Linking } from 'react-native';
+import { TouchableOpacity, Text, Clipboard, Alert, View, Linking, TextInput, Platform } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
 import NetInfo from "@react-native-community/netinfo";
 
 import styles from './styles';
@@ -27,6 +27,8 @@ const ChatScreen = ({
 }) => {
   const dispatch = useDispatch();
   const [text, setText] = useState("");
+  const [lines, setLines] = useState(1);
+  const [composerHeight, setComposerHeight] = useState(0);
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
@@ -61,8 +63,23 @@ const ChatScreen = ({
     if (text) {
       separator = text[text.length - 1] === " " ? "\n" : " \n"
     }
-    setText(`${text}${separator}${address} `);
+    const newText = `${text}${separator}${address} `;
+    setText(newText);
   };
+
+  useEffect(
+    () => {
+      setLines(text.split(/\r\n|\r|\n/).length);
+    },
+    [text]
+  );
+
+  useEffect(
+    () => {
+      setComposerHeight((lines * 16) + 24);
+    },
+    [lines]
+  );
 
   const onLoadEarlier = () => {
     // TODO: make pagination from reducer
@@ -314,6 +331,14 @@ const ChatScreen = ({
         onSend={onSend}
         onLoadEarlier={onLoadEarlier}
         user={{ _id: 1 }}
+        renderInputToolbar={props => (
+          <InputToolbar
+            {...props}
+            composerHeight={Platform.OS === 'ios'
+              ? props.composerHeight
+              : composerHeight}
+          />
+        )}
       />
     </SafeAreaView>
   );
