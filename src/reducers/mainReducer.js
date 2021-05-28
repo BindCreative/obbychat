@@ -396,7 +396,7 @@ function reducer(state = initialState, action) {
         }
       };
 
-      if (botId !== null && state.bots) {
+      if (botId !== null && state[mainKey].messages.bots) {
         newState[mainKey].messages.bots = state[mainKey].messages.bots.map((bot) => bot.id === botId ? ({ ...bot, paired: false }) : bot);
       }
 

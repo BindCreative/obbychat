@@ -42,7 +42,7 @@ const QRScannerScreen = ({ navigation }) => {
         matches = true;
         navigation.pop();
         if (asset && asset !== 'base') {
-          dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet do not support custom assets' }));
+          dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet doesn\'t support custom assets yet' }));
         } else {
           navigate('MakePayment', { walletAddress, amount: amount || '' });
         }

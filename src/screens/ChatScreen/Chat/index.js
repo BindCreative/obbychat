@@ -1,9 +1,9 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import { TouchableOpacity, Text, Clipboard, Alert, View, Linking, TextInput, Platform } from 'react-native';
+import { TouchableOpacity, Text, Clipboard, Alert, View, Linking, TextInput, Platform, Keyboard, ScrollView } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { GiftedChat, InputToolbar } from 'react-native-gifted-chat';
+import { GiftedChat, InputToolbar, Composer } from 'react-native-gifted-chat';
 import NetInfo from "@react-native-community/netinfo";
 
 import styles from './styles';
@@ -16,11 +16,14 @@ import {
 } from '../../../actions/correspondents';
 import { selectCorrespondentMessages, selectCorrespondentWalletAddress } from "../../../selectors/main";
 import { selectWalletAddress, selectAddressWif } from "../../../selectors/temporary";
-import ActionsBar from './ActionsBar';
-import Header from '../../../components/Header';
 import { testnet } from "../../../lib/oCustom";
 
 import WarningIcon from '../../../assets/images/warning.svg';
+import {setToastMessage} from "../../../actions/app";
+
+import CustomHeader from './CustomHeader';
+
+let linesCount = 0;
 
 const ChatScreen = ({
   myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute, addressWif, correspondent
@@ -29,6 +32,9 @@ const ChatScreen = ({
   const [text, setText] = useState("");
   const [lines, setLines] = useState(1);
   const [composerHeight, setComposerHeight] = useState(0);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [inputWidth, setInputWidth] = useState(0);
+  const [linesWidths, setLinesWidths] = useState([]);
 
   const onRemoveCorespondent = address => dispatch(removeCorrespondent({ address }));
   const onClearChatHistory = address => dispatch(clearChatHistory({ address }));
@@ -67,11 +73,30 @@ const ChatScreen = ({
     setText(newText);
   };
 
+  const handleShowKeyboard = () => setKeyboardOpen(true);
+
+  const handleHideKeyboard = () => setKeyboardOpen(false);
+
   useEffect(
     () => {
-      setLines(text.split(/\r\n|\r|\n/).length);
+      Keyboard.addListener('keyboardDidShow', handleShowKeyboard);
+      Keyboard.addListener('keyboardDidHide', handleHideKeyboard);
+      return () => {
+        Keyboard.removeListener('keyboardDidShow', handleShowKeyboard);
+        Keyboard.removeListener('keyboardDidHide', handleHideKeyboard);
+      }
     },
-    [text]
+    []
+  );
+
+  useEffect(
+    () => {
+      let newLines = linesWidths.length
+        ? linesWidths.reduce((counter, width) => counter + (width ? Math.ceil(width / inputWidth) : 1), 0)
+        : 1;
+      setLines(newLines);
+    },
+    [linesWidths, inputWidth]
   );
 
   useEffect(
@@ -146,18 +171,22 @@ const ChatScreen = ({
             : <Text style={replacedStyle}>{address}</Text>
         }
         case "REQUEST_PAYMENT": {
-          const { amount, address } = data;
+          const { amount, address, asset } = data;
           return user._id !== 1
             ? (
               <Fragment>
                 <Text style={style}>Payment request: </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate('MakePayment', {
-                      walletAddress: address,
-                      amount: +amount.split("=")[1],
-                      correspondent
-                    })
+                    if (asset && asset !== 'base') {
+                      dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet doesn\'t support custom assets yet' }));
+                    } else {
+                      navigation.navigate('MakePayment', {
+                        walletAddress: address,
+                        amount: amount || '',
+                        correspondent
+                      })
+                    }
                   }}
                 >
                   <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
@@ -290,39 +319,51 @@ const ChatScreen = ({
     </View>
   );
 
+  const onLineLayout = (event, index) => {
+    let newLinesWidths = [...linesWidths];
+    if (newLinesWidths[index] === undefined) {
+      newLinesWidths[index] = event.layout.width;
+    } else {
+      newLinesWidths = newLinesWidths.filter((width, widthIndex) => widthIndex < index);
+      newLinesWidths[index] = event.layout.width;
+    }
+    setLinesWidths(newLinesWidths);
+  };
+
   return (
     <SafeAreaView
       style={styles.container}
       forceInset={{ top: 'always', bottom: 'always' }}
     >
-      <Header
-        hasBackButton
-        hasBorder
-        backRoute={backRoute}
-        size='compact'
-        titlePosition='left'
-        title={correspondent.name}
+      <ScrollView horizontal style={styles.linesScrollView}>
+        {text.split(/\r\n|\r|\n/).map((textLine, index) => (
+          <Text
+            key={textLine}
+            onLayout={({ nativeEvent }) => onLineLayout(nativeEvent, index)}
+            style={styles.lineText}
+          >
+            {textLine}
+          </Text>
+        ))}
+      </ScrollView>
+      <CustomHeader
+        correspondent={correspondent}
         navigation={navigation}
-        right={
-          <ActionsBar
-            navigation={navigation}
-            myWalletAddress={myWalletAddress}
-            clearChatHistory={onClearChatHistory}
-            removeCorrespondent={onRemoveCorespondent}
-            onSend={onSend}
-            onRequestSignMessage={onRequestSignMessage}
-            insertAddress={insertAddress}
-            correspondentWalletAddress={correspondentWalletAddress}
-            correspondentAddress={correspondent.address}
-          />
-        }
+        keyboardOpen={keyboardOpen}
+        backRoute={backRoute}
+        myWalletAddress={myWalletAddress}
+        onClearChatHistory={onClearChatHistory}
+        onRemoveCorespondent={onRemoveCorespondent}
+        onSend={onSend}
+        onRequestSignMessage={onRequestSignMessage}
+        insertAddress={insertAddress}
+        correspondentWalletAddress={correspondentWalletAddress}
       />
       <GiftedChat
         text={text}
         onInputTextChanged={setText}
         scrollToBottom
         bottomOffset={0}
-        style={styles.chatArea}
         renderAvatar={null}
         renderMessageText={renderText}
         renderLoading={chatLoading}
@@ -331,12 +372,19 @@ const ChatScreen = ({
         onSend={onSend}
         onLoadEarlier={onLoadEarlier}
         user={{ _id: 1 }}
-        renderInputToolbar={props => (
+        renderInputToolbar={(props) => (
           <InputToolbar
             {...props}
-            composerHeight={Platform.OS === 'ios'
-              ? props.composerHeight
-              : composerHeight}
+            composerHeight={Math.min(Platform.OS === 'ios' ? props.composerHeight : Math.max(composerHeight, props.composerHeight), props.maxComposerHeight)}
+          />
+        )}
+        renderComposer={(props) => (
+          <Composer
+            {...props}
+            onInputSizeChanged={(size) => {
+              props.onInputSizeChanged(size);
+              setInputWidth(size.width - 12);
+            }}
           />
         )}
       />

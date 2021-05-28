@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { View, TextInput, FlatList, InteractionManager, Image, Linking, Text } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import TimeAgo from 'react-native-timeago';
 import makeBlockie from 'ethereum-blockies-base64';
 

@@ -12,6 +12,11 @@ export default StyleSheet.create({
   actionsBar: {
     flexDirection: 'row',
   },
+  actionsBarCustom: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-around'
+  },
   header: {
     marginHorizontal: 15,
     marginTop: 15,
@@ -83,10 +88,21 @@ export default StyleSheet.create({
     alignSelf: 'center',
     marginLeft: 10,
   },
+  iconButtonSmallCustom: {
+    padding: 20,
+    backgroundColor: colors.grey.lightest,
+    borderRadius: 50,
+    alignSelf: 'center'
+  },
   iconButtonTransparent: {
     padding: 14,
     borderRadius: 0,
     alignSelf: 'center',
+  },
+  iconButtonSmallTransparentCustom: {
+    padding: 20,
+    borderRadius: 0,
+    alignSelf: 'center'
   },
   iconButtonSmallTransparent: {
     padding: 14,
@@ -98,9 +114,6 @@ export default StyleSheet.create({
     fontSize: 12,
     fontWeight: '100',
     alignSelf: 'center',
-  },
-  chatArea: {
-    backgroundColor: 'red',
   },
   message: {
     marginHorizontal: 10,
@@ -168,5 +181,37 @@ export default StyleSheet.create({
   },
   errorImage: {
     color: colors.darkRed
+  },
+  actionBarButtonContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  actionBarButtonText: {
+    marginTop: 4,
+    fontSize: 14,
+    fontWeight: '400'
+  },
+  textInput: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 16,
+    lineHeight: 16,
+    marginTop: Platform.select({
+      ios: 6,
+      android: 0
+    }),
+    marginBottom: Platform.select({
+      ios: 5,
+      android: 3
+    }),
+  },
+  linesScrollView: {
+    position: 'absolute',
+    width: '100%'
+  },
+  lineText: {
+    position: 'absolute',
+    fontSize: 16
   }
 });
