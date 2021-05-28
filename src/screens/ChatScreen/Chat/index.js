@@ -23,8 +23,6 @@ import {setToastMessage} from "../../../actions/app";
 
 import CustomHeader from './CustomHeader';
 
-let linesCount = 0;
-
 const ChatScreen = ({
   myWalletAddress, correspondentWalletAddress, messages, navigation, backRoute, addressWif, correspondent
 }) => {
