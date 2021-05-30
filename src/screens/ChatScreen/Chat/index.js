@@ -362,7 +362,7 @@ const ChatScreen = ({
         onSend={onSend}
         onLoadEarlier={onLoadEarlier}
         user={{ _id: 1 }}
-        keyboardShouldPersistTaps={false}
+        keyboardShouldPersistTaps="never"
         renderInputToolbar={(props) => (
           <InputToolbar
             {...props}
