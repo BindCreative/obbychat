@@ -14,11 +14,12 @@ import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
-import { initWallet } from '../../actions/wallet';
+import { initWallet, openPaymentLink } from '../../actions/wallet';
 import { setToastMessage } from '../../actions/app';
 import { reSubscribeToHub, stopSubscribeToHub } from "../../actions/device";
+import { acceptInvitation } from "../../actions/correspondents";
 
-import parseUrl from '../../lib/parseUrl';
+import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
 import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
@@ -55,15 +56,18 @@ const App = ({
 
   const redirect = () => {
     if (redirectParams) {
-      const { navigate } = NavigationService;
-      const { type, message, ...params } = redirectParams;
-      switch (type) {
-        case common.urlTypes.error:
-          return dispatch(setToastMessage({ type: 'ERROR', message }));
-        case common.urlTypes.pairing:
-          return navigate('ChatStack', { type, ...params });
-        case common.urlTypes.payment:
-          return navigate('MakePayment', { ...params, title: 'Enter amount' });
+      let matches = false;
+      redirectParams
+        .replace(REGEX_PAIRING, () => {
+          matches = true;
+          return dispatch(acceptInvitation({ data: redirectParams }));
+        })
+        .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
+          matches = true;
+          return dispatch(openPaymentLink({ walletAddress, query }));
+        });
+      if (!matches) {
+        dispatch(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
       }
     }
   };
@@ -84,8 +88,7 @@ const App = ({
 
   const handleLinkingUrl = (url) => {
     if (url) {
-      const urlData = parseUrl(url, walletAddress);
-      setRedirectParams(urlData);
+      setRedirectParams(url);
     }
   };
 

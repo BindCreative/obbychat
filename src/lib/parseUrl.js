@@ -90,7 +90,7 @@ const parseUrl = (url, walletAddress) => {
       if (typeof asset === 'string'){
         if (asset !== 'base') {
           urlParams.type = common.urlTypes.error;
-          urlParams.message = `invalid asset: ${asset}`;
+          urlParams.message = 'Wallet doesn\'t support custom assets yet';
           return urlParams;
         }
         urlParams.asset = asset;
@@ -100,11 +100,11 @@ const parseUrl = (url, walletAddress) => {
       //   urlParams.message = `unused parameter device_address`;
       //   return urlParams;
       // }
-      if (assocParams.base64data) {
-        urlParams.type = common.urlTypes.error;
-        urlParams.message = `unused parameter base64data`;
-        return urlParams;
-      }
+      // if (assocParams.base64data) {
+      //   urlParams.type = common.urlTypes.error;
+      //   urlParams.message = `unused parameter base64data`;
+      //   return urlParams;
+      // }
       const { from_address } = assocParams;
       if (from_address) {
         if (from_address !== walletAddress) {

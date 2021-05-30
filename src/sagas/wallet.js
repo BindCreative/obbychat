@@ -6,6 +6,7 @@ import * as Crypto from 'react-native-crypto';
 import NetInfo from "@react-native-community/netinfo";
 import NavigationService from './../navigation/service';
 import { oClient, testnet, parseQueryString } from './../lib/oCustom';
+import * as validationUtils from './../lib/validationUtils';
 import { actionTypes } from './../constants';
 
 import { subscribeToHub } from './device';
@@ -301,7 +302,20 @@ export function* fetchWalletHistory() {
 export function* sendPayment(action) {
   try {
     const addressWif = yield select(selectAddressWif());
-    const { correspondent, params } = action.payload;
+    const { correspondent, params, base64data } = action.payload;
+
+    if (base64data) {
+      let paymentData = Buffer.from(base64data, 'base64').toString('utf8');
+      paymentData = paymentData ? JSON.parse(paymentData) : null;
+      if (paymentData) {
+        console.log(paymentData);
+        const feedValuesPairs = [];
+        for (let key in paymentData) {
+          feedValuesPairs.push({ name: key, value: paymentData[key], readonly: true });
+        }
+        console.log(feedValuesPairs);
+      }
+    }
 
     const unitId = yield call(oClient.post.payment, params, addressWif);
     yield put(sendPaymentSuccess());
@@ -355,12 +369,47 @@ const isAutonomousAgent = address => new Promise((resolve, reject) => {
   })
 });
 
-const parseValidParams = query => new Promise((resolve, reject) => {
-  const params = parseQueryString(query);
-  const { asset } = params;
-  if (asset && asset !== 'base') {
-    reject({ message: 'Wallet doesn\'t support custom assets yet' })
+const parseValidParams = ({ walletAddress, query = '' }) => new Promise((resolve, reject) => {
+  if (
+    !validationUtils.isValidAddress(walletAddress)
+    && !validationUtils.isValidEmail(walletAddress)
+    && !walletAddress.match(/^(steem\/|reddit\/|github\/|bitcointalk\/|@).{3,}/i)
+    && !walletAddress.match(/^\+\d{9,14}$/)
+  ) {
+    reject({ message: `address ${walletAddress} is invalid` });
   } else {
+    const params = parseQueryString(query);
+    const {
+      amount, asset, from_address,
+      single_address, base64data
+    } = params;
+
+    if (amount) {
+      const amountInt = parseInt(amount);
+      if (`${amountInt}` !== amount) {
+        reject({ message: `invalid amount: ${amount}` });
+      }
+      if (!validationUtils.isPositiveInteger(amountInt)) {
+        reject({ message: `nonpositive amount: ${amount}` });
+      }
+    }
+
+    if (asset && asset !== 'base') {
+      reject({ message: 'Wallet doesn\'t support custom assets yet' })
+    }
+
+    if (from_address && from_address !== walletAddress) {
+      reject({ message: `invalid parameter from_address` })
+    }
+
+    if (single_address && single_address !== "1") {
+      reject({ message: `invalid single_address: ${single_address}` })
+    }
+
+    if (base64data && !validationUtils.isValidBase64(base64data)) {
+      reject({ message: `invalid parameter base64data` })
+    }
+
     resolve(params);
   }
 });
@@ -369,8 +418,8 @@ export function* openPaymentLink({ payload }) {
   try {
     const { walletAddress, query, correspondent } = payload;
     yield call(isAutonomousAgent, walletAddress);
-    const { amount } = yield call(parseValidParams, query);
-    NavigationService.navigate('MakePayment', { walletAddress, amount: amount || '', correspondent });
+    const { amount = '' } = yield call(parseValidParams, { walletAddress, query });
+    NavigationService.navigate('MakePayment', { walletAddress, amount, correspondent });
   } catch (error) {
     yield put(
       setToastMessage({
