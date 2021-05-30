@@ -56,3 +56,8 @@ export const sendPaymentSuccess = () => ({
 export const sendPaymentFail = () => ({
   type: actionTypes.PAYMENT_SEND_FAILED,
 });
+
+export const openPaymentLink = payload => ({
+  type: actionTypes.OPEN_PAYMENT_LINK,
+  payload
+});

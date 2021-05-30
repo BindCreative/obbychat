@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import * as Crypto from 'react-native-crypto';
 import NetInfo from "@react-native-community/netinfo";
 import NavigationService from './../navigation/service';
-import { oClient, testnet } from './../lib/oCustom';
+import { oClient, testnet, parseQueryString } from './../lib/oCustom';
 import { actionTypes } from './../constants';
 
 import { subscribeToHub } from './device';
@@ -345,6 +345,42 @@ export function* updateWalletData() {
   yield call(fetchWalletHistory, { address });
 }
 
+const isAutonomousAgent = address => new Promise((resolve, reject) => {
+  oClient.api.getDefinition(address, (err, result) => {
+    if (err) {
+      reject({ message: "Autonomous Agents are not fully supported yet" });
+    } else {
+      resolve(result);
+    }
+  })
+});
+
+const parseValidParams = query => new Promise((resolve, reject) => {
+  const params = parseQueryString(query);
+  const { asset } = params;
+  if (asset && asset !== 'base') {
+    reject({ message: 'Wallet doesn\'t support custom assets yet' })
+  } else {
+    resolve(params);
+  }
+});
+
+export function* openPaymentLink({ payload }) {
+  try {
+    const { walletAddress, query, correspondent } = payload;
+    yield call(isAutonomousAgent, walletAddress);
+    const { amount } = yield call(parseValidParams, query);
+    NavigationService.navigate('MakePayment', { walletAddress, amount: amount || '', correspondent });
+  } catch (error) {
+    yield put(
+      setToastMessage({
+        type: 'ERROR',
+        message: error.message || 'Unable to open payment',
+      }),
+    );
+  }
+}
+
 export default function* watch() {
   // yield takeLatest(actionTypes.WALLET_INIT_START, initWallet);
   yield takeLatest(actionTypes.WALLET_INIT_START, init);
@@ -354,4 +390,5 @@ export default function* watch() {
   yield takeLatest(actionTypes.PAYMENT_SEND_START, sendPayment);
   yield takeLatest(actionTypes.UPDATE_WALLET_DATA, updateWalletData);
   yield takeLatest(actionTypes.GENERATE_SEED_WORDS, generateSeedWords);
+  yield takeLatest(actionTypes.OPEN_PAYMENT_LINK, openPaymentLink);
 }

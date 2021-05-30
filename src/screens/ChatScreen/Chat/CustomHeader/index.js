@@ -104,6 +104,7 @@ const CustomHeader = ({
       correspondentAddress={correspondent.address}
       customMode={!keyboardOpen}
       handleOpenActionSheet={handleOpenActionSheet}
+      correspondent={correspondent}
     />
   );
 

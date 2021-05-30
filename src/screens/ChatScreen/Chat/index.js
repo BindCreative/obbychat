@@ -14,9 +14,10 @@ import {
   clearChatHistory,
   removeCorrespondent,
 } from '../../../actions/correspondents';
+import { openPaymentLink } from "../../../actions/wallet";
 import { selectCorrespondentMessages, selectCorrespondentWalletAddress } from "../../../selectors/main";
 import { selectWalletAddress, selectAddressWif } from "../../../selectors/temporary";
-import { testnet } from "../../../lib/oCustom";
+import { testnet, parseQueryString } from "../../../lib/oCustom";
 
 import WarningIcon from '../../../assets/images/warning.svg';
 import {setToastMessage} from "../../../actions/app";
@@ -169,32 +170,23 @@ const ChatScreen = ({
             : <Text style={replacedStyle}>{address}</Text>
         }
         case "REQUEST_PAYMENT": {
-          const { amount, address, asset } = data;
+          const { walletAddress, query } = data;
+          const { amount } = parseQueryString(query);
           return user._id !== 1
             ? (
               <Fragment>
                 <Text style={style}>Payment request: </Text>
                 <TouchableOpacity
-                  onPress={() => {
-                    if (asset && asset !== 'base') {
-                      dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet doesn\'t support custom assets yet' }));
-                    } else {
-                      navigation.navigate('MakePayment', {
-                        walletAddress: address,
-                        amount: amount || '',
-                        correspondent
-                      })
-                    }
-                  }}
+                  onPress={() => dispatch(openPaymentLink({ walletAddress, query, correspondent }))}
                 >
-                  <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
+                  <Text style={replacedStyle}>{`${amount}\n${walletAddress}`}</Text>
                 </TouchableOpacity>
               </Fragment>
             )
             : (
               <Text>
                 <Text style={style}>Payment request: </Text>
-                <Text style={replacedStyle}>{`${amount}\n${address}`}</Text>
+                <Text style={replacedStyle}>{`${amount}\n${walletAddress}`}</Text>
               </Text>
             )
         }
@@ -220,14 +212,14 @@ const ChatScreen = ({
                     ]);
                   }}
                 >
-                  <Text style={replacedStyle}>{`\"${messageToSign}\"`}</Text>
+                  <Text style={replacedStyle}>{`\n\"${messageToSign}\"`}</Text>
                 </TouchableOpacity>
               </Fragment>
             )
             : (
               <Text>
                 <Text style={style}>Request to sign message: </Text>
-                <Text style={replacedStyle}>{`\"${messageToSign}\"`}</Text>
+                <Text style={replacedStyle}>{`\n\"${messageToSign}\"`}</Text>
               </Text>
             )
         }
@@ -370,6 +362,7 @@ const ChatScreen = ({
         onSend={onSend}
         onLoadEarlier={onLoadEarlier}
         user={{ _id: 1 }}
+        keyboardShouldPersistTaps={false}
         renderInputToolbar={(props) => (
           <InputToolbar
             {...props}

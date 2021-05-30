@@ -5,23 +5,25 @@ export default StyleSheet.create({
   content: {
     width: '100%',
     backgroundColor: colors.white,
-    borderBottomColor: colors.grey.lightest,
-    borderBottomWidth: 2,
+    borderBottomColor: colors.grey.main,
+    borderBottomWidth: 0.5,
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: 30,
+    paddingTop: 60,
     paddingBottom: 5,
-    height: 280
+    height: 240
   },
   backBtnContainer: {
-    marginLeft: 15,
+    paddingTop: 30,
+    paddingLeft: 15,
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'center',
-    width: '100%'
+    width: '100%',
+    position: 'absolute'
   },
   backBtn: {
     marginRight: 10,
@@ -42,8 +44,8 @@ export default StyleSheet.create({
     borderRadius: 40
   },
   userName: {
-    marginTop: 16,
-    marginBottom: 22,
+    marginTop: 14,
+    marginBottom: 10,
     fontSize: 20,
     fontWeight: '400'
   }

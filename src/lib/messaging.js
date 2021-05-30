@@ -1,7 +1,6 @@
 import crypto from 'react-native-crypto';
 import { getChash160, isValidAddress } from 'obyte/lib/utils';
 import { getSignedMessageInfoFromJsonBase64 } from './oCustom';
-import { parseQueryString } from "./oCustom";
 
 export const REGEX_WALLET_ADDRESS = /(.*?\b|^)([2-7A-Z]{32})([\s.,;!:].*?|$)/g;
 export const REGEX_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)\)/g;
@@ -72,10 +71,9 @@ export const parseTextMessage = originalText => {
       type = 'WALLET_ADDRESS';
       return `${pre}${toDelayedReplacement({ type, address })}${post}`;
     })
-    .replace(REGEX_REQUEST_PAYMENT, (str, payload, address, query) => {
+    .replace(REGEX_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
       type = 'REQUEST_PAYMENT';
-      const params = parseQueryString(query);
-      return toDelayedReplacement({ type, address, ...params });
+      return toDelayedReplacement({ type, walletAddress, query });
     })
     .replace(
       REGEX_SIGN_MESSAGE_REQUEST,

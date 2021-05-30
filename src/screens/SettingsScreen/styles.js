@@ -4,7 +4,7 @@ import { colors } from './../../constants';
 export default StyleSheet.create({
   headerNormal: {
     paddingHorizontal: 15,
-    paddingTop: 30,
+    paddingTop: 34,
     paddingBottom: 5,
     backgroundColor: colors.white,
     flexDirection: 'row',

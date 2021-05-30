@@ -5,13 +5,13 @@ import { StatusBar, Text, View, ActivityIndicator } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import { acceptInvitation } from './../../actions/correspondents';
+import { openPaymentLink } from "../../actions/wallet";
 import Button from './../../components/Button';
 import LoadingModal from '../../components/LoadingModal';
 import styles from './styles';
 
 import { setToastMessage } from "../../actions/app";
 import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
-import { parseQueryString } from "../../lib/oCustom";
 
 const QRScannerScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -29,7 +29,6 @@ const QRScannerScreen = ({ navigation }) => {
 
   const handleBarCodeScanned = ({ data }) => {
     setScanned(true);
-    const { navigate } = navigation;
     let matches = false;
     data
       .replace(REGEX_PAIRING, () => {
@@ -37,15 +36,9 @@ const QRScannerScreen = ({ navigation }) => {
         return dispatch(acceptInvitation({ data }));
       })
       .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
-        const params = parseQueryString(query);
-        const { amount, asset } = params;
         matches = true;
         navigation.pop();
-        if (asset && asset !== 'base') {
-          dispatch(setToastMessage({ type: 'ERROR', message: 'Wallet doesn\'t support custom assets yet' }));
-        } else {
-          navigate('MakePayment', { walletAddress, amount: amount || '' });
-        }
+        dispatch(openPaymentLink({ walletAddress, query }));
       });
 
     if (!matches) {

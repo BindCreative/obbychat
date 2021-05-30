@@ -20,7 +20,8 @@ const ActionsBar = ({
   insertAddress,
   onRequestSignMessage,
   customMode,
-  handleOpenActionSheet
+  handleOpenActionSheet,
+  correspondent
 }) => {
   const handleRequestPayment = useCallback(() => {
     navigation.navigate('RequestPayment', {
@@ -57,6 +58,7 @@ const ActionsBar = ({
     } else {
       navigation.navigate('MakePayment', {
         walletAddress: correspondentWalletAddress,
+        correspondent
       });
     }
   }, [Alert, correspondentWalletAddress, navigation]);
