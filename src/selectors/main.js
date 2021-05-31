@@ -210,12 +210,14 @@ export const selectTransactions = () =>
         }
 
         for (let [im, message] of joint.unit.messages.entries()) {
-          for (let [io, output] of message.payload.outputs.entries()) {
-            if (type === 'RECEIVED' && walletAddress === output.address) {
-              amount += output.amount;
-            } else if (type === 'SENT' && walletAddress !== output.address) {
-              amount += output.amount;
-              toAddress.push(output.address);
+          if (message.payload.outputs) {
+            for (let [io, output] of message.payload.outputs.entries()) {
+              if (type === 'RECEIVED' && walletAddress === output.address) {
+                amount += output.amount;
+              } else if (type === 'SENT' && walletAddress !== output.address) {
+                amount += output.amount;
+                toAddress.push(output.address);
+              }
             }
           }
         }
