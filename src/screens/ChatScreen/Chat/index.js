@@ -59,7 +59,7 @@ const ChatScreen = ({
     if (!text) {
       Alert.alert('', 'Text field is empty');
     } else {
-      onSend([{ text: `[Data request](sign-message-request:${text})` }]);
+      onSend([{ text: `[Data request](sign-message-request:${text.trim()})` }]);
     }
   };
 
@@ -154,18 +154,24 @@ const ChatScreen = ({
         case "PAYMENT": {
           const { unitId, amount } = data;
           return (
-            <TouchableOpacity onPress={() => dispatch(openPaymentFromChat(unitId))}>
-              <Text style={replacedStyle}>{`Payment: ${amount} bytes`}</Text>
-            </TouchableOpacity>
+            <Text
+              onPress={() => dispatch(openPaymentFromChat(unitId))}
+              style={replacedStyle}
+            >
+              {`Payment: ${amount} bytes`}
+            </Text>
           )
         }
         case "WALLET_ADDRESS": {
           const { address } = data;
           return user._id !== 1
             ? (
-              <TouchableOpacity onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}>
-                <Text style={replacedStyle}>{address}</Text>
-              </TouchableOpacity>
+              <Text
+                style={replacedStyle}
+                onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}
+              >
+                {address}
+              </Text>
             )
             : <Text style={replacedStyle}>{address}</Text>
         }
@@ -176,11 +182,12 @@ const ChatScreen = ({
             ? (
               <Fragment>
                 <Text style={style}>Payment request: </Text>
-                <TouchableOpacity
+                <Text
+                  style={replacedStyle}
                   onPress={() => dispatch(openPaymentLink({ walletAddress, query, correspondent }))}
                 >
-                  <Text style={replacedStyle}>{`${amount}\n${walletAddress}`}</Text>
-                </TouchableOpacity>
+                  {`${amount}\n${walletAddress}`}
+                </Text>
               </Fragment>
             )
             : (
@@ -196,7 +203,8 @@ const ChatScreen = ({
             ? (
               <Fragment>
                 <Text style={style}>Request to sign message: </Text>
-                <TouchableOpacity
+                <Text
+                  style={replacedStyle}
                   onPress={() => {
                     Alert.alert('Do you want to sign this message?', '', [
                       { text: 'No', style: 'cancel' },
@@ -212,14 +220,14 @@ const ChatScreen = ({
                     ]);
                   }}
                 >
-                  <Text style={replacedStyle}>{`\n\"${messageToSign}\"`}</Text>
-                </TouchableOpacity>
+                  {`\"${messageToSign}\"`}
+                </Text>
               </Fragment>
             )
             : (
               <Text>
                 <Text style={style}>Request to sign message: </Text>
-                <Text style={replacedStyle}>{`\n\"${messageToSign}\"`}</Text>
+                <Text style={replacedStyle}>{`\"${messageToSign}\"`}</Text>
               </Text>
             )
         }
@@ -229,18 +237,24 @@ const ChatScreen = ({
         case "URL": {
           const { url } = data;
           return (
-            <TouchableOpacity onPress={() => Linking.openURL(url)}>
-              <Text style={{ ...replacedStyle, ...styles.url }}>{url}</Text>
-            </TouchableOpacity>
+            <Text
+              style={{ ...replacedStyle, ...styles.url }}
+              onPress={() => Linking.openURL(url)}
+            >
+              {url}
+            </Text>
           )
         }
         case "COMMAND": {
           const { command, description } = data;
           return user._id !== 1
             ? (
-              <TouchableOpacity onPress={() => onSend([{ text: command }])}>
-                <Text style={replacedStyle}>{description}</Text>
-              </TouchableOpacity>
+              <Text
+                style={replacedStyle}
+                onPress={() => onSend([{ text: command }])}
+              >
+                {description}
+              </Text>
             )
             : <Text style={replacedStyle}>{description}</Text>
         }
@@ -248,12 +262,12 @@ const ChatScreen = ({
           const { command, description } = data;
           return user._id !== 1
             ? (
-              <TouchableOpacity onPress={() => setText(command)}>
+              <Text onPress={() => setText(command)}>
                 <Text style={{ ...styles.command, ...styles.suggestCommand }}>{description}</Text>
                 <View style={styles.dotLineContainer}>
                   <View style={styles.dotLine} />
                 </View>
-              </TouchableOpacity>
+              </Text>
             )
             : (
               <View>

@@ -101,13 +101,8 @@ class PaymentScreen extends React.Component {
     const { navigation } = this.props;
     if (navigation.state.params.walletAddress
       && navigation.state.params !== prevProps.navigation.state.params) {
-      const { walletAddress, amount, correspondent, base64data } = navigation.state.params;
-      this.setState({
-        address: walletAddress,
-        step: 2,
-        correspondent,
-        base64data
-      });
+      const { walletAddress, amount } = navigation.state.params;
+      this.setState({ address: walletAddress, step: 2 });
       if (amount) {
         this.changePrimaryUnit('BYTE')
           .then(() => this.changeValue(`${amount}`, 'primary'));
@@ -210,9 +205,10 @@ class PaymentScreen extends React.Component {
 
   sendPayment = () => {
     const {
-      address, correspondent, primaryValue, primaryUnit, base64data
+      address, primaryValue, primaryUnit
     } = this.state;
-    const data = {
+    const { asset, correspondent, data } = this.props.navigation.state.params;
+    const requestData = {
       params: {
         outputs: [
           {
@@ -222,9 +218,12 @@ class PaymentScreen extends React.Component {
         ],
       },
       correspondent,
-      base64data
+      data
     };
-    this.props.sendPayment(data);
+    // if (asset) {
+    //   data.params.asset = asset;
+    // }
+    this.props.sendPayment(requestData);
   };
 
   requestPayment = () => {

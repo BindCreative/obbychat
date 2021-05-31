@@ -19,6 +19,14 @@ export const oClient =
     ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
 
+// export const hubAddress =
+//   common.network === 'testnet' ? 'testnethub.bytes.cash/bb-test' : 'obyte.org/bb';
+//
+// export const oClient =
+//   common.network === 'testnet'
+//     ? new obyte.Client('ws://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
+//     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
+
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
 // Helpers
@@ -297,7 +305,8 @@ export const parseQueryString = (query) => {
   const parameters = {};
   for (let i = 0; i < vars.length; i++) {
     const pair = vars[i].split('=');
-    parameters[pair[0]] = pair[1]
+    const name = decodeURIComponent(pair[0]);
+    parameters[name] = decodeURIComponent(pair[1]);
   }
   return parameters;
 };

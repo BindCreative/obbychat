@@ -302,22 +302,24 @@ export function* fetchWalletHistory() {
 export function* sendPayment(action) {
   try {
     const addressWif = yield select(selectAddressWif());
-    const { correspondent, params, base64data } = action.payload;
+    const { correspondent, params, data } = action.payload;
+    let unitId;
 
-    if (base64data) {
-      let paymentData = Buffer.from(base64data, 'base64').toString('utf8');
-      paymentData = paymentData ? JSON.parse(paymentData) : null;
-      if (paymentData) {
-        console.log(paymentData);
-        const feedValuesPairs = [];
-        for (let key in paymentData) {
-          feedValuesPairs.push({ name: key, value: paymentData[key], readonly: true });
+    if (data) {
+      const multiParams = [
+        {
+          app: "payment",
+          payload: params
+        },
+        {
+          app: "data",
+          payload: data
         }
-        console.log(feedValuesPairs);
-      }
+      ];
+      unitId = yield call(oClient.post.multi, multiParams, addressWif);
+    } else {
+      unitId = yield call(oClient.post.payment, params, addressWif);
     }
-
-    const unitId = yield call(oClient.post.payment, params, addressWif);
     yield put(sendPaymentSuccess());
     yield put(
       setToastMessage({
@@ -347,7 +349,7 @@ export function* sendPayment(action) {
     yield put(
       setToastMessage({
         type: 'ERROR',
-        message: 'Unable to send payment',
+        message: 'Unable to send payment. Try again later',
       }),
     );
   }
@@ -359,12 +361,20 @@ export function* updateWalletData() {
   yield call(fetchWalletHistory, { address });
 }
 
-const isAutonomousAgent = address => new Promise((resolve, reject) => {
+export const isAutonomousAgent = address => new Promise((resolve, reject) => {
   oClient.api.getDefinition(address, (err, result) => {
     if (err) {
-      reject({ message: "Autonomous Agents are not fully supported yet" });
+      reject({ message: err });
+    } else if (result && result[0] === "autonomous agent") {
+      put(
+        setToastMessage({
+          type: 'WARNING',
+          message: "Autonomous Agents are not fully supported yet",
+        }),
+      );
+      resolve(true);
     } else {
-      resolve(result);
+      resolve(false);
     }
   })
 });
@@ -406,8 +416,17 @@ const parseValidParams = ({ walletAddress, query = '' }) => new Promise((resolve
       reject({ message: `invalid single_address: ${single_address}` })
     }
 
-    if (base64data && !validationUtils.isValidBase64(base64data)) {
-      reject({ message: `invalid parameter base64data` })
+    if (base64data) {
+      if (!validationUtils.isValidBase64(base64data)) {
+        reject({ message: `invalid parameter base64data` })
+      }
+      let paymentData = Buffer.from(base64data, 'base64').toString('utf8');
+      paymentData = paymentData ? JSON.parse(paymentData) : null;
+      if (paymentData) {
+        params.data = paymentData;
+      } else {
+        reject({ message: `invalid parameter base64data` })
+      }
     }
 
     resolve(params);
@@ -418,8 +437,8 @@ export function* openPaymentLink({ payload }) {
   try {
     const { walletAddress, query, correspondent } = payload;
     yield call(isAutonomousAgent, walletAddress);
-    const { amount = '' } = yield call(parseValidParams, { walletAddress, query });
-    NavigationService.navigate('MakePayment', { walletAddress, amount, correspondent });
+    const params = yield call(parseValidParams, { walletAddress, query });
+    NavigationService.navigate('MakePayment', { walletAddress, correspondent, ...params });
   } catch (error) {
     yield put(
       setToastMessage({
