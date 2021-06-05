@@ -42,6 +42,7 @@ import {
   receiveMessageSuccess,
   receiveMessageFail,
   setUnreadMessages,
+  botPairSuccess
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
 
@@ -121,7 +122,6 @@ export function* subscribeToHub() {
     const fetchConnection = new Promise((resolve) => {
       oClient.client.connect();
       oClient.client.onConnectCallback = () => {
-        console.log('client connected');
         oClient.subscribe((err, result) => {
           if (err) {
             throw new Error('Hub socket error');
@@ -391,7 +391,7 @@ export function* handleReceivedMessage(action) {
 
 export function* acceptInvitation(action) {
   try {
-    const { data } = action.payload;
+    const { data, botId } = action.payload;
     let cDeviceAddress, cPubKey, cHub, pairingSecret;
 
     if (typeof data === 'string') {
@@ -412,7 +412,6 @@ export function* acceptInvitation(action) {
       );
     } else {
       const { pubkey, hub, pairing_secret } = data;
-      console.log(data);
       cDeviceAddress = getDeviceAddress(pubkey);
       cPubKey = pubkey;
       cHub = hub;
@@ -439,6 +438,9 @@ export function* acceptInvitation(action) {
           name: 'New',
         }),
       );
+      if (botId) {
+        yield call(botPairSuccess(botId))
+      }
       yield call(NavigationService.navigate, 'ChatStack');
     } else {
       yield call(NavigationService.navigate, 'ChatStack');
@@ -525,7 +527,7 @@ export function* sendPairingMessage({
     const res = yield deliverMessage(objDeviceMessage);
     console.log('sendPairingMessage: ', res);
   } catch (e) {
-    console.log('sendPairingMessage failed', JSON.stringify(e));
+    console.log('sendPairingMessage failed', e.toString());
     throw new Error(e);
   }
 }

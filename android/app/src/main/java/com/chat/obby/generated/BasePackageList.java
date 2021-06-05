@@ -1,4 +1,4 @@
-package com.obby.generated;
+package com.chat.obby.generated;
 
 import java.util.Arrays;
 import java.util.List;

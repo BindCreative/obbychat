@@ -111,7 +111,7 @@
 		91031F9271A2478CBA299B13 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		95779C622560400800344604 /* libRNCAsyncStorage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNCAsyncStorage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		95779C642560400D00344604 /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		95808C732548525200997ACB /* Obby Chat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Obby Chat.entitlements"; sourceTree = "<group>"; };
+		959E8B4B266A238D007E5C63 /* Obby Chat.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Obby Chat.entitlements"; sourceTree = "<group>"; };
 		A17E62FCAA5148590E89BA8D /* Pods-Obby Chat-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby Chat-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Obby Chat-tvOSTests/Pods-Obby Chat-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		ABC0F199E8C96DFC469A5469 /* Pods-Obby-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Obby-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Obby-tvOS/Pods-Obby-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		AECAA9509CEB46149D4AEB7B /* Agenda-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Agenda-Light.otf"; path = "../src/assets/fonts/Agenda-Light.otf"; sourceTree = "<group>"; };
@@ -195,6 +195,7 @@
 		13B07FAE1A68108700A75B9A /* Obby */ = {
 			isa = PBXGroup;
 			children = (
+				959E8B4B266A238D007E5C63 /* Obby Chat.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -272,7 +273,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				95808C732548525200997ACB /* Obby Chat.entitlements */,
 				13B07FAE1A68108700A75B9A /* Obby */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ObbyTests */,

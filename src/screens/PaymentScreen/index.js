@@ -22,7 +22,7 @@ import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates } from "../../selectors/main";
 import { selectWalletAddress } from "../../selectors/temporary";
-import { sendPaymentStart } from './../../actions/wallet';
+import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
 import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
 
@@ -179,19 +179,21 @@ class PaymentScreen extends React.Component {
   };
 
   submitStep = () => {
-    const { method } = this.props;
+    const { method, checkIsAA, navigation } = this.props;
+    const { step, address, correspondent } = this.state;
     if (this._validate()) {
-      if (this.state.step === 1) {
+      if (step === 1) {
         this.setState({ step: 2 });
-        this.props.navigation.setParams({ title: 'Enter amount' });
-      } else if (this.state.step === 2 && method === Methods.SEND) {
+        navigation.setParams({ title: 'Enter amount' });
+        checkIsAA({ address })
+      } else if (step === 2 && method === Methods.SEND) {
         this.sendPayment();
-        if (!this.state.correspondent) {
-          this.props.navigation.navigate('WalletStack');
+        if (!correspondent) {
+          navigation.navigate('WalletStack');
         }
-      } else if (this.state.step === 2 && method === Methods.REQUEST) {
+      } else if (step === 2 && method === Methods.REQUEST) {
         this.requestPayment();
-        this.props.navigation.pop();
+        navigation.pop();
       }
     }
   };
@@ -398,6 +400,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = dispatch => ({
   sendPayment: data => dispatch(sendPaymentStart(data)),
+  checkIsAA: payload => dispatch(checkIsAutonomousAgent(payload))
 });
 
 PaymentScreen = connect(mapStateToProps, mapDispatchToProps)(PaymentScreen);

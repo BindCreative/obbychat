@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { REHYDRATE } from 'redux-persist';
 import { actionTypes } from '../constants';
 

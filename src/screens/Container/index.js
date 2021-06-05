@@ -56,11 +56,12 @@ const App = ({
 
   const redirect = () => {
     if (redirectParams) {
+      const parsedParams = decodeURIComponent(redirectParams);
       let matches = false;
-      redirectParams
+      parsedParams
         .replace(REGEX_PAIRING, () => {
           matches = true;
-          return dispatch(acceptInvitation({ data: redirectParams }));
+          return dispatch(acceptInvitation({ data: parsedParams }));
         })
         .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
           matches = true;

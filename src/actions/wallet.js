@@ -61,3 +61,8 @@ export const openPaymentLink = payload => ({
   type: actionTypes.OPEN_PAYMENT_LINK,
   payload
 });
+
+export const checkIsAutonomousAgent = payload => ({
+  type: actionTypes.CHECK_IS_AUTONOMOUS_AGENT,
+  payload
+});

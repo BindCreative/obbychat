@@ -1,4 +1,4 @@
-package com.obby;
+package com.chat.obby;
 
 import android.app.Application;
 import android.content.Context;
@@ -13,7 +13,7 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Arrays;
-import com.obby.generated.BasePackageList;
+import com.chat.obby.generated.BasePackageList;
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.interfaces.SingletonModule;

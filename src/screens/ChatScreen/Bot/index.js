@@ -6,7 +6,6 @@ import { Text, View } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
 
 import { acceptInvitation } from '../../../actions/correspondents';
-import { botPairSuccess } from "../../../actions/messages";
 
 import Header from '../../../components/Header';
 import Button from '../../../components/Button';
@@ -22,8 +21,7 @@ const BotScreen = ({
   const pairChatBot = () => {
     setFetching(true);
     const { id, pairing_code } = correspondent;
-    dispatch(acceptInvitation({ data: pairing_code }));
-    dispatch(botPairSuccess(id))
+    dispatch(acceptInvitation({ data: pairing_code, botId: id }));
   };
 
   return (

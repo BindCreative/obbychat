@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.obby"
+        applicationId "com.chat.obby"
         minSdkVersion 21
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -1,8 +1,8 @@
 import React, { useRef, useCallback } from 'react';
 import { Alert, View, TouchableOpacity, Text } from 'react-native';
-import ActionSheet from 'react-native-actionsheet';
-import UserAvatar from 'react-native-user-avatar';
-import makeBlockie from 'ethereum-blockies-base64';
+import { useDispatch } from "react-redux";
+
+import { openPaymentLink } from "../../../actions/wallet";
 
 import MoreIcon from '../../../assets/images/icon-more.svg';
 import ReceiveIcon from '../../../assets/images/icon-receive.svg';
@@ -23,6 +23,8 @@ const ActionsBar = ({
   handleOpenActionSheet,
   correspondent
 }) => {
+  const dispatch = useDispatch();
+
   const handleRequestPayment = useCallback(() => {
     navigation.navigate('RequestPayment', {
       walletAddress: myWalletAddress,
@@ -56,10 +58,7 @@ const ActionsBar = ({
         { cancelable: false },
       );
     } else {
-      navigation.navigate('MakePayment', {
-        walletAddress: correspondentWalletAddress,
-        correspondent
-      });
+      dispatch(openPaymentLink({ walletAddress: correspondentWalletAddress, correspondent }));
     }
   }, [Alert, correspondentWalletAddress, navigation]);
 

@@ -168,7 +168,7 @@ const ChatScreen = ({
             ? (
               <Text
                 style={replacedStyle}
-                onPress={() => navigation.navigate('MakePayment', { walletAddress: data.address })}
+                onPress={() => dispatch(openPaymentLink({ walletAddress: data.address }))}
               >
                 {address}
               </Text>

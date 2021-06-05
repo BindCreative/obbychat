@@ -22,6 +22,10 @@ export default StyleSheet.create({
     width: '100%'
   },
   backBtn: {
-    width: 175
+    width: 250
+  },
+  scanBtn: {
+    marginBottom: 12,
+    width: 250
   }
 });

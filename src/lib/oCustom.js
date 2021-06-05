@@ -24,7 +24,7 @@ export const oClient =
 //
 // export const oClient =
 //   common.network === 'testnet'
-//     ? new obyte.Client('ws://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
+//     ? new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
 //     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
@@ -251,7 +251,7 @@ export const getTempPubKey = async recipientPubKey => {
   let pubKeyResult;
   await oClient.api.getTempPubkey(recipientPubKey, (err, response) => {
     if (err) {
-      throw new Error('unknown error');
+      throw new Error(`getTempPubKey error: ${err}`);
     } else if (
       !response.temp_pubkey ||
       !response.pubkey ||

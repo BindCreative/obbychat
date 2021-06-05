@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { View, Platform } from 'react-native';
+import { View, Platform, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'lodash';
 import SafeAreaView from 'react-native-safe-area-view';
@@ -11,6 +11,8 @@ import { colors } from './../../constants';
 import Header from '../../components/Header';
 import Button from './../../components/Button';
 import styles from './styles';
+
+import { runHceSimulation, stopHceSimulation } from '../../lib/NfcProxy';
 
 const getTitle = (type) => {
   switch (type) {
@@ -49,6 +51,18 @@ const QRCodeScreen = ({ navigation, backRoute }) => {
       message: `${urlHost}${qrData}`,
     },
   });
+
+  useEffect(
+    () => {
+      if (Platform.OS === 'android') {
+        runHceSimulation(`${urlHost}${qrData}`);
+        return () => {
+          stopHceSimulation();
+        }
+      }
+    },
+    []
+  );
 
   return (
     <SafeAreaView

@@ -361,17 +361,11 @@ export function* updateWalletData() {
   yield call(fetchWalletHistory, { address });
 }
 
-export const isAutonomousAgent = address => new Promise((resolve, reject) => {
+export const isAutonomousAgentRequest = address => new Promise((resolve, reject) => {
   oClient.api.getDefinition(address, (err, result) => {
     if (err) {
       reject({ message: err });
     } else if (result && result[0] === "autonomous agent") {
-      put(
-        setToastMessage({
-          type: 'WARNING',
-          message: "Autonomous Agents are not fully supported yet",
-        }),
-      );
       resolve(true);
     } else {
       resolve(false);
@@ -379,7 +373,20 @@ export const isAutonomousAgent = address => new Promise((resolve, reject) => {
   })
 });
 
-const parseValidParams = ({ walletAddress, query = '' }) => new Promise((resolve, reject) => {
+function* checkIsAutonomousAgent({ payload }) {
+  const { address } = payload;
+  const isAutonomousAgent = yield call(isAutonomousAgentRequest, address);
+  if (isAutonomousAgent) {
+    yield put(
+      setToastMessage({
+        type: 'WARNING',
+        message: "Autonomous Agents are not fully supported yet",
+      }),
+    );
+  }
+}
+
+const parseValidParams = ({ walletAddress, query = '', myWalletAddress }) => new Promise((resolve, reject) => {
   if (
     !validationUtils.isValidAddress(walletAddress)
     && !validationUtils.isValidEmail(walletAddress)
@@ -408,7 +415,7 @@ const parseValidParams = ({ walletAddress, query = '' }) => new Promise((resolve
       reject({ message: 'Wallet doesn\'t support custom assets yet' })
     }
 
-    if (from_address && from_address !== walletAddress) {
+    if (from_address && from_address !== myWalletAddress) {
       reject({ message: `invalid parameter from_address` })
     }
 
@@ -436,8 +443,17 @@ const parseValidParams = ({ walletAddress, query = '' }) => new Promise((resolve
 export function* openPaymentLink({ payload }) {
   try {
     const { walletAddress, query, correspondent } = payload;
-    yield call(isAutonomousAgent, walletAddress);
-    const params = yield call(parseValidParams, { walletAddress, query });
+    const myWalletAddress = yield select(selectWalletAddress());
+    const isAutonomousAgent = yield call(isAutonomousAgentRequest, walletAddress);
+    if (isAutonomousAgent) {
+      yield put(
+        setToastMessage({
+          type: 'WARNING',
+          message: "Autonomous Agents are not fully supported yet",
+        }),
+      );
+    }
+    const params = yield call(parseValidParams, { walletAddress, query, myWalletAddress });
     NavigationService.navigate('MakePayment', { walletAddress, correspondent, ...params });
   } catch (error) {
     yield put(
@@ -459,4 +475,5 @@ export default function* watch() {
   yield takeLatest(actionTypes.UPDATE_WALLET_DATA, updateWalletData);
   yield takeLatest(actionTypes.GENERATE_SEED_WORDS, generateSeedWords);
   yield takeLatest(actionTypes.OPEN_PAYMENT_LINK, openPaymentLink);
+  yield takeLatest(actionTypes.CHECK_IS_AUTONOMOUS_AGENT, checkIsAutonomousAgent);
 }

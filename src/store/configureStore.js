@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import createSecureStore from 'redux-persist-expo-securestore';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
@@ -22,17 +23,16 @@ export default function configureStore() {
   // const composedEnhancer = compose(...storeEnhancers);
 
   // Secure storage
-  const secureStorage = createSecureStore();
+  const secureStorage = Platform.OS === 'android' ? createSecureStore() : AsyncStorage;
   const securePersistConfig = {
     key: 'secure',
-    // storage: secureStorage,
-    storage: AsyncStorage,
+    storage: secureStorage
   };
 
   // Non-secure storage
   const mainPersistConfig = {
     key: 'main',
-    storage: AsyncStorage,
+    storage: AsyncStorage
   };
 
   const rootReducer = combineReducers({

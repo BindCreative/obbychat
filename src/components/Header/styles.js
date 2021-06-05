@@ -39,7 +39,8 @@ export default StyleSheet.create({
   headerTitle: {
     fontFamily: 'Agenda-Medium',
     color: colors.black,
-    fontSize: 28
+    fontSize: 28,
+    width: screenWidth - 220
   },
   headerTitleSmall: {
     fontSize: 21
