@@ -207,6 +207,8 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
+  - react-native-hce (0.1.2):
+    - React
   - react-native-netinfo (5.9.10):
     - React-Core
   - react-native-nfc-manager (3.7.0):
@@ -285,6 +287,8 @@ PODS:
     - React
   - RNCPicker (1.8.1):
     - React-Core
+  - RNCPushNotificationIOS (1.8.0):
+    - React-Core
   - RNDeviceInfo (5.6.5):
     - React
   - RNGestureHandler (1.8.0):
@@ -347,6 +351,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-hce (from `../node_modules/react-native-hce`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -366,6 +371,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - "RNCPicker (from `../node_modules/@react-native-community/picker`)"
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNOS (from `../node_modules/react-native-os`)
@@ -444,6 +450,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-hce:
+    :path: "../node_modules/react-native-hce"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-nfc-manager:
@@ -482,6 +490,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/masked-view"
   RNCPicker:
     :path: "../node_modules/@react-native-community/picker"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNDeviceInfo:
     :path: "../node_modules/react-native-device-info"
   RNGestureHandler:
@@ -565,6 +575,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
   react-native-camera: 5c1fbfecf63b802b8ca4a71c60d30a71550fb348
+  react-native-hce: 8f1770568ba9b35987db6443ed8e159228290814
   react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
   react-native-nfc-manager: 6e2897fa044f599070dd9ba7e28f290e6b38e068
   react-native-randombytes: 45ae693012df24c9a07a5e578b3b567c01468581
@@ -584,6 +595,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: cb9a623793918c6699586281f0b51cbc38f046f9
   RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
   RNCPicker: 914b557e20b3b8317b084aca9ff4b4edb95f61e4
+  RNCPushNotificationIOS: 5b1cf9ad2aaa107ecb92d5d2d7005ba521b2b97a
   RNDeviceInfo: e841619c3dac5495a095c5455473579ff04908d4
   RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
   RNOS: 6f2f9a70895bbbfbdad7196abd952e7b01d45027
@@ -610,4 +622,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 59218e4c0deb0a5265a2307f87325d55e0c1fd37
 
-COCOAPODS: 1.9.2
+COCOAPODS: 1.10.1
