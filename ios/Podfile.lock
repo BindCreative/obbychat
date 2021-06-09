@@ -207,6 +207,8 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.40.0):
     - React-Core
+  - react-native-hce (0.1.2):
+    - React
   - react-native-netinfo (5.9.10):
     - React-Core
   - react-native-nfc-manager (3.7.0):
@@ -347,6 +349,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-hce (from `../node_modules/react-native-hce`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-nfc-manager (from `../node_modules/react-native-nfc-manager`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -444,6 +447,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-hce:
+    :path: "../node_modules/react-native-hce"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-nfc-manager:
@@ -565,6 +570,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
   react-native-camera: 5c1fbfecf63b802b8ca4a71c60d30a71550fb348
+  react-native-hce: 8f1770568ba9b35987db6443ed8e159228290814
   react-native-netinfo: 52cf0ee8342548a485e28f4b09e56b477567244d
   react-native-nfc-manager: 6e2897fa044f599070dd9ba7e28f290e6b38e068
   react-native-randombytes: 45ae693012df24c9a07a5e578b3b567c01468581
@@ -608,6 +614,6 @@ SPEC CHECKSUMS:
   UMTaskManagerInterface: ee5b1ee1056eb338ff2d521ba79460d8cd0bae7d
   Yoga: 7d13633d129fd179e01b8953d38d47be90db185a
 
-PODFILE CHECKSUM: 59218e4c0deb0a5265a2307f87325d55e0c1fd37
+PODFILE CHECKSUM: aa66b9e3b00358cf1f2e9a3d739ec9e5f061a070
 
-COCOAPODS: 1.9.2
+COCOAPODS: 1.10.1
