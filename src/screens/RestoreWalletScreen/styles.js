@@ -11,8 +11,8 @@ export default StyleSheet.create({
   content: {
     backgroundColor: colors.white,
     flex: 1,
-    padding: 10,
-    justifyContent: 'center'
+    paddingTop: 120,
+    padding: 10
   },
   buttonArea: {
     width: '100%',

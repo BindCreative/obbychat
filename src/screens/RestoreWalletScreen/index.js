@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, Fragment } from 'react';
+import React, { useState, useEffect, useMemo, Fragment, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch } from "react-redux";
 
@@ -19,6 +19,7 @@ import { colors } from "../../constants";
 
 const RestoreWalletScreen = ({ navigation }) => {
   const dispatch = useDispatch();
+  const inputRef = useRef(null);
   const [step, setStep] = useState(1);
   const [seedWords, setSeedWords] = useState([]);
   const [stepWords, setStepWords] = useState([]);
@@ -106,6 +107,15 @@ const RestoreWalletScreen = ({ navigation }) => {
     setInputValueVisible(!inputValueVisible);
   };
 
+  useEffect(
+    () => {
+      if (stepWords.length >= 3) {
+        inputRef.current.blur();
+      }
+    },
+    [stepWords]
+  );
+
   return (
     <Fragment
       style={styles.container}
@@ -132,13 +142,14 @@ const RestoreWalletScreen = ({ navigation }) => {
           </View>
           <View style={styles.addressInputBox}>
             <TextInput
-              type="password"
+              ref={inputRef}
               style={styles.addressInput}
               value={inputValue}
               onChangeText={setInputValue}
               autoCorrect={false}
               secureTextEntry={!inputValueVisible}
               placeholder="Search"
+              editable={stepWords.length < 3}
             />
             <View style={styles.addressInputPaste}>
               <TouchableOpacity onPress={toggleInputValueVisibility}>
