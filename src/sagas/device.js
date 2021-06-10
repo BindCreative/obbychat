@@ -8,7 +8,7 @@ import { AppState, Alert } from 'react-native';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
-import { REGEX_SIGNED_MESSAGE, REGEX_PAIRING } from './../lib/messaging';
+import { REGEX_SIGNED_MESSAGE, REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from './../lib/messaging';
 
 import {
   sign,
@@ -32,7 +32,8 @@ import {
   correspondentRemovedDevice,
   updateCorrespondentWalletAddress,
   setCorrespondentName,
-  addCorrespondentFail
+  addCorrespondentFail,
+  acceptInvitation
 } from '../actions/correspondents';
 import {
   addMessageSuccess,
@@ -45,6 +46,7 @@ import {
   botPairSuccess
 } from '../actions/messages';
 import { setExchangeRates } from './../actions/exchangeRates';
+import { openPaymentLink } from "../actions/wallet";
 
 import {
   selectCorrespondentByPairingSecret,
@@ -389,7 +391,7 @@ export function* handleReceivedMessage(action) {
   }
 }
 
-export function* acceptInvitation(action) {
+export function* acceptInvitationSaga(action) {
   try {
     const { data, botId } = action.payload;
     let cDeviceAddress, cPubKey, cHub, pairingSecret;
@@ -571,6 +573,39 @@ export function* openPaymentFromChat(action) {
   NavigationService.navigate('TransactionInfo', { transaction })
 }
 
+export function* openLink(action) {
+  const { link } = action.payload;
+  const linkParams = { type: "unsupported" };
+  link
+    .replace(REGEX_PAIRING, () => {
+      linkParams.type = 'pairing';
+      linkParams.data = link;
+    })
+    .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
+      linkParams.type = 'payment';
+      linkParams.data = { walletAddress, query };
+    });
+
+  const { type, data } = linkParams;
+
+  switch (type) {
+    case 'pairing': {
+      yield put(acceptInvitation({ data }));
+      return;
+    }
+    case 'payment': {
+      NavigationService.popToTop();
+      yield put(openPaymentLink(data));
+      return;
+    }
+    default: {
+      NavigationService.popToTop();
+      yield put(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
+      return;
+    }
+  }
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
@@ -579,8 +614,9 @@ export default function* watch() {
     takeEvery(actionTypes.STOP_SUBSCRIBE_TO_HUB, stopSubscribeToHub),
     takeEvery(actionTypes.MESSAGE_ADD_START, sendMessage),
     takeEvery(actionTypes.MESSAGE_RECEIVE_START, handleReceivedMessage),
-    takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitation),
+    takeEvery(actionTypes.CORRESPONDENT_INVITATION_ACCEPT, acceptInvitationSaga),
     takeEvery(actionTypes.CORRESPONDENT_DEVICE_REMOVE, removeCorrespondentSaga),
     takeEvery(actionTypes.OPEN_PAYMENT_FROM_CHAT, openPaymentFromChat),
+    takeEvery(actionTypes.OPEN_LINK, openLink),
   ]);
 }

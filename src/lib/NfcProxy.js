@@ -30,7 +30,7 @@ export const runNfcReader = async () => {
     const isEnabled = await NfcManager.isEnabled();
     if (isEnabled) {
       try {
-        await NfcManager.requestTechnology(NfcTech.Ndef);
+        await NfcManager.requestTechnology(NfcTech.Ndef, { alertMessage: "Put your device near the other device that has QR code open" });
         const tag = await NfcManager.getTag();
         tag.ndefStatus = await NfcManager.ndefHandler.getNdefStatus();
         uri = decodeTag(tag);

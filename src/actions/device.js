@@ -39,3 +39,8 @@ export const restoreAccount = payload => ({
 export const resetAccount = () => ({
   type: actionTypes.RESET_ACCOUNT
 });
+
+export const openLink = payload => ({
+  type: actionTypes.OPEN_LINK,
+  payload
+});

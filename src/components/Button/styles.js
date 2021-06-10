@@ -8,6 +8,8 @@ export default StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
     borderRadius: 30,
   },
   buttonText: {

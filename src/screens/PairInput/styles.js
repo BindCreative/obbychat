@@ -36,5 +36,11 @@ export default StyleSheet.create({
   addressInputPasteIcon: {
     marginLeft: 'auto',
     color: colors.grey.light
+  },
+  nfcReaderContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40
   }
 });

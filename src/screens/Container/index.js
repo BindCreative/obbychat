@@ -4,22 +4,18 @@ import { useDispatch, connect } from "react-redux";
 import { createStructuredSelector } from 'reselect';
 import { AppState, StatusBar, InteractionManager, Platform, Linking, Alert } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { setJSExceptionHandler, setNativeExceptionHandler } from 'react-native-exception-handler';
+import { setJSExceptionHandler } from 'react-native-exception-handler';
 import { useNetInfo } from "@react-native-community/netinfo";
 
-import common from '../../constants/common';
 import { oClient } from '../../lib/oCustom';
 
 import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
-import { initWallet, openPaymentLink } from '../../actions/wallet';
-import { setToastMessage } from '../../actions/app';
+import { initWallet } from '../../actions/wallet';
 import { reSubscribeToHub, stopSubscribeToHub } from "../../actions/device";
-import { acceptInvitation } from "../../actions/correspondents";
-
-import { REGEX_PAIRING, REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
+import { openLink } from "../../actions/device";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
 import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
@@ -57,19 +53,7 @@ const App = ({
   const redirect = () => {
     if (redirectParams) {
       const parsedParams = decodeURIComponent(redirectParams);
-      let matches = false;
-      parsedParams
-        .replace(REGEX_PAIRING, () => {
-          matches = true;
-          return dispatch(acceptInvitation({ data: parsedParams }));
-        })
-        .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
-          matches = true;
-          return dispatch(openPaymentLink({ walletAddress, query }));
-        });
-      if (!matches) {
-        dispatch(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
-      }
+      dispatch(openLink({ link: parsedParams }));
     }
   };
 

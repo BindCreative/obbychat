@@ -16,6 +16,7 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
+import NfcReader from '../../components/NfcReader';
 import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
@@ -324,6 +325,9 @@ class PaymentScreen extends React.Component {
                     </TouchableOpacity>
                   </View>
                 )}
+              </View>
+              <View style={styles.nfcReaderContainer}>
+                <NfcReader />
               </View>
               <Button
                 disabled={!address}

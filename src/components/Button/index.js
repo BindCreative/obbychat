@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { TouchableOpacity, Text } from 'react-native';
 import styles from './styles';
 
-const Button = ({ text, style, disabled, textStyle, ...restProps }) => {
+const Button = ({ text, style, disabled, textStyle, icon, ...restProps }) => {
   const buttonStyles = useMemo(
     () => {
       let stylesObject = {
@@ -28,6 +28,7 @@ const Button = ({ text, style, disabled, textStyle, ...restProps }) => {
       disabled={disabled}
       {...restProps}
     >
+      {icon}
       <Text style={{ ...styles.buttonText, ...textStyle }}>{text}</Text>
     </TouchableOpacity>
   );
@@ -36,13 +37,15 @@ const Button = ({ text, style, disabled, textStyle, ...restProps }) => {
 Button.defaultProps = {
   style: {},
   textStyle: {},
-  disabled: false
+  disabled: false,
+  icon: null
 };
 
 Button.propTypes = {
   text: PropTypes.string.isRequired,
   style: PropTypes.object,
   textStyle: PropTypes.object,
+  icon: PropTypes.object,
   disabled: PropTypes.bool
 };
 
