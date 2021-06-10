@@ -430,7 +430,7 @@ const parseValidParams = ({ walletAddress, query = '', myWalletAddress }) => new
       let paymentData = Buffer.from(base64data, 'base64').toString('utf8');
       paymentData = paymentData ? JSON.parse(paymentData) : null;
       if (paymentData) {
-        params.data = paymentData;
+        params.data = Object.keys(paymentData).length ? paymentData : null;
       } else {
         reject({ message: `invalid parameter base64data` })
       }
