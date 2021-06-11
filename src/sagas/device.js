@@ -575,14 +575,16 @@ export function* openPaymentFromChat(action) {
 
 export function* openLink(action) {
   const { link } = action.payload;
+  const decodedLink = decodeURIComponent(link);
   const linkParams = { type: "unsupported" };
-  link
+  decodedLink
     .replace(REGEX_PAIRING, () => {
       linkParams.type = 'pairing';
-      linkParams.data = link;
+      linkParams.data = decodedLink;
     })
-    .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
+    .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
       linkParams.type = 'payment';
+      const query = link.split("?")[1];
       linkParams.data = { walletAddress, query };
     });
 

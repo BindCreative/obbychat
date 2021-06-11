@@ -286,6 +286,7 @@ class PaymentScreen extends React.Component {
       step, address, primaryValue,
       secondaryValue, primaryUnit, secondaryUnit
     } = this.state;
+    const data = _.get(this.props, 'navigation.state.params.data', null);
 
     return (
       <SafeAreaView
@@ -374,6 +375,13 @@ class PaymentScreen extends React.Component {
                   items={SECONDARY_UNITS.map(({ label, value }) => ({ label, value }))}
                 />
               </View>
+              {data && (
+                <View style={styles.jsonContainer}>
+                  <Text>
+                    {JSON.stringify(data)}
+                  </Text>
+                </View>
+              )}
               <Button
                 text={
                   this.props.method === Methods.REQUEST ? 'Request' : 'Send'

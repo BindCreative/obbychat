@@ -66,5 +66,12 @@ export default StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 40
+  },
+  jsonContainer: {
+    borderColor: colors.grey.main,
+    borderWidth: 1,
+    borderRadius: 3,
+    padding: 5,
+    backgroundColor: colors.grey.lightest
   }
 });

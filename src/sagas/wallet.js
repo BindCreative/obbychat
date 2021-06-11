@@ -344,12 +344,12 @@ export function* sendPayment(action) {
       yield call(NavigationService.navigate, 'Wallet');
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
     yield put(sendPaymentFail());
     yield put(
       setToastMessage({
         type: 'ERROR',
-        message: 'Unable to send payment. Try again later',
+        message: error.customMessage || 'Unable to send payment. Try again later',
       }),
     );
   }
@@ -416,7 +416,7 @@ const parseValidParams = ({ walletAddress, query = '', myWalletAddress }) => new
     }
 
     if (from_address && from_address !== myWalletAddress) {
-      reject({ message: `invalid parameter from_address` })
+      reject({ message: `Payment request for ${from_address}, but you have ${myWalletAddress}` })
     }
 
     if (single_address && single_address !== "1") {
@@ -424,6 +424,7 @@ const parseValidParams = ({ walletAddress, query = '', myWalletAddress }) => new
     }
 
     if (base64data) {
+      console.log(base64data);
       if (!validationUtils.isValidBase64(base64data)) {
         reject({ message: `invalid parameter base64data` })
       }

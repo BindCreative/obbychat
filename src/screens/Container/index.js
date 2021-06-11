@@ -52,8 +52,8 @@ const App = ({
 
   const redirect = () => {
     if (redirectParams) {
-      const parsedParams = decodeURIComponent(redirectParams);
-      dispatch(openLink({ link: parsedParams }));
+      dispatch(openLink({ link: redirectParams }));
+      setRedirectParams(null);
     }
   };
 
