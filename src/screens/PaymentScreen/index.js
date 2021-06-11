@@ -327,15 +327,6 @@ class PaymentScreen extends React.Component {
                   </View>
                 )}
               </View>
-              <View style={styles.nfcReaderContainer}>
-                <NfcReader />
-              </View>
-              <Button
-                disabled={!address}
-                text='Next'
-                style={styles.confirmButton}
-                onPress={this.submitStep}
-              />
             </React.Fragment>
           )}
           {step === 2 && (
@@ -382,15 +373,23 @@ class PaymentScreen extends React.Component {
                   </Text>
                 </View>
               )}
-              <Button
-                text={
-                  this.props.method === Methods.REQUEST ? 'Request' : 'Send'
-                }
-                style={styles.confirmButton}
-                onPress={this.submitStep}
-              />
             </React.Fragment>
           )}
+          <View style={styles.nfcReaderContainer}>
+            <NfcReader />
+          </View>
+          <Button
+            disabled={step === 1 && !address}
+            text={
+              step === 1
+                ? 'Next'
+                : this.props.method === Methods.REQUEST
+                  ? 'Request'
+                  : 'Send'
+            }
+            style={styles.confirmButton}
+            onPress={this.submitStep}
+          />
         </KeyboardAvoidingView>
       </SafeAreaView>
     );

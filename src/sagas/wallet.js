@@ -424,7 +424,6 @@ const parseValidParams = ({ walletAddress, query = '', myWalletAddress }) => new
     }
 
     if (base64data) {
-      console.log(base64data);
       if (!validationUtils.isValidBase64(base64data)) {
         reject({ message: `invalid parameter base64data` })
       }

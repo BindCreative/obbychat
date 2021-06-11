@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from "react-redux";
 
-import { Platform, Text, View } from 'react-native';
+import { Platform, Text, View, AppState } from 'react-native';
 
 import Button from './../../components/Button';
 
@@ -13,6 +13,7 @@ import NfcIcon from '../../assets/images/nfc-icon.svg';
 
 import styles from "./styles";
 import { colors } from "../../constants";
+import {oClient} from "../../lib/oCustom";
 
 const NfcReader = () => {
   const dispatch = useDispatch();
@@ -24,13 +25,23 @@ const NfcReader = () => {
     }
   };
 
+  const appStateListener = (appState) => {
+    if (appState === 'active') {
+      readNfcTag();
+    } else if (appState === 'background') {
+      stopNfcReader();
+    }
+  };
+
   useEffect(
     () => {
       if (Platform.OS === 'android') {
+        AppState.addEventListener('change', appStateListener);
         readNfcTag();
-      }
-      return () => {
-        stopNfcReader();
+        return () => {
+          AppState.removeEventListener('change', appStateListener);
+          stopNfcReader();
+        };
       }
     },
     []
