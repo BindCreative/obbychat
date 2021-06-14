@@ -35,7 +35,7 @@ export const runNfcReader = async () => {
         tag.ndefStatus = await NfcManager.ndefHandler.getNdefStatus();
         uri = decodeTag(tag);
       } catch (ex) {
-        console.log(ex);
+        // console.log(ex);
       } finally {
         await stopNfcReader();
       }

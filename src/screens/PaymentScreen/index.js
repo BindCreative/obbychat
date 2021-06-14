@@ -375,9 +375,11 @@ class PaymentScreen extends React.Component {
               )}
             </React.Fragment>
           )}
-          <View style={styles.nfcReaderContainer}>
-            <NfcReader />
-          </View>
+          {this.props.method === Methods.SEND && (
+            <View style={styles.nfcReaderContainer}>
+              <NfcReader />
+            </View>
+          )}
           <Button
             disabled={step === 1 && !address}
             text={

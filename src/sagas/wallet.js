@@ -344,12 +344,12 @@ export function* sendPayment(action) {
       yield call(NavigationService.navigate, 'Wallet');
     }
   } catch (error) {
-    console.log(error.message);
+    const errorMessage = error.message.includes('empty array in {"inputs":[]') ? 'Unable to send payment. Try again later' : error.message;
     yield put(sendPaymentFail());
     yield put(
       setToastMessage({
         type: 'ERROR',
-        message: error.customMessage || 'Unable to send payment. Try again later',
+        message: errorMessage,
       }),
     );
   }
