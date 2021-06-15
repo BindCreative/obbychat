@@ -206,16 +206,29 @@ export const selectTransactions = () =>
         }, []);
 
         for (let [ia, author] of joint.unit.authors.entries()) {
-          type = walletAddress === author.address ? 'SENT' : 'RECEIVED';
+          if (walletAddress === author.address) {
+            type = 'MOVED';
+            toAddress = [walletAddress];
+            for (let [im, message] of joint.unit.messages.entries()) {
+              if (message.payload.outputs) {
+                for (let [io, output] of message.payload.outputs.entries()) {
+                  if (walletAddress !== output.address) {
+                    type = 'SENT';
+                    toAddress = [];
+                  }
+                }
+              }
+            }
+          } else {
+            type = 'RECEIVED';
+          }
         }
 
         for (let [im, message] of joint.unit.messages.entries()) {
           if (message.payload.outputs) {
             for (let [io, output] of message.payload.outputs.entries()) {
-              if (type === 'RECEIVED' && walletAddress === output.address) {
-                amount += output.amount;
-              } else if (type === 'SENT' && walletAddress !== output.address) {
-                amount += output.amount;
+              amount += output.amount;
+              if (type === 'SENT' && walletAddress !== output.address) {
                 toAddress.push(output.address);
               }
             }

@@ -39,6 +39,12 @@ const TX_TYPES = [
   { label: 'Sent', value: 'SENT' },
 ];
 
+const unconfirmedStatuses = {
+  'MOVED': 'MOVING',
+  'SENT': 'SENDING',
+  'RECEIVED': 'RECEIVING'
+};
+
 class WalletScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -81,11 +87,11 @@ class WalletScreen extends React.Component {
           <Text style={styles.txType}>{
             tx.confirmed
               ? tx.type
-              : tx.type === 'RECEIVED' ? "RECEIVING" : "SENDING"
+              : unconfirmedStatuses[tx.type]
           }</Text>
           <Text style={styles.txAddress}>
             {tx.type === 'RECEIVED' && tx.fromAddress.join(', ')}
-            {tx.type === 'SENT' && tx.toAddress.join(', ')}
+            {(tx.type === 'SENT' || tx.type === 'MOVED') && tx.toAddress.join(', ')}
           </Text>
         </TouchableOpacity>
       );
