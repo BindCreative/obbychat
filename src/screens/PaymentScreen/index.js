@@ -88,7 +88,10 @@ class PaymentScreen extends React.Component {
       });
       if (amount) {
         this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(`${amount}`, 'primary'));
+          .then(async () => {
+            await this.changeValue(`${amount}`, 'primary');
+            await this.changePrimaryUnit('MBYTE')
+          });
       } else {
         this.changePrimaryUnit('MBYTE')
           .then(() => this.changeValue('', 'primary'));
@@ -106,7 +109,10 @@ class PaymentScreen extends React.Component {
       this.setState({ address: walletAddress, step: 2 });
       if (amount) {
         this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(`${amount}`, 'primary'));
+          .then(async () => {
+            await this.changeValue(`${amount}`, 'primary');
+            await this.changePrimaryUnit('MBYTE')
+          });
       } else {
         this.changePrimaryUnit('MBYTE')
           .then(() => this.changeValue('', 'primary'));
@@ -118,7 +124,7 @@ class PaymentScreen extends React.Component {
 
   changeSecondaryValue = value => this.changeValue(value, 'secondary');
 
-  changeValue = (value, type) => {
+  changeValue = async (value, type) => {
     const commaValue = value.replace(",", ".");
     if (isNaN(commaValue) || !['primary', 'secondary'].includes(type)) {
       return;
@@ -143,7 +149,7 @@ class PaymentScreen extends React.Component {
         primaryValue = zeroValueToEmptyString(primaryValue);
       }
     }
-    this.setState({
+    await this.setState({
       primaryValue: primaryValue,
       secondaryValue: secondaryValue
     });

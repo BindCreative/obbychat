@@ -227,9 +227,13 @@ export const selectTransactions = () =>
         for (let [im, message] of joint.unit.messages.entries()) {
           if (message.payload.outputs) {
             for (let [io, output] of message.payload.outputs.entries()) {
-              amount += output.amount;
-              if (type === 'SENT' && walletAddress !== output.address) {
+              if (type === 'RECEIVED' && walletAddress === output.address) {
+                amount += output.amount;
+              } else if (type === 'SENT' && walletAddress !== output.address) {
+                amount += output.amount;
                 toAddress.push(output.address);
+              } else if (type === 'MOVED' && walletAddress === output.address) {
+                amount += output.amount;
               }
             }
           }

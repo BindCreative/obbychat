@@ -7,7 +7,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { setJSExceptionHandler } from 'react-native-exception-handler';
 import { useNetInfo } from "@react-native-community/netinfo";
 
-import { oClient } from '../../lib/oCustom';
+import messaging from '@react-native-firebase/messaging';
+import PushNotification from 'react-native-push-notification'
+
+import { oClient, testnet } from '../../lib/oCustom';
 
 import Navigator from '../../navigation/Root';
 import NavigationService from '../../navigation/service';
@@ -20,7 +23,10 @@ import { openLink } from "../../actions/device";
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
 import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
 
-const prefix = 'obyte-tn:|obyte';
+// const prefix = 'obyte-tn:|obyte';
+const prefix = testnet ? 'obyte-tn:|byteball-tn' : 'obyte:|byteball';
+
+const PUSH_CHANEL_ID = 'obby-chat-push-chanel-id';
 
 setJSExceptionHandler((error, isFatal) => {
   if (error && isFatal) {
@@ -38,6 +44,10 @@ setJSExceptionHandler((error, isFatal) => {
 
 let wasConnected = true;
 
+const createChanel = () => {
+  PushNotification.createChannel({ channelId: PUSH_CHANEL_ID, channelName: "Obby Chat push chanel id" });
+};
+
 const App = ({
   walletAddress, seedWords, passwordProtected, walletInit, accountInit, connectedToHub
 }) => {
@@ -45,10 +55,38 @@ const App = ({
   const [appReady, setAppReady] = useState(false);
   const [redirectParams, setRedirectParams] = useState(null);
   const netInfo = useNetInfo();
+  const navigationRef = useRef(null);
   const readyRef = useRef({ appReady });
   const inFocusRef = useRef(true);
   const netInfoRef = useRef(netInfo.isConnected);
   const lastInfocusRef = useRef('active');
+
+  const getDeviceToken = async () => {
+    const token = await messaging().getToken();
+    console.log('deviceToken:', token);
+  };
+
+  const handlePush = async (message) => {
+    const { notification } = message;
+    const { title, body } = notification;
+    PushNotification.localNotification({
+      channelId: PUSH_CHANEL_ID,
+      title,
+      message: body
+    });
+  };
+
+  useEffect(
+    () => {
+      createChanel();
+      getDeviceToken();
+      messaging().setBackgroundMessageHandler(handlePush);
+      const unsubscribe = messaging().onMessage(handlePush);
+
+      return unsubscribe;
+    },
+    []
+  );
 
   const redirect = () => {
     if (redirectParams) {
@@ -159,6 +197,20 @@ const App = ({
     [accountInit, redirectParams, connectedToHub]
   );
 
+  const getRouteData = ({ routes, index }) => {
+    const route = routes[index];
+    if (route.routes) {
+      return getRouteData(route)
+    } else {
+      return route;
+    }
+  };
+
+  const onNavigationStateChange = () => {
+    const route = getRouteData(navigationRef.current.state.nav);
+    console.log(route);
+  };
+
   return (
     <SafeAreaProvider>
       {!appReady && <LoadingScreen />}
@@ -166,8 +218,10 @@ const App = ({
       {accountInit && (
         <Navigator
           ref={navigatorRef => {
+            navigationRef.current = navigatorRef;
             NavigationService.setTopLevelNavigator(navigatorRef);
           }}
+          onNavigationStateChange={onNavigationStateChange}
           uriPrefix={prefix}
         />
       )}

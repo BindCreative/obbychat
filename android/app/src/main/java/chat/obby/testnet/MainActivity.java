@@ -1,4 +1,4 @@
-package com.chat.obby;
+package chat.obby.testnet;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
