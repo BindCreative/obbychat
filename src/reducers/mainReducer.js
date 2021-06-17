@@ -490,6 +490,18 @@ function reducer(state = initialState, action) {
     case actionTypes.RESTORE_ACCOUNT:
       return initialState;
 
+    case actionTypes.SET_UNIT_SIZE:
+      return {
+        ...state,
+        [mainKey]: {
+          ...state[mainKey],
+          settings: {
+            ...state[mainKey].settings,
+            unitSize: action.payload
+          }
+        }
+      };
+
     default: return state;
   }
 }

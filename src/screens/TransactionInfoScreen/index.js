@@ -9,11 +9,13 @@ import SafeAreaView from 'react-native-safe-area-view';
 
 import { common } from '../../constants';
 import Header from '../../components/Header';
-import { selectExchangeRates } from "../../selectors/main";
+import { selectExchangeRates, selectUnitSize } from "../../selectors/main";
 import { bytesToUnit } from './../../lib/utils';
 import styles from './styles';
 
-const TransactionInfoScreen = ({ navigation, exchangeRates, ...other }) => {
+const TransactionInfoScreen = ({
+  navigation, exchangeRates, unit, ...other
+}) => {
   const transaction = useMemo(
     () => _.get(navigation, 'state.params.transaction'),
     [navigation]
@@ -40,7 +42,7 @@ const TransactionInfoScreen = ({ navigation, exchangeRates, ...other }) => {
 
   const titleAmount = useMemo(
     () => {
-      const mBytes = bytesToUnit(transaction.amount, 'MB');
+      const mBytes = bytesToUnit(transaction.amount, unit);
       switch (transaction.type) {
         case 'SENT':
           return `-${mBytes}`;
@@ -66,7 +68,7 @@ const TransactionInfoScreen = ({ navigation, exchangeRates, ...other }) => {
         <View style={styles.amountBlock}>
           <View style={styles.amountRow}>
             <Text style={styles.primaryAmount}>{titleAmount}</Text>
-            <Text style={styles.primaryUnit}>MB</Text>
+            <Text style={styles.primaryUnit}>{unit}</Text>
           </View>
           <View style={styles.amountRow}>
             <Text style={styles.secondaryAmount}>~${amountInDollars}</Text>
@@ -138,11 +140,13 @@ const TransactionInfoScreen = ({ navigation, exchangeRates, ...other }) => {
 
 TransactionInfoScreen.propTypes = {
   navigation: PropTypes.object.isRequired,
-  exchangeRates: PropTypes.object.isRequired
+  exchangeRates: PropTypes.object.isRequired,
+  unit: PropTypes.string.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
+  unit: selectUnitSize()
 });
 
 export default connect(mapStateToProps, null)(TransactionInfoScreen);

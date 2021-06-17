@@ -3,12 +3,9 @@ import * as Crypto from 'react-native-crypto';
 import obyte from 'obyte';
 import { validateSignedMessage } from 'obyte/lib/utils';
 import ecdsa from 'secp256k1';
-import { getChash160, isValidAddress } from 'obyte/lib/utils';
+import { getChash160 } from 'obyte/lib/utils';
 import { common } from './../constants';
 
-let wasClosed = false;
-
-// Conf
 export const testnet = common.network === 'testnet';
 
 export const hubAddress = 'obyte.org/bb-test';

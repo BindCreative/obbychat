@@ -44,3 +44,8 @@ export const openLink = payload => ({
   type: actionTypes.OPEN_LINK,
   payload
 });
+
+export const setDefaultUnitSize = payload => ({
+  type: actionTypes.SET_UNIT_SIZE,
+  payload
+});

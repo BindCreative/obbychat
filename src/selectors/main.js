@@ -25,6 +25,8 @@ export const getExchangeRatesState = state => getCurrentMain(state).exchangeRate
 
 export const getMessagesState = state => getCurrentMain(state).messages;
 
+export const getSettingsState = state => getCurrentMain(state).settings;
+
 export const getWalletHistoryState = state => getCurrentMain(state).walletHistory;
 
 export const selectWalletBalances = (
@@ -271,3 +273,8 @@ export const selectTransactionByUnitId = (unitId) =>
       });
       return transaction;
     });
+
+export const selectUnitSize = () => createSelector(
+  getSettingsState,
+  ({ unitSize }) => unitSize
+);

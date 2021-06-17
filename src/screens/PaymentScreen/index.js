@@ -21,7 +21,7 @@ import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { selectExchangeRates } from "../../selectors/main";
+import { selectExchangeRates, selectUnitSize } from "../../selectors/main";
 import { selectWalletAddress } from "../../selectors/temporary";
 import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
 import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
@@ -63,13 +63,25 @@ const getMaxLength = (value, unit) => {
   return maxLength;
 };
 
+const getUnitLabel = (unit) => {
+  let result = "MBYTE";
+  PRIMARY_UNITS.some(({ value, altValue }) => {
+    if (value === unit) {
+      result = altValue;
+      return true;
+    }
+    return false;
+  });
+  return result;
+};
+
 class PaymentScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       step: 1,
       address: null,
-      primaryUnit: 'MBYTE',
+      primaryUnit: getUnitLabel(props.unit),
       secondaryUnit: 'USD',
       primaryValue: '',
       secondaryValue: '',
@@ -78,45 +90,31 @@ class PaymentScreen extends React.Component {
     };
   }
 
+  runToSecondStep = async () => {
+    const { navigation, unit } = this.props;
+    const { walletAddress, amount } = navigation.state.params;
+    this.setState({ address: walletAddress, step: 2 });
+    if (amount) {
+      await this.changePrimaryUnit('BYTE');
+      await this.changeValue(`${amount}`, 'primary');
+      await this.changePrimaryUnit(getUnitLabel(unit))
+    } else {
+      await this.changePrimaryUnit(getUnitLabel(unit));
+      await this.changeValue('', 'primary');
+    }
+  };
+
   componentDidMount() {
     if (_.get(this.props, 'navigation.state.params.walletAddress', false)) {
-      this.props.navigation.setParams({ title: 'Enter amount' });
-      const amount = this.props.navigation.state.params.amount;
-      this.setState({
-        address: this.props.navigation.state.params.walletAddress,
-        step: 2
-      });
-      if (amount) {
-        this.changePrimaryUnit('BYTE')
-          .then(async () => {
-            await this.changeValue(`${amount}`, 'primary');
-            await this.changePrimaryUnit('MBYTE')
-          });
-      } else {
-        this.changePrimaryUnit('MBYTE')
-          .then(() => this.changeValue('', 'primary'));
-      }
-    } else {
-      this.props.navigation.setParams({ title: 'Enter address' });
+      this.runToSecondStep();
     }
   }
 
   componentDidUpdate(prevProps): void {
     const { navigation } = this.props;
-    if (navigation.state.params.walletAddress
+    if (_.get(navigation, 'state.params.walletAddress', false)
       && navigation.state.params !== prevProps.navigation.state.params) {
-      const { walletAddress, amount } = navigation.state.params;
-      this.setState({ address: walletAddress, step: 2 });
-      if (amount) {
-        this.changePrimaryUnit('BYTE')
-          .then(async () => {
-            await this.changeValue(`${amount}`, 'primary');
-            await this.changePrimaryUnit('MBYTE')
-          });
-      } else {
-        this.changePrimaryUnit('MBYTE')
-          .then(() => this.changeValue('', 'primary'));
-      }
+      this.runToSecondStep();
     }
   }
 
@@ -158,10 +156,12 @@ class PaymentScreen extends React.Component {
   convertPrimaryValue = (nextUnit) => {
     const { primaryUnit, primaryValue } = this.state;
     const bytes = unitToBytes(primaryValue, primaryUnit);
-    return `${primaryValue}` ? bytesToUnit(bytes, nextUnit) : primaryValue;
+    return `${primaryValue}`
+      ? bytesToUnit(bytes, nextUnit).toFixed(getMaxDecimalsLength(nextUnit)).replace(/\.?0+$/, '')
+      : primaryValue;
   };
 
-  changePrimaryUnit = async(primaryUnit) => {
+  changePrimaryUnit = async (primaryUnit) => {
     const convertedPrimaryValue = this.convertPrimaryValue(primaryUnit);
     await this.setState({ primaryUnit });
     this.changeValue(`${convertedPrimaryValue}`, 'primary');
@@ -191,7 +191,6 @@ class PaymentScreen extends React.Component {
     if (this._validate()) {
       if (step === 1) {
         this.setState({ step: 2 });
-        navigation.setParams({ title: 'Enter amount' });
         checkIsAA({ address })
       } else if (step === 2 && method === Methods.SEND) {
         this.sendPayment();
@@ -206,9 +205,6 @@ class PaymentScreen extends React.Component {
   };
 
   goBack = () => {
-    if (this.state.step === 2) {
-      this.props.navigation.setParams({ title: 'Enter address' });
-    }
     this.setState({ step: this.state.step - 1 });
   };
 
@@ -410,11 +406,13 @@ PaymentScreen.defaultProps = {
 
 PaymentScreen.propTypes = {
   method: PropTypes.string.isRequired,
+  unit: PropTypes.string.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
   myWalletAddress: selectWalletAddress(),
+  unit: selectUnitSize()
 });
 
 const mapDispatchToProps = dispatch => ({

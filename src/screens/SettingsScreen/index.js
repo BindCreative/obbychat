@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useMemo } from 'react';
 import { connect, useDispatch } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
@@ -10,12 +10,18 @@ import makeBlockie from 'ethereum-blockies-base64';
 
 import ArrowLeftIcon from '../../assets/images/icon-arrow-left.svg';
 
-import { resetAccount } from "../../actions/device";
+import { resetAccount, setDefaultUnitSize } from "../../actions/device";
 
 import { selectWalletAddress } from "../../selectors/temporary";
+import { selectUnitSize } from "../../selectors/main";
+
+import ActionSheet from '../../components/ActionSheet';
+
+import { PRIMARY_UNITS } from './../../lib/utils';
+
 import styles from './styles';
 
-const SettingsScreen = ({ navigation, walletAddress }) => {
+const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
   const dispatch = useDispatch();
 
   const handleResetAccount = () => {
@@ -34,6 +40,23 @@ const SettingsScreen = ({ navigation, walletAddress }) => {
       ]
     );
   };
+
+  const primaryUnit = useMemo(
+    () => {
+      let result = "MBYTE";
+      PRIMARY_UNITS.some(({ value, altValue }) => {
+        if (value === unitSize) {
+          result = altValue;
+          return true;
+        }
+        return false;
+      });
+      return result;
+    },
+    [unitSize]
+  );
+
+  const handleDefaultUnitSelect = unit => dispatch(setDefaultUnitSize(unit));
 
   return (
     <SafeAreaView
@@ -79,6 +102,17 @@ const SettingsScreen = ({ navigation, walletAddress }) => {
             titleStyle={styles.listItemText}
             onPress={handleResetAccount}
           />
+          <List.Item
+            title="Default unit size"
+            titleStyle={styles.listItemText}
+            right={() => (
+              <ActionSheet
+                currentValue={primaryUnit}
+                onChange={handleDefaultUnitSelect}
+                items={PRIMARY_UNITS}
+              />
+            )}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -91,6 +125,7 @@ SettingsScreen.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   walletAddress: selectWalletAddress(),
+  unitSize: selectUnitSize()
 });
 
 export default connect(mapStateToProps, null)(SettingsScreen);

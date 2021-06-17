@@ -23,7 +23,8 @@ import {
   selectWalletBalances,
   selectBalancesLoading,
   selectExchangeRates,
-  selectTransactions
+  selectTransactions,
+  selectUnitSize
 } from "../../selectors/main";
 
 import { bytesToUnit } from './../../lib/utils';
@@ -62,8 +63,10 @@ class WalletScreen extends React.Component {
 
   renderTx = (data) => {
     const { item: tx } = data;
+    const { unit } = this.props;
+    const { txType } = this.state;
 
-    if (this.state.txType === 'ALL' || this.state.txType === tx.type) {
+    if (txType === 'ALL' || txType === tx.type) {
       return (
         <TouchableOpacity
           style={styles.transaction}
@@ -73,7 +76,7 @@ class WalletScreen extends React.Component {
         >
           <View style={styles.txBoxRow}>
             <Text style={styles.txAmount}>
-              {bytesToUnit(tx.amount, this.state.unit)} {this.state.unit}
+              {bytesToUnit(tx.amount, unit)} {unit}
             </Text>
             <Moment
               unix
@@ -118,8 +121,9 @@ class WalletScreen extends React.Component {
   );
 
   renderHeader = () => {
+    const { walletBalance, unit } = this.props;
     const balanceInDollars = (
-      bytesToUnit(this.props.walletBalance, 'GB') *
+      bytesToUnit(walletBalance, 'GB') *
       this.props.exchangeRates.GBYTE_USD
     ).toFixed(2);
 
@@ -127,9 +131,9 @@ class WalletScreen extends React.Component {
       <React.Fragment>
         <View style={styles.balanceRow}>
           <Text style={styles.balanceText}>
-            {bytesToUnit(this.props.walletBalance, this.state.unit)}
+            {bytesToUnit(walletBalance, unit)}
           </Text>
-          <Text style={styles.balanceUnitText}>{this.state.unit}</Text>
+          <Text style={styles.balanceUnitText}>{unit}</Text>
         </View>
         <View style={styles.balanceRow}>
           <Text style={styles.convertedBalanceText}>${balanceInDollars}</Text>
@@ -188,6 +192,7 @@ const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
   transactions: selectTransactions(),
   loading: selectBalancesLoading(),
+  unit: selectUnitSize()
 });
 
 const mapDispatchToProps = dispatch => ({
