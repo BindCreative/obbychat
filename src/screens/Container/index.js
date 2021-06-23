@@ -8,7 +8,8 @@ import { setJSExceptionHandler } from 'react-native-exception-handler';
 import { useNetInfo } from "@react-native-community/netinfo";
 
 import messaging from '@react-native-firebase/messaging';
-import PushNotification from 'react-native-push-notification'
+import PushNotification from 'react-native-push-notification';
+import PushNotificationIOS from '@react-native-community/push-notification-ios';
 
 import { oClient, testnet } from '../../lib/oCustom';
 
@@ -67,17 +68,30 @@ const App = ({
   };
 
   const handlePush = async (message) => {
-    const { notification } = message;
-    const { title, body } = notification;
-    PushNotification.localNotification({
-      channelId: PUSH_CHANEL_ID,
-      title,
-      message: body
-    });
+    console.log('message:', message);
+    const { notification, messageId } = message;
+    const { title, body, sound } = notification;
+    if (Platform.OS === 'android') {
+      PushNotification.localNotification({
+        channelId: PUSH_CHANEL_ID,
+        title,
+        message: body
+      });
+    }
+    if (Platform.OS === 'ios') {
+      PushNotificationIOS.addNotificationRequest({
+        id: messageId,
+        title,
+        body
+      })
+    }
   };
 
   useEffect(
     () => {
+      if (Platform.OS === 'ios') {
+        messaging().requestPermission();
+      }
       createChanel();
       getDeviceToken();
       messaging().setBackgroundMessageHandler(handlePush);

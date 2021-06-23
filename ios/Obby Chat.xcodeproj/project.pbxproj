@@ -34,7 +34,13 @@
 		86BE9593B7434B92AA3DDF76 /* Lato-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 65686229E02440AEBB05078C /* Lato-Regular.ttf */; };
 		93734053899747E38BE651A8 /* Lato-HairlineItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 75756DB8E204491CA0C91C22 /* Lato-HairlineItalic.ttf */; };
 		94A7867CD40E405B8FFDF218 /* Lato-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2F040A5B9DDB43D7BF06EE67 /* Lato-Heavy.ttf */; };
-		9525D67B2670F6CA00F19C02 /* BuildFile in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9525D67B2670F6CA00F19C02 /* (null) in Embed Frameworks */ = {isa = PBXBuildFile; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9536C6AA26838ECE00F2A0C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6A926838ECE00F2A0C9 /* GoogleService-Info.plist */; };
+		9536C6AB26838ECE00F2A0C9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6A926838ECE00F2A0C9 /* GoogleService-Info.plist */; };
+		9536C6AD26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6AC26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist */; };
+		9536C6AE26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6AC26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist */; };
+		9536C6B326839BA700F2A0C9 /* GoogleService-Info-testnet.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6B226839BA700F2A0C9 /* GoogleService-Info-testnet.plist */; };
+		9536C6B426839BA700F2A0C9 /* GoogleService-Info-testnet.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9536C6B226839BA700F2A0C9 /* GoogleService-Info-testnet.plist */; };
 		9577A45325605BAA00344604 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		AD3D8E626CD9440982086C96 /* Lato-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F02668ECA9EA49D195782D5F /* Lato-Italic.ttf */; };
 		AF601697F590449A825A23CC /* Lato-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2FD90C1225B84E9B9A4248ED /* Lato-Black.ttf */; };
@@ -70,7 +76,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9525D67B2670F6CA00F19C02 /* BuildFile in Embed Frameworks */,
+				9525D67B2670F6CA00F19C02 /* (null) in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -123,6 +129,9 @@
 		8E3EFD50463C47DF9B8E5B65 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/native-base/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		90B0E081BF704ABC87832FD8 /* Agenda-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Agenda-Bold.otf"; path = "../src/assets/fonts/Agenda-Bold.otf"; sourceTree = "<group>"; };
 		91031F9271A2478CBA299B13 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/native-base/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		9536C6A926838ECE00F2A0C9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9536C6AC26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-mainnet.plist"; sourceTree = "<group>"; };
+		9536C6B226839BA700F2A0C9 /* GoogleService-Info-testnet.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info-testnet.plist"; sourceTree = "<group>"; };
 		95779C622560400800344604 /* libRNCAsyncStorage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNCAsyncStorage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		95779C642560400D00344604 /* libCocoaAsyncSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libCocoaAsyncSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		959E8B4B266A238D007E5C63 /* Obby Chat.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Obby Chat.entitlements"; sourceTree = "<group>"; };
@@ -202,6 +211,9 @@
 		13B07FAE1A68108700A75B9A /* Obby */ = {
 			isa = PBXGroup;
 			children = (
+				9536C6B226839BA700F2A0C9 /* GoogleService-Info-testnet.plist */,
+				9536C6AC26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist */,
+				9536C6A926838ECE00F2A0C9 /* GoogleService-Info.plist */,
 				959E8B4B266A238D007E5C63 /* Obby Chat.entitlements */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -476,12 +488,14 @@
 				4541757D6AE04B9DAC2DE412 /* rubicon-icon-font.ttf in Resources */,
 				AF601697F590449A825A23CC /* Lato-Black.ttf in Resources */,
 				093D436A90624169807B9BCA /* Lato-BlackItalic.ttf in Resources */,
+				9536C6B326839BA700F2A0C9 /* GoogleService-Info-testnet.plist in Resources */,
 				2748B43969B34A3B82D79317 /* Lato-Bold.ttf in Resources */,
 				67149AAC06074C3DB5DAA69E /* Lato-BoldItalic.ttf in Resources */,
 				F2115F4E30E441578AFF1686 /* Lato-Hairline.ttf in Resources */,
 				93734053899747E38BE651A8 /* Lato-HairlineItalic.ttf in Resources */,
 				94A7867CD40E405B8FFDF218 /* Lato-Heavy.ttf in Resources */,
 				475B643F36434107A1B2C34C /* Lato-HeavyItalic.ttf in Resources */,
+				9536C6AD26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist in Resources */,
 				AD3D8E626CD9440982086C96 /* Lato-Italic.ttf in Resources */,
 				593554B31FDE4AB0A7823339 /* Lato-Light.ttf in Resources */,
 				4518B12B13F2440DBC622A59 /* Lato-LightItalic.ttf in Resources */,
@@ -492,6 +506,7 @@
 				BC80E15F7729449899309641 /* Lato-SemiboldItalic.ttf in Resources */,
 				848431CB17E749679FEE3A72 /* Lato-Thin.ttf in Resources */,
 				5ED7729484C84C798B2AA313 /* Lato-ThinItalic.ttf in Resources */,
+				9536C6AA26838ECE00F2A0C9 /* GoogleService-Info.plist in Resources */,
 				18455F6FE1A34F5DB8776EF4 /* Agenda-Bold.otf in Resources */,
 				D72D6738A237494181DE8AAE /* Agenda-Light.otf in Resources */,
 				7F718E7E614F415995160AD0 /* Agenda-Medium.otf in Resources */,
@@ -502,6 +517,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9536C6AE26838ED400F2A0C9 /* GoogleService-Info-mainnet.plist in Resources */,
+				9536C6AB26838ECE00F2A0C9 /* GoogleService-Info.plist in Resources */,
+				9536C6B426839BA700F2A0C9 /* GoogleService-Info-testnet.plist in Resources */,
 				2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -916,7 +934,7 @@
 					"-lc++",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = chat.obby.testnet;
+				PRODUCT_BUNDLE_IDENTIFIER = chat.obby.mainnet;
 				PRODUCT_NAME = "Obby Chat";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -953,7 +971,7 @@
 					"-lc++",
 					"-ObjC",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = chat.obby.testnet;
+				PRODUCT_BUNDLE_IDENTIFIER = chat.obby.mainnet;
 				PRODUCT_NAME = "Obby Chat";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

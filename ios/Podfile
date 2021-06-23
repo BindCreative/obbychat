@@ -10,6 +10,7 @@ target 'Obby Chat' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "../node_modules/react-native-permissions/ios/Camera.podspec"
+  pod 'Firebase/Analytics'
 
   target 'Obby ChatTests' do
     inherit! :complete
