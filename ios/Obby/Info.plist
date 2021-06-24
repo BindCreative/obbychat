@@ -26,20 +26,20 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>obyte</string>
+			<string>obyte-tn</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>obyte</string>
+				<string>obyte-tn</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>byteball</string>
+			<string>byteball-tn</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>byteball</string>
+				<string>byteball-tn</string>
 			</array>
 		</dict>
 	</array>

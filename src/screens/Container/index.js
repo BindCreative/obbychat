@@ -18,7 +18,7 @@ import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
 import { initWallet } from '../../actions/wallet';
-import { reSubscribeToHub, stopSubscribeToHub } from "../../actions/device";
+import { reSubscribeToHub, stopSubscribeToHub, setFcmToken } from "../../actions/device";
 import { openLink } from "../../actions/device";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
@@ -28,6 +28,8 @@ import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectCon
 const prefix = testnet ? 'obyte-tn:|byteball-tn' : 'obyte:|byteball';
 
 const PUSH_CHANEL_ID = 'obby-chat-push-chanel-id';
+
+// oClient.justsaying
 
 setJSExceptionHandler((error, isFatal) => {
   if (error && isFatal) {
@@ -45,8 +47,14 @@ setJSExceptionHandler((error, isFatal) => {
 
 let wasConnected = true;
 
-const createChanel = () => {
-  PushNotification.createChannel({ channelId: PUSH_CHANEL_ID, channelName: "Obby Chat push chanel id" });
+const createChanel = () => new Promise((resolve) => {
+  PushNotification.createChannel({ channelId: PUSH_CHANEL_ID, channelName: "Obby Chat push chanel id" }, resolve);
+});
+
+export const requestNotificationsPermission = async () => {
+  const authStatus = await messaging().requestPermission();
+  return authStatus === messaging.AuthorizationStatus.AUTHORIZED
+    || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 };
 
 const App = ({
@@ -62,9 +70,8 @@ const App = ({
   const netInfoRef = useRef(netInfo.isConnected);
   const lastInfocusRef = useRef('active');
 
-  const getDeviceToken = async () => {
-    const token = await messaging().getToken();
-    console.log('deviceToken:', token);
+  const getFcmToken = async () => {
+    return await messaging().getToken();
   };
 
   const handlePush = async (message) => {
@@ -87,17 +94,26 @@ const App = ({
     }
   };
 
+  const startFcm = async () => {
+    let enabled = true;
+    if (Platform.OS === 'ios') {
+      enabled = await requestNotificationsPermission();
+    } else {
+      await createChanel();
+    }
+    if (enabled) {
+      const fcmToken = await getFcmToken();
+      dispatch(setFcmToken(fcmToken));
+    }
+  };
+
   useEffect(
     () => {
-      if (Platform.OS === 'ios') {
-        messaging().requestPermission();
-      }
-      createChanel();
-      getDeviceToken();
+      startFcm();
       messaging().setBackgroundMessageHandler(handlePush);
-      const unsubscribe = messaging().onMessage(handlePush);
+      // const unsubscribe = messaging().onMessage(handlePush);
 
-      return unsubscribe;
+      // return unsubscribe;
     },
     []
   );

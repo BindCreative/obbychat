@@ -4,16 +4,16 @@ import { createStructuredSelector } from 'reselect';
 import PropTypes from 'prop-types';
 import { View, Text, InteractionManager, Alert, Image, ScrollView } from 'react-native';
 import SafeAreaView from 'react-native-safe-area-view';
-import { List } from 'react-native-paper';
+import { List, Switch, Divider } from 'react-native-paper';
 import ContentLoader, { Circle } from 'react-content-loader/native';
 import makeBlockie from 'ethereum-blockies-base64';
 
 import ArrowLeftIcon from '../../assets/images/icon-arrow-left.svg';
 
-import { resetAccount, setDefaultUnitSize } from "../../actions/device";
+import { resetAccount, setDefaultUnitSize, enableNotificationsRequest, disableNotificationsRequest } from "../../actions/device";
 
-import { selectWalletAddress } from "../../selectors/temporary";
-import { selectUnitSize } from "../../selectors/main";
+import { selectWalletAddress, selectFcmToken } from "../../selectors/temporary";
+import { selectUnitSize, selectNotificationsEnabled } from "../../selectors/main";
 
 import ActionSheet from '../../components/ActionSheet';
 
@@ -21,7 +21,9 @@ import { PRIMARY_UNITS } from './../../lib/utils';
 
 import styles from './styles';
 
-const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
+const SettingsScreen = ({
+  navigation, walletAddress, unitSize, notificationsEnabled, fcmToken
+}) => {
   const dispatch = useDispatch();
 
   const handleResetAccount = () => {
@@ -57,6 +59,14 @@ const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
   );
 
   const handleDefaultUnitSelect = unit => dispatch(setDefaultUnitSize(unit));
+
+  const toggleNotificationEnabled = () => {
+    if (notificationsEnabled) {
+      dispatch(disableNotificationsRequest());
+    } else {
+      dispatch(enableNotificationsRequest());
+    }
+  };
 
   return (
     <SafeAreaView
@@ -98,11 +108,6 @@ const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
             onPress={() => navigation.navigate('RestoreWallet')}
           />
           <List.Item
-            title="Reset wallet data"
-            titleStyle={styles.listItemText}
-            onPress={handleResetAccount}
-          />
-          <List.Item
             title="Default unit size"
             titleStyle={styles.listItemText}
             right={() => (
@@ -113,6 +118,23 @@ const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
               />
             )}
           />
+          <List.Item
+            title="Enable notifications"
+            titleStyle={styles.listItemText}
+            right={() => (
+              <Switch
+                value={notificationsEnabled}
+                onValueChange={toggleNotificationEnabled}
+                disabled={!fcmToken}
+              />
+            )}
+          />
+          <Divider style={styles.divider} />
+          <List.Item
+            title="Reset wallet data"
+            titleStyle={styles.listItemText}
+            onPress={handleResetAccount}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -120,12 +142,22 @@ const SettingsScreen = ({ navigation, walletAddress, unitSize }) => {
 };
 
 SettingsScreen.propTypes = {
+  fcmToken: PropTypes.string,
   walletAddress: PropTypes.string,
+  unitSize: PropTypes.string.isRequired,
+  notificationsEnabled: PropTypes.bool.isRequired
+};
+
+SettingsScreen.defaultProps = {
+  fcmToken: null,
+  walletAddress: null
 };
 
 const mapStateToProps = createStructuredSelector({
   walletAddress: selectWalletAddress(),
-  unitSize: selectUnitSize()
+  unitSize: selectUnitSize(),
+  notificationsEnabled: selectNotificationsEnabled(),
+  fcmToken: selectFcmToken()
 });
 
 export default connect(mapStateToProps, null)(SettingsScreen);

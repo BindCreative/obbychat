@@ -10,7 +10,7 @@ export const testnet = common.network === 'testnet';
 
 export const hubAddress = 'obyte.org/bb-test';
 
-export const oClient = new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false });
+export const oClient = new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false });
 
 // export const hubAddress =
 //   common.network === 'testnet' ? 'obyte.org/bb-test' : 'obyte.org/bb';

@@ -278,3 +278,8 @@ export const selectUnitSize = () => createSelector(
   getSettingsState,
   ({ unitSize }) => unitSize
 );
+
+export const selectNotificationsEnabled = () => createSelector(
+  getSettingsState,
+  ({ notificationsEnabled }) => notificationsEnabled
+);

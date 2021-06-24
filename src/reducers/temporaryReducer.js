@@ -15,7 +15,8 @@ const initialState = {
   hashedWif: null,
   walletInit: false,
   accountInit: false,
-  connectedToHub: false
+  connectedToHub: false,
+  fcmToken: null
 };
 
 function reducer(state = initialState, action) {
@@ -61,6 +62,13 @@ function reducer(state = initialState, action) {
         ...state,
         connectedToHub: action.payload,
       };
+
+    case actionTypes.SET_FCM_TOKEN:
+      return {
+        ...state,
+        fcmToken: action.payload
+      };
+
     case actionTypes.RESTORE_ACCOUNT:
     case actionTypes.RESET_ACCOUNT:
       return initialState;

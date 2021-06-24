@@ -30,7 +30,7 @@ import {
   loadWalletBalancesSuccess,
   loadWalletBalancesFail,
 } from './../actions/balances';
-import { initDeviceInfo, initDeviceSuccess } from "../actions/device";
+import { initDeviceInfo, initDeviceSuccess, initNotificationsRequest } from "../actions/device";
 import { botsAddSuccess, addMessageStart } from "../actions/messages";
 import { setSeedWords, setPasswordProtected } from "../actions/secure";
 
@@ -46,6 +46,7 @@ export function* init({ payload }) {
     yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
+    yield put(initNotificationsRequest());
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);

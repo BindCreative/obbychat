@@ -4,7 +4,7 @@ import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
 import NetInfo from "@react-native-community/netinfo";
-import { AppState, Alert } from 'react-native';
+import { AppState, Alert, Platform } from 'react-native';
 
 import NavigationService from './../navigation/service';
 import { actionTypes } from '../constants';
@@ -24,7 +24,7 @@ import {
   getDeviceAddress,
 } from './../lib/oCustom';
 
-import { setConnectionStatus } from "../actions/device";
+import { setConnectionStatus, setNotificationsEnabling, enableNotificationsRequest } from "../actions/device";
 import { setToastMessage } from './../actions/app';
 import { updateWalletData } from "../actions/balances";
 import {
@@ -52,13 +52,17 @@ import {
   selectCorrespondentByPairingSecret,
   selectCorrespondent,
   selectDeviceTempKeyData,
-  selectTransactionByUnitId
+  selectTransactionByUnitId,
+  selectNotificationsEnabled
 } from "../selectors/main";
 import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
-  selectWalletAddress
+  selectWalletAddress,
+  selectFcmToken
 } from "../selectors/temporary";
+
+import { requestNotificationsPermission } from "../screens/Container";
 
 
 let heartBeatInterval = 0;
@@ -608,6 +612,62 @@ export function* openLink(action) {
   }
 }
 
+export function* initNotificationsRequest() {
+  const notificationEnabled = yield select(selectNotificationsEnabled());
+  const fcmToken = yield select(selectFcmToken());
+  if (notificationEnabled === null) {
+    if (!fcmToken) {
+      yield put(setNotificationsEnabling(false));
+    } else {
+      yield put(enableNotificationsRequest());
+    }
+  }
+}
+
+export function* enableNotifications() {
+  try {
+    const registrationId = yield select(selectFcmToken());
+    const enablePromise = new Promise((resolve, reject) => {
+      oClient.client.request(
+        'hub/enable_notification',
+        { registrationId, platform: Platform.OS },
+        (request, response) => {
+          if (!response || (response && response !== 'ok')) {
+            reject(false);
+          } else {
+            resolve(true);
+          }
+        })
+    });
+    const enabled = yield enablePromise;
+    yield put(setNotificationsEnabling(enabled));
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export function* disableNotifications() {
+  try {
+    const registrationId = yield select(selectFcmToken());
+    const disablePromise = new Promise((resolve, reject) => {
+      oClient.client.request(
+        'hub/disable_notification',
+        registrationId,
+        (request, response) => {
+          if (!response || (response && response !== 'ok')) {
+            reject(true);
+          } else {
+            resolve(false);
+          }
+        })
+    });
+    const enabled = yield disablePromise;
+    yield put(setNotificationsEnabling(enabled));
+  } catch (e) {
+    console.log(e)
+  }
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
@@ -620,5 +680,8 @@ export default function* watch() {
     takeEvery(actionTypes.CORRESPONDENT_DEVICE_REMOVE, removeCorrespondentSaga),
     takeEvery(actionTypes.OPEN_PAYMENT_FROM_CHAT, openPaymentFromChat),
     takeEvery(actionTypes.OPEN_LINK, openLink),
+    takeEvery(actionTypes.INIT_NOTIFICATIONS, initNotificationsRequest),
+    takeEvery(actionTypes.ENABLE_NOTIFICATIONS, enableNotifications),
+    takeEvery(actionTypes.DISABLE_NOTIFICATIONS, disableNotifications)
   ]);
 }

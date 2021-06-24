@@ -25,7 +25,8 @@ export const accountTemplate = {
   },
   walletHistory: null,
   settings: {
-    unitSize: 'MB', // B | kB | MB | GB
+    unitSize: 'MB', // B | kB | MB | GB,
+    notificationsEnabled: null
   },
   messages: {
     correspondents: {},
@@ -134,18 +135,6 @@ function reducer(state = initialState, action) {
         [mainKey]: {
           ...state[mainKey],
           walletHistory: null
-        }
-      };
-
-    case actionTypes.SETTINGS_SET:
-      return {
-        ...state,
-        [mainKey]: {
-          ...state[mainKey],
-          settings: {
-            ...state[mainKey].settings,
-            ...payload
-          }
         }
       };
 
@@ -498,6 +487,18 @@ function reducer(state = initialState, action) {
           settings: {
             ...state[mainKey].settings,
             unitSize: action.payload
+          }
+        }
+      };
+
+    case actionTypes.SET_NOTIFICATIONS_ENABLING:
+      return {
+        ...state,
+        [mainKey]: {
+          ...state[mainKey],
+          settings: {
+            ...state[mainKey].settings,
+            notificationsEnabled: action.payload
           }
         }
       };

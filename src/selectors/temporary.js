@@ -67,3 +67,6 @@ export const selectWalletInitAddress = () =>
 
 export const selectConnectionStatus = () =>
   createSelector(getTemporaryState, ({ connectedToHub }) => connectedToHub);
+
+export const selectFcmToken = () =>
+  createSelector(getTemporaryState, ({ fcmToken }) => fcmToken);

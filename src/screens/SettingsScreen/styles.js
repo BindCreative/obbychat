@@ -48,4 +48,7 @@ export default StyleSheet.create({
     fontSize: 16,
     color: colors.grey.main,
   },
+  divider: {
+    margin: 12
+  }
 });
