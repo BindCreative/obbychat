@@ -8,9 +8,9 @@ import { common } from './../constants';
 
 export const testnet = common.network === 'testnet';
 
-export const hubAddress = 'obyte.org/bb-test';
+// export const hubAddress = 'obyte.org/bb-test';
 
-export const oClient = new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false });
+// export const oClient = new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false });
 
 // export const hubAddress =
 //   common.network === 'testnet' ? 'obyte.org/bb-test' : 'obyte.org/bb';
@@ -20,13 +20,13 @@ export const oClient = new obyte.Client('wss://testnethub.bytes.cash/bb-test', {
 //     ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
 //     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
 
-// export const hubAddress =
-//   common.network === 'testnet' ? 'testnethub.bytes.cash/bb-test' : 'obyte.org/bb';
-//
-// export const oClient =
-//   common.network === 'testnet'
-//     ? new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
-//     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
+export const hubAddress =
+  common.network === 'testnet' ? 'testnethub.bytes.cash/bb-test' : 'obyte.org/bb';
+
+export const oClient =
+  common.network === 'testnet'
+    ? new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
+    : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 

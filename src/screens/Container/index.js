@@ -111,9 +111,9 @@ const App = ({
     () => {
       startFcm();
       messaging().setBackgroundMessageHandler(handlePush);
-      // const unsubscribe = messaging().onMessage(handlePush);
+      const unsubscribe = messaging().onMessage(handlePush);
 
-      // return unsubscribe;
+      return unsubscribe;
     },
     []
   );
@@ -238,7 +238,7 @@ const App = ({
 
   const onNavigationStateChange = () => {
     const route = getRouteData(navigationRef.current.state.nav);
-    console.log(route);
+    // console.log(route);
   };
 
   return (
