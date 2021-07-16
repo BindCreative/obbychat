@@ -66,5 +66,191 @@ Run `yarn ios`
 1. Run `npm start` or `yarn start` to run metro bundle.
 2. Open "./ios/Obby Chat.xcworkspace" in xCode.
 3. Follow nex steps:
-    ![alt text](https://github.com/BindCreative/obbychat/raw/master/instruction.png)
+    ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/instruction.png)
 
+### Build variants
+
+### TESTNET
+
+1. In `src/constants/common.js`:
+
+    `Common.network = 'testnet';`
+
+2. In `app.json`:
+
+    `"displayName": "Obby chat testnet"`
+
+#### IOS
+
+- Bundle identifier: `chat.obby.testnet`
+
+    ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/iosTestnetBundle.png)
+    
+- Info.plist `CFBundleURLTypes` should contain:
+```
+    <key>CFBundleURLTypes</key>
+    <array>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLName</key>
+    		<string>obyte-tn</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<string>obyte-tn</string>
+    		</array>
+    	</dict>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLName</key>
+    		<string>byteball-tn</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<string>byteball-tn</string>
+    		</array>
+    	</dict>
+    </array> 
+```
+- Update `Bundle name` in `Info.plist`:
+```
+    <key>CFBundleName</key>
+    <string>Obby chat testnet</string>
+```
+- Copy all from `ios/GoogleService-Info-testnet.plist` and paste to `ios/GoogleService-Info.plist`.
+- Clear the project `cmd+shift+k`
+
+#### ANDROID
+
+- Make sure you have right folder name
+
+    ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/androidTestnetFolder.png)
+    
+- Update `android/app/src/main/res/values/strings.xml`
+```
+<resources>
+    <string name="app_name">Obby chat testnet</string>
+</resources>
+```
+- In `android/app/src/main/java/chat/obby/testnet/MainActivity.java`:
+
+    ```package chat.obby.testnet;```
+- In `android/app/src/main/java/chat/obby/testnet/generated/BasePackageList.java`:
+
+    ```package chat.obby.testnet.generated;```
+- In `android/app/src/main/AndroidManifest.xml`:
+
+    ```package="chat.obby.testnet"```
+- In `android/app/build.gradle`:
+
+    ```applicationId "chat.obby.testnet"```
+- In `android/app/_BUCK`:
+
+```
+android_build_config(
+    name = "build_config",
+    package = "chat.obby.testnet",
+)
+
+android_resource(
+    name = "res",
+    package = "chat.obby.testnet",
+    res = "src/main/res",
+)
+```
+- In Gradle' cleaning in the end (in /android folder):
+
+    ```./gradlew clean```
+
+
+### MAINNET
+
+1. In `src/constants/common.js`: `Common.network = 'mainnet';`
+
+2. In `app.json`: `"displayName": "Obby chat"`
+
+#### IOS
+
+- Bundle identifier: `chat.obby.mainnet`
+
+    ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/iosMainnetBundle.png)
+    
+- Info.plist `CFBundleURLTypes` should contain:
+```
+    <key>CFBundleURLTypes</key>
+    <array>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLName</key>
+    		<string>obyte</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<string>obyte</string>
+    		</array>
+    	</dict>
+    	<dict>
+    		<key>CFBundleTypeRole</key>
+    		<string>Editor</string>
+    		<key>CFBundleURLName</key>
+    		<string>byteball</string>
+    		<key>CFBundleURLSchemes</key>
+    		<array>
+    			<string>byteball</string>
+    		</array>
+    	</dict>
+    </array> 
+```
+- Update `Bundle name` in `Info.plist`:
+```
+    <key>CFBundleName</key>
+    <string>Obby chat</string>
+```
+- Copy all from `ios/GoogleService-Info-mainnet.plist` and paste to `ios/GoogleService-Info.plist`.
+- Clear the project `cmd+shift+k`
+
+#### ANDROID
+
+- Make sure you have right folder name
+
+    ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/androidMainnetFolder.png)
+    
+- Update `android/app/src/main/res/values/strings.xml`
+```
+<resources>
+    <string name="app_name">Obby chat</string>
+</resources>
+```
+- In `android/app/src/main/java/chat/obby/mainnet/MainActivity.java`:
+
+    ```package chat.obby.mainnet;```
+    
+- In `android/app/src/main/java/chat/obby/mainnet/generated/BasePackageList.java`:
+
+    ```package chat.obby.mainnet.generated;```
+    
+- In `android/app/src/main/AndroidManifest.xml`:
+
+    ```package="chat.obby.mainnet"```
+    
+- In `android/app/build.gradle`:
+
+    ```applicationId "chat.obby.mainnet"```
+    
+- In `android/app/_BUCK`:
+
+```
+android_build_config(
+    name = "build_config",
+    package = "chat.obby.mainnet",
+)
+
+android_resource(
+    name = "res",
+    package = "chat.obby.mainnet",
+    res = "src/main/res",
+)
+```
+- In Gradle' cleaning in the end (in /android folder):
+
+    ```./gradlew clean```

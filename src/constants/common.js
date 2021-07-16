@@ -1,6 +1,6 @@
 let Common = {};
 
-Common.network = 'testnet'; // testnet | livenet
+Common.network = 'testnet'; // testnet | mainnet
 
 Common.DERIVATION_STRATEGIES = {
   BIP44: 'BIP44',
