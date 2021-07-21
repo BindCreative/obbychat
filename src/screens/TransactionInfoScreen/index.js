@@ -51,7 +51,12 @@ const TransactionInfoScreen = ({
         default: return mBytes;
       }
     },
-    [transaction]
+    [unit, transaction]
+  );
+
+  const fees = useMemo(
+    () => bytesToUnit(transaction.totalCommission, unit),
+    [unit, transaction]
   );
 
   return (
@@ -104,7 +109,7 @@ const TransactionInfoScreen = ({
             <View style={styles.infoRow}>
               <Text style={styles.infoRowLabel}>Fees:</Text>
               <Text style={styles.infoRowValue}>
-                {transaction.totalCommission} bytes
+                {`${fees} ${unit}`}
               </Text>
             </View>
             <View style={styles.infoRow}>

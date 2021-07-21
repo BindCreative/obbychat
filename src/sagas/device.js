@@ -1,5 +1,6 @@
 import { take, takeEvery, call, put, select, all } from '@redux-saga/core/effects';
 import { channel } from '@redux-saga/core';
+import obyte from 'obyte';
 import DeviceInfo from 'react-native-device-info';
 import * as Crypto from 'react-native-crypto';
 import uuid from 'uuid/v4';
@@ -22,6 +23,7 @@ import {
   deliverMessage,
   getSignedMessageInfoFromJsonBase64,
   getDeviceAddress,
+  clientParams
 } from './../lib/oCustom';
 
 import { setConnectionStatus, setNotificationsEnabling, enableNotificationsRequest } from "../actions/device";
@@ -59,10 +61,10 @@ import {
   selectDeviceAddress,
   selectPermanentDeviceKeyObj,
   selectWalletAddress,
-  selectFcmToken
+  selectFcmToken,
+  selectHistoryState,
+  selectDevicePubKey
 } from "../selectors/temporary";
-
-import { requestNotificationsPermission } from "../screens/Container";
 
 
 let heartBeatInterval = 0;
@@ -75,36 +77,104 @@ if (!oChannel) {
 
 const deviceInfo = {};
 
-export function* initDeviceInfo() {
-  deviceInfo.deviceAddress = yield select(selectDeviceAddress());
-  deviceInfo.permanentDeviceKeyObj = yield select(selectPermanentDeviceKeyObj());
-  deviceInfo.deviceTempKeyData = yield select(selectDeviceTempKeyData());
+const temporaryClients = {};
+
+const openNewClient = hub => new Promise((resolve) => {
+  try {
+    const temporaryClient = new obyte.Client(`wss://${hub}`, clientParams);
+    temporaryClient.hub = hub;
+    temporaryClient.client.ws.close();
+    temporaryClient.client.connect();
+    temporaryClient.client.onConnectCallback = () => {
+      temporaryClient.subscribe((err, result) => {
+        if (err) {
+          throw new Error('Hub socket error');
+        } else {
+          const [type, payload] = result;
+          if (payload.subject === 'hub/challenge' || payload.subject === 'hub/message') {
+            oChannel.put({ type, payload, temporaryClient });
+            if (payload.subject === 'hub/challenge' && !!payload.body) {
+              resolve(temporaryClient);
+            }
+          }
+        }
+      });
+    };
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+const closeClient = (hub) => new Promise((resolve) => {
+  try {
+    temporaryClients[hub].client.ws.onclose = () => {
+      delete temporaryClients[hub];
+      console.log(`client ${hub} closed`);
+      resolve();
+    };
+    temporaryClients[hub].client.close();
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+function* getClient(hub) {
+  try {
+    let temporaryClient;
+    if (hub !== hubAddress) {
+      if (!temporaryClients[hub]) {
+        temporaryClient = yield call(openNewClient, hub);
+        temporaryClients[hub] = temporaryClient;
+      } else {
+        temporaryClient = temporaryClients[hub];
+      }
+    } else {
+      temporaryClient = oClient;
+    }
+    return temporaryClient;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
-export function* loginToHub(challenge) {
-  const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
-  const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
+export function* initDeviceInfo() {
+  try {
+    deviceInfo.deviceAddress = yield select(selectDeviceAddress());
+    deviceInfo.permanentDeviceKeyObj = yield select(selectPermanentDeviceKeyObj());
+    deviceInfo.deviceTempKeyData = yield select(selectDeviceTempKeyData());
+  } catch (e) {
+    console.log(e);
+  }
+}
 
-  const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
-  objLogin.signature = sign(
-    getDeviceMessageHashToSign(objLogin),
-    permanentDeviceKey.priv,
-  );
-  oClient.justsaying('hub/login', objLogin);
+export function* loginToHub(challenge, client = oClient) {
+  try {
+    const permanentDeviceKey = deviceInfo.permanentDeviceKeyObj;
+    const tempDeviceKeyData = deviceInfo.deviceTempKeyData;
 
-  const objTempPubkey = {
-    temp_pubkey: tempDeviceKeyData.pubB64,
-    pubkey: permanentDeviceKey.pubB64,
-  };
+    const objLogin = { challenge, pubkey: permanentDeviceKey.pubB64 };
+    objLogin.signature = sign(
+      getDeviceMessageHashToSign(objLogin),
+      permanentDeviceKey.priv,
+    );
+    client.justsaying('hub/login', objLogin);
 
-  objTempPubkey.signature = sign(
-    getDeviceMessageHashToSign(objTempPubkey),
-    permanentDeviceKey.priv,
-  );
+    const objTempPubkey = {
+      temp_pubkey: tempDeviceKeyData.pubB64,
+      pubkey: permanentDeviceKey.pubB64,
+    };
 
-  yield oClient.api.tempPubkey(objTempPubkey);
+    objTempPubkey.signature = sign(
+      getDeviceMessageHashToSign(objTempPubkey),
+      permanentDeviceKey.priv,
+    );
 
-  oClient.justsaying('hub/refresh', null);
+    yield client.api.tempPubkey(objTempPubkey);
+
+    client.justsaying('hub/refresh', null);
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 function* handleSetConnectionStatus(status) {
@@ -112,14 +182,22 @@ function* handleSetConnectionStatus(status) {
 }
 
 function* stopSubscribeToHub() {
-  oClient.client.ws.close();
-  clearInterval(heartBeatInterval);
-  yield put(setConnectionStatus(false));
+  try {
+    oClient.client.ws.close();
+    clearInterval(heartBeatInterval);
+    yield put(setConnectionStatus(false));
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 function* resubscribeToHub() {
-  yield call(subscribeToHub);
-  yield put(updateWalletData());
+  try {
+    yield call(subscribeToHub);
+    yield put(updateWalletData());
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export function* subscribeToHub() {
@@ -166,12 +244,12 @@ export function* subscribeToHub() {
 export function* watchHubMessages() {
   while (true) {
     try {
-      const {type, payload} = yield take(oChannel);
+      const { type, payload, temporaryClient } = yield take(oChannel);
       if (type === 'justsaying') {
         if (payload.subject === 'hub/challenge' && !!payload.body) {
-          yield call(loginToHub, payload.body);
+          yield call(loginToHub, payload.body, temporaryClient);
         } else if (payload.subject === 'hub/message') {
-          yield call(receiveMessage, payload);
+          yield call(receiveMessage, payload, temporaryClient);
         } else if (payload.subject === 'exchange_rates') {
           yield put(setExchangeRates(payload.body));
         } else if (payload.subject === 'info' && /^(\d+) messages? sent$/.test(payload?.body)) {
@@ -194,7 +272,7 @@ export function* watchHubMessages() {
   }
 }
 
-export function* receiveMessage({ body }) {
+export function* receiveMessage({ body }, client = oClient) {
   const tempDeviceKey = deviceInfo.deviceTempKeyData;
   const permDeviceKey = deviceInfo.permanentDeviceKeyObj;
 
@@ -208,6 +286,17 @@ export function* receiveMessage({ body }) {
 
     if (decryptedMessage.subject === 'removed_paired_device') {
       yield put(correspondentRemovedDevice({ address: decryptedMessage.from }));
+      const historyState = yield select(selectHistoryState());
+      const correspondent = yield select(selectCorrespondent(decryptedMessage.from));
+      const { routeName, params } = historyState;
+      if (routeName === 'Chat' && params.correspondent && params.correspondent.address === decryptedMessage.from) {
+        NavigationService.back();
+      }
+      yield put(
+        setToastMessage({
+          message: `${correspondent.name} chat was deleted`
+        })
+      );
     } else if (decryptedMessage.subject === 'pairing') {
       console.log('Pairing');
       const existingCorrespondent = yield select(
@@ -313,22 +402,25 @@ export function* receiveMessage({ body }) {
       message: body.message,
     });
   }
-  oClient.justsaying('hub/delete', body.message_hash);
+  client.justsaying('hub/delete', body.message_hash);
 }
 
 export function* sendMessage(action) {
   const id = yield call(uuid);
   try {
     yield put(addMessageTemp({ ...action.payload, id, timestamp: Date.now() }));
-    const myPermKeys = deviceInfo.permanentDeviceKeyObj;
-    const myDeviceAddress = deviceInfo.deviceAddress;
     const {
       pubKey: recipientPubKey,
       address: recipientAddress,
       message,
       isConnected,
-      messageType = "text"
+      messageType = "text",
+      hub
     } = action.payload;
+
+    let temporaryClient = yield call(getClient, hub);
+    const myPermKeys = deviceInfo.permanentDeviceKeyObj;
+    const myDeviceAddress = deviceInfo.deviceAddress;
 
     const packageObj = {
       from: myDeviceAddress,
@@ -357,7 +449,7 @@ export function* sendMessage(action) {
     };
     if (isConnected) {
       messageData.timestamp = Date.now();
-      const tempPubKeyData = yield getTempPubKey(recipientPubKey);
+      const tempPubKeyData = yield getTempPubKey(recipientPubKey, temporaryClient);
       const objEncryptedPackage = createEncryptedPackage(
         packageObj,
         tempPubKeyData.temp_pubkey,
@@ -371,7 +463,10 @@ export function* sendMessage(action) {
         getDeviceMessageHashToSign(objDeviceMessage),
         myPermKeys.priv,
       );
-      yield call(deliverMessage, objDeviceMessage);
+      yield call(deliverMessage, objDeviceMessage, temporaryClient);
+      if (temporaryClient.hub && temporaryClient.hub !== hubAddress) {
+        yield call(closeClient, temporaryClient.hub);
+      }
     } else {
       messageData.sendingError = true;
     }
@@ -389,7 +484,7 @@ export function* handleReceivedMessage(action) {
   try {
     const id = yield call(uuid);
     yield put(receiveMessageSuccess({ id, ...action.payload }));
-    oClient.justsaying('hub/delete', action.payload.messageHash);
+    // oClient.justsaying('hub/delete', action.payload.messageHash);
   } catch (error) {
     yield put(receiveMessageFail());
   }
@@ -397,6 +492,7 @@ export function* handleReceivedMessage(action) {
 
 export function* acceptInvitationSaga(action) {
   try {
+    const devicePubKey = yield select(selectDevicePubKey());
     const { data, botId } = action.payload;
     let cDeviceAddress, cPubKey, cHub, pairingSecret;
 
@@ -424,41 +520,46 @@ export function* acceptInvitationSaga(action) {
       pairingSecret = pairing_secret;
     }
 
-    if (cDeviceAddress) {
-      const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
+    if (devicePubKey === cPubKey) {
+      yield put(setToastMessage({ message: 'Cannot pair with myself' }));
+    } else {
+      if (cDeviceAddress) {
+        const reversePairingSecret = Crypto.randomBytes(9).toString('base64');
 
-      yield call(sendPairingMessage, {
-        pairingSecret,
-        reversePairingSecret,
-        address: cDeviceAddress,
-        recipientPubKey: cPubKey,
-        hub: cHub,
-      });
-      yield put(
-        addCorrespondent({
-          hub: cHub,
-          pubKey: cPubKey,
+        yield call(sendPairingMessage, {
           pairingSecret,
           reversePairingSecret,
           address: cDeviceAddress,
-          name: 'New',
-        }),
-      );
-      if (botId) {
-        yield call(botPairSuccess(botId))
+          recipientPubKey: cPubKey,
+          hub: cHub,
+        });
+        yield put(
+          addCorrespondent({
+            hub: cHub,
+            pubKey: cPubKey,
+            pairingSecret,
+            reversePairingSecret,
+            address: cDeviceAddress,
+            name: 'New',
+          }),
+        );
+        if (botId) {
+          yield put(botPairSuccess(botId))
+        }
+        yield call(NavigationService.navigate, 'ChatStack');
+      } else {
+        yield call(NavigationService.navigate, 'ChatStack');
+        yield put(addCorrespondentFail());
+        yield put(
+          setToastMessage({
+            type: 'ERROR',
+            message: 'Unable to accept invitation',
+          }),
+        );
       }
-      yield call(NavigationService.navigate, 'ChatStack');
-    } else {
-      yield call(NavigationService.navigate, 'ChatStack');
-      yield put(addCorrespondentFail());
-      yield put(
-        setToastMessage({
-          type: 'ERROR',
-          message: 'Unable to accept invitation',
-        }),
-      );
     }
   } catch(e) {
+    console.log(e);
     yield call(NavigationService.navigate, 'ChatStack');
     yield put(addCorrespondentFail());
     yield put(
@@ -471,32 +572,38 @@ export function* acceptInvitationSaga(action) {
 }
 
 export function* checkForSigning(decryptedMessage) {
-  let info;
+  try {
+    let info;
 
-  decryptedMessage.body.replace(
-    REGEX_SIGNED_MESSAGE,
-    (str, description, signedMessageBase64) => {
-      info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
-  });
+    decryptedMessage.body.replace(
+      REGEX_SIGNED_MESSAGE,
+      (str, description, signedMessageBase64) => {
+        info = getSignedMessageInfoFromJsonBase64(signedMessageBase64);
+      });
 
-  if (info && info.valid) {
-    yield put(
-      updateCorrespondentWalletAddress({
-        address: decryptedMessage.from,
-        walletAddress: info.objSignedMessage.authors[0].address ?? null
-      })
-    );
+    if (info && info.valid) {
+      yield put(
+        updateCorrespondentWalletAddress({
+          address: decryptedMessage.from,
+          walletAddress: info.objSignedMessage.authors[0].address ?? null
+        })
+      );
+    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
-export function* sendPairingMessage({
-  hub,
-  address,
-  pairingSecret,
-  reversePairingSecret,
-  recipientPubKey,
-}) {
+export function* sendPairingMessage(action) {
   try {
+    const {
+      hub,
+      address,
+      pairingSecret,
+      reversePairingSecret,
+      recipientPubKey
+    } = action;
+    let temporaryClient = yield call(getClient, hub);
     const myPermKeys = deviceInfo.permanentDeviceKeyObj;
     const myDeviceAddress = deviceInfo.deviceAddress;
     const myDeviceName = yield call(DeviceInfo.getDeviceName);
@@ -507,7 +614,7 @@ export function* sendPairingMessage({
 
     const packageObj = {
       from: myDeviceAddress,
-      device_hub: hub,
+      device_hub: hubAddress,
       subject: 'pairing',
       body: body,
     };
@@ -516,7 +623,7 @@ export function* sendPairingMessage({
     //   packageObj,
     //   recipientPubKey,
     // );
-    const tempPubKeyData = yield getTempPubKey(recipientPubKey);
+    const tempPubKeyData = yield getTempPubKey(recipientPubKey, temporaryClient);
     const objEncryptedPackage = createEncryptedPackage(
       packageObj,
       tempPubKeyData.temp_pubkey,
@@ -530,8 +637,11 @@ export function* sendPairingMessage({
       getDeviceMessageHashToSign(objDeviceMessage),
       myPermKeys.priv,
     );
-    const res = yield deliverMessage(objDeviceMessage);
-    console.log('sendPairingMessage: ', res);
+    const res = yield deliverMessage(objDeviceMessage, temporaryClient);
+    if (temporaryClient.hub && temporaryClient.hub !== hubAddress) {
+      // yield call(closeClient, temporaryClient.hub);
+    }
+    console.log('sendPairingMessage:', res);
   } catch (e) {
     console.log('sendPairingMessage failed', e.toString());
     throw new Error(e);
@@ -540,87 +650,108 @@ export function* sendPairingMessage({
 
 // Deprecated, as reconnect option was introduced to obyte.js
 export function* removeCorrespondentSaga(action) {
-  const correspondent = yield select(
-    selectCorrespondent(action.payload.address),
-  );
-  const myPermKeys = deviceInfo.permanentDeviceKeyObj;
-  const myDeviceAddress = deviceInfo.deviceAddress;
+  try {
+    const correspondent = yield select(
+      selectCorrespondent(action.payload.address),
+    );
+    const { hub } = correspondent;
+    let temporaryClient = yield call(getClient, hub);
+    const myPermKeys = deviceInfo.permanentDeviceKeyObj;
+    const myDeviceAddress = deviceInfo.deviceAddress;
 
-  const packageObj = {
-    from: myDeviceAddress,
-    device_hub: hubAddress,
-    subject: 'removed_paired_device',
-    body: 'removed',
-  };
+    const packageObj = {
+      from: myDeviceAddress,
+      device_hub: hubAddress,
+      subject: 'removed_paired_device',
+      body: 'removed',
+    };
 
-  const tempPubKeyData = yield getTempPubKey(correspondent.pubKey);
+    const tempPubKeyData = yield getTempPubKey(correspondent.pubKey, temporaryClient);
 
-  const objEncryptedPackage = createEncryptedPackage(
-    packageObj,
-    tempPubKeyData.temp_pubkey,
-  );
-  const objDeviceMessage = {
-    encrypted_package: objEncryptedPackage,
-    to: action.payload.address,
-    pubkey: myPermKeys.pubB64,
-  };
-  objDeviceMessage.signature = sign(
-    getDeviceMessageHashToSign(objDeviceMessage),
-    myPermKeys.priv,
-  );
-  yield deliverMessage(objDeviceMessage);
+    const objEncryptedPackage = createEncryptedPackage(
+      packageObj,
+      tempPubKeyData.temp_pubkey,
+    );
+    const objDeviceMessage = {
+      encrypted_package: objEncryptedPackage,
+      to: action.payload.address,
+      pubkey: myPermKeys.pubB64,
+    };
+    objDeviceMessage.signature = sign(
+      getDeviceMessageHashToSign(objDeviceMessage),
+      myPermKeys.priv,
+    );
+    yield deliverMessage(objDeviceMessage, temporaryClient);
+    if (temporaryClient.hub && temporaryClient.hub !== hubAddress) {
+      yield call(closeClient, temporaryClient.hub);
+    }
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export function* openPaymentFromChat(action) {
-  const unitId = action.payload;
-  const transaction = yield select(selectTransactionByUnitId(unitId));
-  NavigationService.navigate('TransactionInfo', { transaction })
+  try {
+    const unitId = action.payload;
+    const transaction = yield select(selectTransactionByUnitId(unitId));
+    NavigationService.navigate('TransactionInfo', { transaction })
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 export function* openLink(action) {
-  const { link } = action.payload;
-  const decodedLink = decodeURIComponent(link);
-  const linkParams = { type: "unsupported" };
-  decodedLink
-    .replace(REGEX_PAIRING, () => {
-      linkParams.type = 'pairing';
-      linkParams.data = decodedLink;
-    })
-    .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
-      linkParams.type = 'payment';
-      const query = link.split("?")[1];
-      linkParams.data = { walletAddress, query };
-    });
+  try {
+    const { link } = action.payload;
+    const decodedLink = decodeURIComponent(link);
+    const linkParams = { type: "unsupported" };
+    decodedLink
+      .replace(REGEX_PAIRING, () => {
+        linkParams.type = 'pairing';
+        linkParams.data = decodedLink;
+      })
+      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
+        linkParams.type = 'payment';
+        const query = link.split("?")[1];
+        linkParams.data = { walletAddress, query };
+      });
 
-  const { type, data } = linkParams;
+    const { type, data } = linkParams;
 
-  switch (type) {
-    case 'pairing': {
-      yield put(acceptInvitation({ data }));
-      return;
+    switch (type) {
+      case 'pairing': {
+        yield put(acceptInvitation({ data }));
+        return;
+      }
+      case 'payment': {
+        NavigationService.popToTop();
+        yield put(openPaymentLink(data));
+        return;
+      }
+      default: {
+        NavigationService.popToTop();
+        yield put(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
+        return;
+      }
     }
-    case 'payment': {
-      NavigationService.popToTop();
-      yield put(openPaymentLink(data));
-      return;
-    }
-    default: {
-      NavigationService.popToTop();
-      yield put(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
-      return;
-    }
+  } catch (e) {
+    console.log(e);
   }
 }
 
 export function* initNotificationsRequest() {
-  const notificationEnabled = yield select(selectNotificationsEnabled());
-  const fcmToken = yield select(selectFcmToken());
-  if (notificationEnabled === null) {
-    if (!fcmToken) {
-      yield put(setNotificationsEnabling(false));
-    } else {
-      yield put(enableNotificationsRequest());
+  try {
+    const notificationEnabled = yield select(selectNotificationsEnabled());
+    const fcmToken = yield select(selectFcmToken());
+    if (notificationEnabled === null) {
+      if (!fcmToken) {
+        yield put(setNotificationsEnabling(false));
+      } else {
+        yield put(enableNotificationsRequest());
+      }
     }
+  } catch (e) {
+    console.log(e);
   }
 }
 

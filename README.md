@@ -84,6 +84,8 @@ Run `yarn ios`
 
 - Bundle identifier: `chat.obby.testnet`
 
+- Display Name: `Obby Chat testnet`
+
     ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/iosTestnetBundle.png)
     
 - Info.plist `CFBundleURLTypes` should contain:
@@ -172,6 +174,8 @@ android_resource(
 #### IOS
 
 - Bundle identifier: `chat.obby.mainnet`
+
+- Display Name: `Obby Chat`
 
     ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/iosMainnetBundle.png)
     

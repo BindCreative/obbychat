@@ -26,6 +26,7 @@ import { selectWalletAddress } from "../../selectors/temporary";
 import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
 import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
+import {REGEX_REQUEST_PAYMENT, REGEXP_QR_REQUEST_PAYMENT} from "../../lib/messaging";
 
 export const Methods = {
   SEND: 'SEND',
@@ -174,14 +175,17 @@ class PaymentScreen extends React.Component {
 
   onChangeAddress = (value) => {
     let address = String(value.trim());
-    if (address.length <= 34) {
+    if (address.length <= 32) {
       this.setState({ address });
     }
   };
 
   pasteAddress = async() => {
     let address = await Clipboard.getString();
-    address = address.trim().substring(0, 34);
+    address = address.trim();
+    address.replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
+      address = walletAddress;
+    });
     this.setState({ address });
   };
 

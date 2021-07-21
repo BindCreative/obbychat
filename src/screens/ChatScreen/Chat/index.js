@@ -40,7 +40,7 @@ const ChatScreen = ({
 
   const onSend = (messages = []) => {
     if (messages) {
-      const { address, pubKey } = correspondent;
+      const { address, pubKey, hub } = correspondent;
       NetInfo.fetch().then(state => {
         const { isConnected } = state;
         dispatch(addMessageStart({
@@ -48,7 +48,8 @@ const ChatScreen = ({
           pubKey,
           type: 'text',
           message: messages[0].text,
-          isConnected
+          isConnected,
+          hub
         }));
       });
       setText("");

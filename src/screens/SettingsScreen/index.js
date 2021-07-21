@@ -108,7 +108,7 @@ const SettingsScreen = ({
             onPress={() => navigation.navigate('RestoreWallet')}
           />
           <List.Item
-            title="Default unit size"
+            title="Display unit size"
             titleStyle={styles.listItemText}
             right={() => (
               <ActionSheet

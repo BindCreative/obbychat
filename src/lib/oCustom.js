@@ -8,25 +8,13 @@ import { common } from './../constants';
 
 export const testnet = common.network === 'testnet';
 
-// export const hubAddress = 'obyte.org/bb-test';
+export const hubAddress = common.network === 'testnet'
+  // ? 'obyte.org/bb-test' : 'obyte.org/bb';
+  ? 'testnethub.bytes.cash/bb-test' : 'obyte.org/bb';
 
-// export const oClient = new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false });
+export const clientParams = testnet ? { testnet, reconnect: false } : { reconnect: false };
 
-// export const hubAddress =
-//   common.network === 'testnet' ? 'obyte.org/bb-test' : 'obyte.org/bb';
-//
-// export const oClient =
-//   common.network === 'testnet'
-//     ? new obyte.Client('wss://obyte.org/bb-test', { testnet, reconnect: false })
-//     : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
-
-export const hubAddress =
-  common.network === 'testnet' ? 'testnethub.bytes.cash/bb-test' : 'obyte.org/bb';
-
-export const oClient =
-  common.network === 'testnet'
-    ? new obyte.Client('wss://testnethub.bytes.cash/bb-test', { testnet, reconnect: false })
-    : new obyte.Client('wss://obyte.org/bb', { reconnect: false });
+export const oClient = new obyte.Client(`wss://${hubAddress}`, clientParams);
 
 export const urlHost = common.network === 'testnet' ? 'obyte-tn:' : 'obyte:';
 
@@ -248,9 +236,9 @@ export const createEncryptedPackage = (json, recipient_device_pubkey) => {
   return encrypted_package;
 };
 
-export const getTempPubKey = async recipientPubKey => {
+export const getTempPubKey = async (recipientPubKey, client = oClient) => {
   let pubKeyResult;
-  await oClient.api.getTempPubkey(recipientPubKey, (err, response) => {
+  await client.api.getTempPubkey(recipientPubKey, (err, response) => {
     if (err) {
       throw new Error(`getTempPubKey error: ${err}`);
     } else if (
@@ -277,15 +265,19 @@ export const getTempPubKey = async recipientPubKey => {
   return pubKeyResult;
 };
 
-export const deliverMessage = async objDeviceMessage => {
-  let accepted = false;
-  await oClient.api.deliver(objDeviceMessage, (error, response) => {
-    if (error || response !== 'accepted') {
-      throw new Error('unhandled error' + JSON.stringify(error));
-    }
-    accepted = true;
-  });
-  return accepted;
+export const deliverMessage = async (objDeviceMessage, client = oClient) => {
+  try {
+    let accepted = false;
+    await client.api.deliver(objDeviceMessage, (error, response) => {
+      if (error || response !== 'accepted') {
+        throw new Error('unhandled error' + JSON.stringify(error));
+      }
+      accepted = true;
+    });
+    return accepted;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const getSignedMessageInfoFromJsonBase64 = signedMessageBase64 => {

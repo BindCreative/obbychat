@@ -16,7 +16,8 @@ const initialState = {
   walletInit: false,
   accountInit: false,
   connectedToHub: false,
-  fcmToken: null
+  fcmToken: null,
+  historyState: null
 };
 
 function reducer(state = initialState, action) {
@@ -67,6 +68,12 @@ function reducer(state = initialState, action) {
       return {
         ...state,
         fcmToken: action.payload
+      };
+
+    case actionTypes.SET_HISTORY_STATE:
+      return {
+        ...state,
+        historyState: action.payload
       };
 
     case actionTypes.RESTORE_ACCOUNT:

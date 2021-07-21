@@ -38,7 +38,7 @@ export const unitToBytes = (n, unit) => {
     case 'MB':
       return n * 1000000;
     case 'kBYTE':
-    case 'kB':
+    case 'KB':
       return n * 1000;
     case 'BYTE':
     case 'B':
@@ -49,10 +49,10 @@ export const unitToBytes = (n, unit) => {
 };
 
 export const PRIMARY_UNITS = [
-  { label: 'bytes', value: 'B', altValue: 'BYTE' },
-  { label: 'kB', value: 'kB', altValue: 'kBYTE' },
-  { label: 'MB', value: 'MB', altValue: 'MBYTE' },
-  { label: 'GB', value: 'GB', altValue: 'GBYTE' },
+  { label: 'BYTES', value: 'B', altValue: 'BYTES' },
+  { label: 'KBYTE', value: 'KB', altValue: 'KBYTE' },
+  { label: 'MBYTE', value: 'MB', altValue: 'MBYTE' },
+  { label: 'GBYTE', value: 'GB', altValue: 'GBYTE' },
 ];
 
 export const SECONDARY_UNITS = [

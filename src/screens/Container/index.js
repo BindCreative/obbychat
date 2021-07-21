@@ -18,7 +18,7 @@ import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
 import { initWallet } from '../../actions/wallet';
-import { reSubscribeToHub, stopSubscribeToHub, setFcmToken } from "../../actions/device";
+import { reSubscribeToHub, stopSubscribeToHub, setFcmToken, setHistoryState } from "../../actions/device";
 import { openLink } from "../../actions/device";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
@@ -86,10 +86,13 @@ const App = ({
       });
     }
     if (Platform.OS === 'ios') {
-      PushNotificationIOS.addNotificationRequest({
-        id: messageId,
-        title,
-        body
+      PushNotificationIOS.getApplicationIconBadgeNumber((number) => {
+        PushNotificationIOS.addNotificationRequest({
+          id: messageId,
+          title,
+          body,
+          badge: number + 1
+        })
       })
     }
   };
@@ -110,6 +113,9 @@ const App = ({
   useEffect(
     () => {
       startFcm();
+      if (Platform.OS === 'ios') {
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      }
       messaging().setBackgroundMessageHandler(handlePush);
       const unsubscribe = messaging().onMessage(handlePush);
 
@@ -238,7 +244,7 @@ const App = ({
 
   const onNavigationStateChange = () => {
     const route = getRouteData(navigationRef.current.state.nav);
-    // console.log(route);
+    dispatch(setHistoryState(route));
   };
 
   return (

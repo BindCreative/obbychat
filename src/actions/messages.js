@@ -30,9 +30,10 @@ export const receiveMessageStart = ({
   messageHash,
   handleAs,
   timestamp,
+  hub
 }) => ({
   type: actionTypes.MESSAGE_RECEIVE_START,
-  payload: { address, message, messageType, messageHash, handleAs, timestamp },
+  payload: { address, message, messageType, messageHash, handleAs, timestamp, hub },
 });
 
 export const receiveMessageSuccess = ({
@@ -43,6 +44,7 @@ export const receiveMessageSuccess = ({
   messageHash,
   handleAs,
   timestamp,
+  hub
 }) => ({
   type: actionTypes.MESSAGE_RECEIVE_SUCCESS,
   payload: {
@@ -53,6 +55,7 @@ export const receiveMessageSuccess = ({
     messageHash,
     handleAs,
     timestamp,
+    hub
   },
 });
 

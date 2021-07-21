@@ -70,3 +70,6 @@ export const selectConnectionStatus = () =>
 
 export const selectFcmToken = () =>
   createSelector(getTemporaryState, ({ fcmToken }) => fcmToken);
+
+export const selectHistoryState = () =>
+  createSelector(getTemporaryState, ({ historyState }) => historyState);

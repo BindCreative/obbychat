@@ -71,3 +71,8 @@ export const enableNotificationsRequest = () => ({
 export const disableNotificationsRequest = () => ({
   type: actionTypes.DISABLE_NOTIFICATIONS
 });
+
+export const setHistoryState = payload => ({
+  type: actionTypes.SET_HISTORY_STATE,
+  payload
+});

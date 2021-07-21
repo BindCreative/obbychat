@@ -39,9 +39,9 @@ export const setCorrespondentName = ({ name, address }) => ({
   payload: { name, address },
 });
 
-export const acceptInvitation = ({ data }) => ({
+export const acceptInvitation = (payload) => ({
   type: actionTypes.CORRESPONDENT_INVITATION_ACCEPT,
-  payload: { data },
+  payload,
 });
 
 export const clearChatHistory = ({ address }) => ({

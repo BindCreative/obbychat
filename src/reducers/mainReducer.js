@@ -25,7 +25,7 @@ export const accountTemplate = {
   },
   walletHistory: null,
   settings: {
-    unitSize: 'MB', // B | kB | MB | GB,
+    unitSize: 'B', // B | kB | MB | GB,
     notificationsEnabled: null
   },
   messages: {
@@ -280,6 +280,9 @@ function reducer(state = initialState, action) {
                 ...state[mainKey].messages.correspondents,
                 [payload.address]: {
                   ...state[mainKey].messages.correspondents[payload.address],
+                  hub: state[mainKey].messages.correspondents[payload.address].hub === payload.hub
+                    ? state[mainKey].messages.correspondents[payload.address].hub
+                    : payload.hub,
                   messages: [
                     ...state[mainKey].messages.correspondents[payload.address].messages,
                     {
