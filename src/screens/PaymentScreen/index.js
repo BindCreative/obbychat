@@ -48,11 +48,23 @@ const getMaxLength = (value, unit) => {
   return maxLength;
 };
 
-const getUnitLabel = (unit) => {
+const getUnitAltValue = (unit) => {
   let result = "MBYTE";
   PRIMARY_UNITS.some(({ value, altValue }) => {
     if (value === unit) {
       result = altValue;
+      return true;
+    }
+    return false;
+  });
+  return result;
+};
+
+const getUnitLabel = (unit) => {
+  let result = "MBYTE";
+  PRIMARY_UNITS.some(({ altValue, label }) => {
+    if (altValue === unit) {
+      result = label;
       return true;
     }
     return false;
@@ -82,9 +94,9 @@ class PaymentScreen extends React.Component {
     if (amount) {
       await this.changePrimaryUnit('BYTE');
       await this.changeValue(`${amount}`, 'primary');
-      await this.changePrimaryUnit(getUnitLabel(unit))
+      await this.changePrimaryUnit(getUnitAltValue(unit))
     } else {
-      await this.changePrimaryUnit(getUnitLabel(unit));
+      await this.changePrimaryUnit(getUnitAltValue(unit));
       await this.changeValue('', 'primary');
     }
   };
@@ -142,7 +154,9 @@ class PaymentScreen extends React.Component {
     const { primaryUnit, primaryValue } = this.state;
     const bytes = unitToBytes(primaryValue, primaryUnit);
     return `${primaryValue}`
-      ? bytesToUnit(bytes, nextUnit).toFixed(getMaxDecimalsLength(nextUnit)).replace(/\.?0+$/, '')
+      ? bytesToUnit(bytes, nextUnit)
+        .toFixed(getMaxDecimalsLength(nextUnit) || 1)
+        .replace(/\.?0+$/, '')
       : primaryValue;
   };
 
@@ -200,7 +214,8 @@ class PaymentScreen extends React.Component {
     const {
       address, primaryValue, primaryUnit
     } = this.state;
-    const { asset, correspondent, data } = this.props.navigation.state.params;
+    const { params = {} } = this.props.navigation.state;
+    const { asset, correspondent, data } = params;
     const requestData = {
       params: {
         outputs: [
@@ -335,7 +350,7 @@ class PaymentScreen extends React.Component {
                   maxLength={this.getMaxPrimaryLength()}
                 />
                 <ActionSheet
-                  currentValue={primaryUnit}
+                  currentValue={getUnitLabel(primaryUnit)}
                   onChange={this.changePrimaryUnit}
                   items={PRIMARY_UNITS.map(({ label, altValue }) => ({ label, value: altValue }))}
                 />

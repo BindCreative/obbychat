@@ -46,9 +46,9 @@ const SettingsScreen = ({
   const primaryUnit = useMemo(
     () => {
       let result = "MBYTE";
-      PRIMARY_UNITS.some(({ value, altValue }) => {
+      PRIMARY_UNITS.some(({ value, label }) => {
         if (value === unitSize) {
-          result = altValue;
+          result = label;
           return true;
         }
         return false;

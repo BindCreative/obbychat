@@ -204,7 +204,13 @@ const App = ({
       Linking.getInitialURL().then(handleLinkingUrl);
       Linking.addEventListener('url', handleIosLinkingUrl);
       AppState.addEventListener('change', changeListener);
-      oClient.client.ws.close();
+      if (oClient.client.open) {
+        oClient.client.ws.close();
+      } else {
+        oClient.client.onConnectCallback = () => {
+          oClient.client.ws.close();
+        }
+      }
       return () => {
         AppState.removeEventListener('change', changeListener);
       };

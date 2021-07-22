@@ -65,30 +65,6 @@ export function* init({ payload }) {
   }
 }
 
-export function* initWallet({ payload }) {
-  try {
-    yield put(createInitialWalletStart(payload));
-    yield put(initDeviceInfo());
-    // Handle websocket traffic
-    yield call(subscribeToHub);
-    // Fetch wallet data from hub
-    yield call(fetchBalances);
-    yield call(fetchWitnesses);
-    yield call(initDefaultBots);
-    yield call(fetchWalletHistory);
-    yield put(initAccountSuccess());
-  } catch (error) {
-    console.log(error);
-    yield put(initWalletFail());
-    yield put(
-      setToastMessage({
-        type: 'ERROR',
-        message: 'Unable to init wallet.',
-      }),
-    );
-  }
-}
-
 export function* generateSeedWords() {
   let mnemonic = new Mnemonic();
   while (!Mnemonic.isValid(mnemonic.toString())) {
