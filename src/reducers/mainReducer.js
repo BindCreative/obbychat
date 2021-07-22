@@ -191,7 +191,7 @@ function reducer(state = initialState, action) {
                     _id: payload.id,
                     address: payload.address,
                     message: payload.message,
-                    type: payload.type,
+                    type: payload.messageType,
                     timestamp: payload.timestamp,
                     handleAs: 'SENT',
                     pending: true,

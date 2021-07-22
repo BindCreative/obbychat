@@ -331,14 +331,15 @@ export function* sendPayment(action) {
     yield call(fetchBalances, action);
     yield call(fetchWalletHistory, action);
     if (correspondent) {
-      const { address, pubKey } = correspondent;
+      const { address, pubKey, hub } = correspondent;
       const { isConnected } = yield call(NetInfo.fetch);
       yield put(addMessageStart({
         address,
         pubKey,
         messageType: 'payment_notification',
         message: unitId,
-        isConnected
+        isConnected,
+        hub
       }));
       yield call(NavigationService.back);
     } else {

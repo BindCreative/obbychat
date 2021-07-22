@@ -46,7 +46,7 @@ const ChatScreen = ({
         dispatch(addMessageStart({
           address,
           pubKey,
-          type: 'text',
+          messageType: 'text',
           message: messages[0].text,
           isConnected,
           hub

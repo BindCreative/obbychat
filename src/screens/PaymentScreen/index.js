@@ -14,6 +14,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
 import { isValidAddress } from 'obyte/lib/utils';
 
+import { getMaxDecimalsLength } from "./../../lib/utils";
 import Header from '../../components/Header';
 import Button from '../../components/Button';
 import NfcReader from '../../components/NfcReader';
@@ -26,28 +27,11 @@ import { selectWalletAddress } from "../../selectors/temporary";
 import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
 import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
-import {REGEX_REQUEST_PAYMENT, REGEXP_QR_REQUEST_PAYMENT} from "../../lib/messaging";
+import { REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
 
 export const Methods = {
   SEND: 'SEND',
   REQUEST: 'REQUEST',
-};
-
-const getMaxDecimalsLength = (unit) => {
-  switch (unit) {
-    case 'BYTE':
-      return 0;
-    case 'kBYTE':
-      return 3;
-    case 'MBYTE':
-      return 6;
-    case 'GBYTE':
-      return 9;
-    case 'USD':
-      return 2;
-    case 'BTC':
-      return 8;
-  }
 };
 
 const zeroValueToEmptyString = value => value.replace(/^[0]*\.?[0]*$/, "");
@@ -93,8 +77,8 @@ class PaymentScreen extends React.Component {
 
   runToSecondStep = async () => {
     const { navigation, unit } = this.props;
-    const { walletAddress, amount } = navigation.state.params;
-    this.setState({ address: walletAddress, step: 2 });
+    const { walletAddress, amount, correspondent } = navigation.state.params;
+    this.setState({ address: walletAddress, step: 2, correspondent });
     if (amount) {
       await this.changePrimaryUnit('BYTE');
       await this.changeValue(`${amount}`, 'primary');

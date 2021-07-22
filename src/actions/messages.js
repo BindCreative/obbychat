@@ -5,9 +5,9 @@ export const addMessageStart = (payload) => ({
   payload
 });
 
-export const addMessageTemp = ({ id, address, pubKey, message, type }) => ({
+export const addMessageTemp = (payload) => ({
   type: actionTypes.MESSAGE_ADD_TEMP,
-  payload: { id, address, pubKey, message, type },
+  payload
 });
 
 export const addMessageSuccess = (messageData) => ({

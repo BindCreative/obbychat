@@ -9,6 +9,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 
 import { common } from '../../constants';
 import Header from '../../components/Header';
+import { getMaxDecimalsLength } from "../../lib/utils";
 import { selectExchangeRates, selectUnitSize } from "../../selectors/main";
 import { bytesToUnit } from './../../lib/utils';
 import styles from './styles';
@@ -55,7 +56,12 @@ const TransactionInfoScreen = ({
   );
 
   const fees = useMemo(
-    () => bytesToUnit(transaction.totalCommission, unit),
+    () => {
+      let value = bytesToUnit(transaction.totalCommission, unit);
+      const maxDecimals = getMaxDecimalsLength(unit);
+      value = value.toFixed(maxDecimals);
+      return value;
+    },
     [unit, transaction]
   );
 

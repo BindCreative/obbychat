@@ -470,9 +470,7 @@ export function* sendMessage(action) {
     } else {
       messageData.sendingError = true;
     }
-    yield put(
-      addMessageSuccess(messageData),
-    );
+    yield put(addMessageSuccess(messageData));
   } catch (error) {
     yield put(addMessageFail({ id, address: action.payload.address }));
     console.log('UNHANDLED ERROR: ', error);

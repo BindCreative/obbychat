@@ -9,7 +9,7 @@ export const bytesToUnit = (n, unit) => {
     case 'BYTE':
     case 'B':
       return Number(n);
-    case 'kBYTE':
+    case 'KBYTE':
     case 'kB':
       return n / 1000;
     case 'MBYTE':
@@ -37,7 +37,7 @@ export const unitToBytes = (n, unit) => {
     case 'MBYTE':
     case 'MB':
       return n * 1000000;
-    case 'kBYTE':
+    case 'KBYTE':
     case 'KB':
       return n * 1000;
     case 'BYTE':
@@ -59,3 +59,24 @@ export const SECONDARY_UNITS = [
   { label: 'USD', value: 'USD' },
   { label: 'BTC', value: 'BTC' },
 ];
+
+export const getMaxDecimalsLength = (unit) => {
+  switch (unit) {
+    case 'BYTE':
+    case 'B':
+      return 0;
+    case 'KBYTE':
+    case 'KB':
+      return 3;
+    case 'MBYTE':
+    case 'MB':
+      return 6;
+    case 'GBYTE':
+    case 'GB':
+      return 9;
+    case 'USD':
+      return 2;
+    case 'BTC':
+      return 8;
+  }
+};
