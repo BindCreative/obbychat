@@ -81,7 +81,7 @@ class WalletScreen extends React.Component {
             <Moment
               unix
               element={Text}
-              format={'DD/MM/YYYY HH:mm'}
+              format={'YYYY-MM-DD hh:mm'}
               style={styles.txDate}
             >
               {tx.timestamp}

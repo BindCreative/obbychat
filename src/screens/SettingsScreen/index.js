@@ -17,7 +17,7 @@ import { selectUnitSize, selectNotificationsEnabled } from "../../selectors/main
 
 import ActionSheet from '../../components/ActionSheet';
 
-import { PRIMARY_UNITS } from './../../lib/utils';
+import { PRIMARY_UNITS, getUnitLabel } from './../../lib/utils';
 
 import styles from './styles';
 
@@ -44,17 +44,7 @@ const SettingsScreen = ({
   };
 
   const primaryUnit = useMemo(
-    () => {
-      let result = "MBYTE";
-      PRIMARY_UNITS.some(({ value, label }) => {
-        if (value === unitSize) {
-          result = label;
-          return true;
-        }
-        return false;
-      });
-      return result;
-    },
+    () => getUnitLabel(unitSize),
     [unitSize]
   );
 

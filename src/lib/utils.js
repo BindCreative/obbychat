@@ -6,10 +6,6 @@
  */
 export const bytesToUnit = (n, unit) => {
   switch (unit) {
-    case 'BYTES':
-    case 'BYTE':
-    case 'B':
-      return Number(n);
     case 'KBYTE':
     case 'kBYTE':
     case 'kB':
@@ -43,10 +39,6 @@ export const unitToBytes = (n, unit) => {
     case 'kBYTE':
     case 'KB':
       return n * 1000;
-    case 'BYTES':
-    case 'BYTE':
-    case 'B':
-      return Number(n);
     default:
       return Number(n);
   }
@@ -66,10 +58,6 @@ export const SECONDARY_UNITS = [
 
 export const getMaxDecimalsLength = (unit) => {
   switch (unit) {
-    case 'BYTES':
-    case 'BYTE':
-    case 'B':
-      return 0;
     case 'KBYTE':
     case 'kBYTE':
     case 'KB':
@@ -84,5 +72,31 @@ export const getMaxDecimalsLength = (unit) => {
       return 2;
     case 'BTC':
       return 8;
+    default:
+      return 0;
   }
+};
+
+export const getUnitAltValue = (unit) => {
+  let result = "BYTE";
+  PRIMARY_UNITS.some(({ value, altValue, label }) => {
+    if (value === unit || altValue === unit || label === unit) {
+      result = altValue;
+      return true;
+    }
+    return false;
+  });
+  return result;
+};
+
+export const getUnitLabel = (unit) => {
+  let result = "BYTES";
+  PRIMARY_UNITS.some(({ value, altValue, label }) => {
+    if (value === unit || altValue === unit || label === unit) {
+      result = label;
+      return true;
+    }
+    return false;
+  });
+  return result;
 };

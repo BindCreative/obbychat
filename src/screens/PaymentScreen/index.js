@@ -14,7 +14,6 @@ import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
 import { isValidAddress } from 'obyte/lib/utils';
 
-import { getMaxDecimalsLength } from "./../../lib/utils";
 import Header from '../../components/Header';
 import Button from '../../components/Button';
 import NfcReader from '../../components/NfcReader';
@@ -25,7 +24,10 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { selectExchangeRates, selectUnitSize } from "../../selectors/main";
 import { selectWalletAddress } from "../../selectors/temporary";
 import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
-import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes, bytesToUnit } from './../../lib/utils';
+import {
+  PRIMARY_UNITS, SECONDARY_UNITS,
+  unitToBytes, bytesToUnit, getMaxDecimalsLength, getUnitAltValue, getUnitLabel
+} from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
 import { REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
 
@@ -48,37 +50,13 @@ const getMaxLength = (value, unit) => {
   return maxLength;
 };
 
-const getUnitAltValue = (unit) => {
-  let result = "MBYTE";
-  PRIMARY_UNITS.some(({ value, altValue }) => {
-    if (value === unit) {
-      result = altValue;
-      return true;
-    }
-    return false;
-  });
-  return result;
-};
-
-const getUnitLabel = (unit) => {
-  let result = "MBYTE";
-  PRIMARY_UNITS.some(({ altValue, label }) => {
-    if (altValue === unit) {
-      result = label;
-      return true;
-    }
-    return false;
-  });
-  return result;
-};
-
 class PaymentScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       step: 1,
       address: null,
-      primaryUnit: getUnitLabel(props.unit),
+      primaryUnit: getUnitAltValue(props.unit),
       secondaryUnit: 'USD',
       primaryValue: '',
       secondaryValue: '',
