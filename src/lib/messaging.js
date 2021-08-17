@@ -4,9 +4,10 @@ import { getSignedMessageInfoFromJsonBase64 } from './oCustom';
 
 export const REGEX_WALLET_ADDRESS = /(.*?\b|^)([2-7A-Z]{32})([\s.,;!:].*?|$)/g;
 export const REGEX_REQUEST_PAYMENT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)\)/g;
+export const REGEXP_QR_REQUEST_PAYMENT = /((?:byteball-tn|byteball|obyte-tn|obyte):([0-9A-Z]{32})(?:\?([\w=&;+%]+))?)/g;
 export const REGEX_SIGN_MESSAGE_REQUEST = /\[(.+?)\]\(sign-message-request(-network-aware)?:(.+?)\)/g;
 export const REGEX_SIGNED_MESSAGE = /\[(.+?)\]\(signed-message:([\w\/+=]+?)\)/g;
-export const REGEX_PAIRING = /(byteball-tn|byteball|obyte-tn|obyte):([\w\/+]{44})@([\w.:\/-]+)#(.+)/g;
+export const REGEX_PAIRING = /(?:(?:byteball-tn|byteball|obyte-tn|obyte):)?(([\w\/+]{44})@([\w.:\/-]+)#(.+))/g;
 export const REGEX_URL = /\bhttps?:\/\/[\w+&@#/%?=~|!:,.;-]+[\w+&@#/%=~|-]/g;
 export const REGEX_COMMAND = /\[(.+?)\]\(command:(.+?)\)/g;
 export const REGEX_SUGGEST_COMMAND = /\[(.+?)\]\(suggest-command:(.+?)\)/g;
@@ -14,11 +15,12 @@ export const REGEX_SUGGEST_COMMAND = /\[(.+?)\]\(suggest-command:(.+?)\)/g;
 // Unsupported messages
 export const REGEX_TEXTCOIN = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):textcoin\?([a-z-]+))\)/g;
 export const REGEX_DATA = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):data\?(.+))\)/g;
-export const REGEX_PAYMENT = /\[(.+?)\]\(payment:([\w\/+=]+?)\)/g;
+export const REGEX_PAYMENT = /\[(.+?)\]\(payment:([\w\/+=]+?) (.+?)\)/g;
 export const REGEX_VOTE = /\[(.+?)\]\(vote:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE = /\[(.+?)\]\(profile:([\w\/+=]+?)\)/g;
 export const REGEX_PROFILE_REQUEST = /\[(.+?)\]\(profile-request:([\w,]+?)\)/g;
 export const REGEX_PROSAIC_CONTRACT = /\(prosaic-contract:([\w\/+=]+?)\)/g;
+export const REGEX_PAIRING_CHAT = /\[.*?\]\(((?:byteball-tn|byteball|obyte-tn|obyte):([\w\/+]{44})@([\w.:\/-]+)#(.+))\)/g;
 
 export const parseTextMessage = originalText => {
   let type = null;
@@ -41,10 +43,6 @@ export const parseTextMessage = originalText => {
       type = 'DATA';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
-    .replace(REGEX_PAYMENT, () => {
-      type = 'PAYMENT';
-      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
-    })
     .replace(REGEX_VOTE, () => {
       type = 'VOTE';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
@@ -61,13 +59,21 @@ export const parseTextMessage = originalText => {
       type = 'PROSAIC_CONTRACT';
       return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
     })
+    .replace(REGEX_PAIRING_CHAT, () => {
+      type = 'PAIRING_CHAT';
+      return toDelayedReplacement({ type, text: '[UNSUPPORTED ACTION]' });
+    })
+    .replace(REGEX_PAYMENT, (str, pre, unitId, amount) => {
+      type = 'PAYMENT';
+      return toDelayedReplacement({ type, amount, unitId });
+    })
     .replace(REGEX_WALLET_ADDRESS, (str, pre, address, post) => {
       type = 'WALLET_ADDRESS';
       return `${pre}${toDelayedReplacement({ type, address })}${post}`;
     })
-    .replace(REGEX_REQUEST_PAYMENT, (str, payload, address, amount) => {
+    .replace(REGEX_REQUEST_PAYMENT, (str, payload, walletAddress, query) => {
       type = 'REQUEST_PAYMENT';
-      return toDelayedReplacement({ type, address, amount });
+      return toDelayedReplacement({ type, walletAddress, query });
     })
     .replace(
       REGEX_SIGN_MESSAGE_REQUEST,

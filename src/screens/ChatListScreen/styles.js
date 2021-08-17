@@ -1,5 +1,7 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { colors } from '../../constants';
+
+const windowWidth = Dimensions.get('window').width;
 
 export default StyleSheet.create({
   container: {
@@ -94,5 +96,21 @@ export default StyleSheet.create({
     height: 16,
     fontSize: 16,
     lineHeight: 16
+  },
+  dividerView: {
+    height: 24,
+    marginVertical: 16
+  },
+  divider: {
+    margin: 12
+  },
+  dividerText: {
+    position: 'absolute',
+    textAlign: 'center',
+    lineHeight: 24,
+    backgroundColor: colors.white,
+    width: 120,
+    left: windowWidth / 2 - 60,
+    color: colors.grey.main
   }
 });

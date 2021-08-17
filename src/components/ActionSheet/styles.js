@@ -3,7 +3,8 @@ import { colors } from './../../constants';
 
 export default StyleSheet.create({
   container: {
-    alignContent: 'flex-end'
+    alignContent: 'flex-end',
+    justifyContent: 'center'
   },
   label: {
     fontFamily: 'Agenda-Light',

@@ -2,13 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import {
-  TextInput,
-  Clipboard,
-  KeyboardAvoidingView,
-  View,
-  Text,
-} from 'react-native';
+import { TextInput, Clipboard, KeyboardAvoidingView, View, Text, Platform } from 'react-native';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
@@ -16,198 +10,203 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
+import NfcReaderIOS from '../../components/NfcReaderIOS';
 import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { selectExchangeRates } from './../../selectors/exchangeRates';
-import { selectWalletAddress } from './../../selectors/wallet';
-import { sendPaymentStart } from './../../actions/wallet';
-import { PRIMARY_UNITS, SECONDARY_UNITS, unitToBytes } from './../../lib/utils';
+import { selectExchangeRates, selectUnitSize } from "../../selectors/main";
+import { selectWalletAddress } from "../../selectors/temporary";
+import { sendPaymentStart, checkIsAutonomousAgent } from './../../actions/wallet';
+import {
+  PRIMARY_UNITS, SECONDARY_UNITS,
+  unitToBytes, bytesToUnit, getMaxDecimalsLength, getUnitAltValue, getUnitLabel
+} from './../../lib/utils';
 import { urlHost } from './../../lib/oCustom';
+import { REGEXP_QR_REQUEST_PAYMENT } from "../../lib/messaging";
 
 export const Methods = {
   SEND: 'SEND',
   REQUEST: 'REQUEST',
 };
 
+const zeroValueToEmptyString = value => value.replace(/^[0]*\.?[0]*$/, "");
+
+const getMaxLength = (value, unit) => {
+  let maxLength = 0;
+  if (value.includes('.')) {
+    const valueInt = value.split(".")[0];
+    maxLength += (valueInt.length + 1);
+    maxLength += getMaxDecimalsLength(unit);
+  } else {
+    maxLength = 20;
+  }
+  return maxLength;
+};
+
 class PaymentScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.changeValue = this.changeValue.bind(this);
-    this.changePrimaryUnit = this.changePrimaryUnit.bind(this);
-    this.changeSecondaryUnit = this.changeSecondaryUnit.bind(this);
-    this.onChangeAddress = this.onChangeAddress.bind(this);
-    this.pasteAddress = this.pasteAddress.bind(this);
-    this.submitStep = this.submitStep.bind(this);
-    this.goBack = this.goBack.bind(this);
-    this.sendPayment = this.sendPayment.bind(this);
-    this.requestPayment = this.requestPayment.bind(this);
-    this._validate = this._validate.bind(this);
     this.state = {
       step: 1,
       address: null,
-      primaryUnit: 'MBYTE',
+      primaryUnit: getUnitAltValue(props.unit),
       secondaryUnit: 'USD',
-      primaryValue: 0,
-      secondaryValue: 0,
-      disabledInputs: false
+      primaryValue: '',
+      secondaryValue: '',
+      disabledInputs: false,
+      correspondent: null
     };
   }
 
+  runToSecondStep = async () => {
+    const { navigation, unit } = this.props;
+    const { walletAddress, amount, correspondent } = navigation.state.params;
+    this.setState({ address: walletAddress, step: 2, correspondent });
+    if (amount) {
+      await this.changePrimaryUnit('BYTE');
+      await this.changeValue(`${amount}`, 'primary');
+      await this.changePrimaryUnit(getUnitAltValue(unit))
+    } else {
+      await this.changePrimaryUnit(getUnitAltValue(unit));
+      await this.changeValue('', 'primary');
+    }
+  };
+
   componentDidMount() {
     if (_.get(this.props, 'navigation.state.params.walletAddress', false)) {
-      this.props.navigation.setParams({ title: 'Enter amount' });
-      const amount = this.props.navigation.state.params.amount;
-      this.setState({
-        address: this.props.navigation.state.params.walletAddress,
-        step: 2
-      });
-      if (amount) {
-        this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(amount, 'primary'));
-      } else {
-        this.changePrimaryUnit('MBYTE')
-          .then(() => this.changeValue(0, 'primary'));
-      }
-    } else {
-      this.props.navigation.setParams({ title: 'Enter address' });
+      this.runToSecondStep();
     }
   }
 
   componentDidUpdate(prevProps): void {
     const { navigation } = this.props;
-    if (navigation.state.params.walletAddress
+    if (_.get(navigation, 'state.params.walletAddress', false)
       && navigation.state.params !== prevProps.navigation.state.params) {
-      const { walletAddress, amount } = navigation.state.params;
-      this.setState({
-        address: walletAddress,
-        step: 2
-      });
-      if (amount) {
-        this.changePrimaryUnit('BYTE')
-          .then(() => this.changeValue(amount, 'primary'));
-      } else {
-        this.changePrimaryUnit('MBYTE')
-          .then(() => this.changeValue(0, 'primary'));
-      }
+      this.runToSecondStep();
     }
   }
 
-  changeValue(value, type) {
-    if (isNaN(value) || !['primary', 'secondary'].includes(type)) {
+  changePrimaryValue = value => this.changeValue(value, 'primary');
+
+  changeSecondaryValue = value => this.changeValue(value, 'secondary');
+
+  changeValue = async (value, type) => {
+    const commaValue = value.replace(",", ".");
+    if (isNaN(commaValue) || !['primary', 'secondary'].includes(type)) {
       return;
     }
-
+    let parsedValue = commaValue;
+    if (Number(commaValue) && Number.isInteger(Number(commaValue))) {
+      parsedValue = commaValue.replace(/^0+/, '');
+    }
     let primaryValue, secondaryValue;
     const { primaryUnit, secondaryUnit } = this.state;
     const { exchangeRates } = this.props;
-
-    // Calculate other value by exchange rate
     if (type === 'primary') {
-      if (
-        typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] !== 'undefined'
-      ) {
-        secondaryValue =
-          value * exchangeRates[`${primaryUnit}_${secondaryUnit}`];
+      primaryValue = parsedValue;
+      secondaryValue = (parsedValue * exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(getMaxDecimalsLength(secondaryUnit));
+      if (!primaryValue) {
+        secondaryValue = zeroValueToEmptyString(secondaryValue);
       }
     } else if (type === 'secondary') {
-      if (
-        typeof exchangeRates[`${primaryUnit}_${secondaryUnit}`] !== 'undefined'
-      ) {
-        primaryValue = value / exchangeRates[`${primaryUnit}_${secondaryUnit}`];
+      secondaryValue = parsedValue;
+      primaryValue = (parsedValue / exchangeRates[`${primaryUnit}_${secondaryUnit}`]).toFixed(getMaxDecimalsLength(primaryUnit));
+      if (!secondaryValue) {
+        primaryValue = zeroValueToEmptyString(primaryValue);
       }
     }
-    // Additional parsing
-    if (type === 'primary' && value > 0) {
-      if (secondaryUnit === 'USD') {
-        secondaryValue = _.round(secondaryValue, 2).toFixed(2);
-      } else if (secondaryUnit === 'BTC') {
-        secondaryValue = _.round(secondaryValue, 8).toFixed(8);
-      }
-    } else if (type === 'secondary' && value > 0) {
-      if (primaryUnit === 'BYTE') {
-        primaryValue = _.round(primaryValue);
-      } else if (primaryUnit === 'kBYTE') {
-        primaryValue = _.round(primaryValue, 3).toFixed(3);
-      } else if (primaryUnit === 'MBYTE') {
-        primaryValue = _.round(primaryValue, 6).toFixed(6);
-      } else if (primaryUnit === 'GBYTE') {
-        primaryValue = _.round(primaryValue, 9).toFixed(9);
-      }
-    }
-
-    this.setState({
-      primaryValue:
-        type === 'primary' ? value : !isNaN(primaryValue) ? primaryValue : 0,
-      secondaryValue:
-        type === 'secondary'
-          ? value
-          : !isNaN(secondaryValue)
-          ? secondaryValue
-          : 0,
+    await this.setState({
+      primaryValue: primaryValue,
+      secondaryValue: secondaryValue
     });
-  }
+  };
 
-  async changePrimaryUnit(primaryUnit) {
+  convertPrimaryValue = (nextUnit) => {
+    const { primaryUnit, primaryValue } = this.state;
+    const bytes = unitToBytes(primaryValue, primaryUnit);
+    return `${primaryValue}`
+      ? bytesToUnit(bytes, nextUnit)
+        .toFixed(getMaxDecimalsLength(nextUnit) || 1)
+        .replace(/\.?0+$/, '')
+      : primaryValue;
+  };
+
+  changePrimaryUnit = async (primaryUnit) => {
+    const convertedPrimaryValue = this.convertPrimaryValue(primaryUnit);
     await this.setState({ primaryUnit });
-    this.changeValue(this.state.primaryValue, 'primary');
-  }
+    this.changeValue(`${convertedPrimaryValue}`, 'primary');
+  };
 
-  async changeSecondaryUnit(secondaryUnit) {
+  changeSecondaryUnit = async(secondaryUnit) => {
     await this.setState({ secondaryUnit });
     this.changeValue(this.state.secondaryValue, 'secondary');
-  }
+  };
 
-  onChangeAddress(value) {
+  onChangeAddress = (value) => {
     let address = String(value.trim());
-    if (address.length <= 34) {
+    if (address.length <= 32) {
       this.setState({ address });
     }
-  }
+  };
 
-  async pasteAddress() {
+  pasteAddress = async() => {
     let address = await Clipboard.getString();
-    address = address.trim().substring(0, 34);
+    address = address.trim();
+    address.replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
+      address = walletAddress;
+    });
     this.setState({ address });
-  }
+  };
 
-  submitStep() {
-    const { method } = this.props;
+  submitStep = () => {
+    const { method, checkIsAA, navigation } = this.props;
+    const { step, address, correspondent } = this.state;
     if (this._validate()) {
-      if (this.state.step === 1) {
+      if (step === 1) {
         this.setState({ step: 2 });
-        this.props.navigation.setParams({ title: 'Enter amount' });
-      } else if (this.state.step === 2 && method === Methods.SEND) {
+        checkIsAA({ address })
+      } else if (step === 2 && method === Methods.SEND) {
         this.sendPayment();
-        this.props.navigation.navigate('WalletStack');
-      } else if (this.state.step === 2 && method === Methods.REQUEST) {
+        if (!correspondent) {
+          navigation.navigate('WalletStack');
+        }
+      } else if (step === 2 && method === Methods.REQUEST) {
         this.requestPayment();
-        this.props.navigation.pop();
+        navigation.pop();
       }
     }
-  }
+  };
 
-  goBack() {
-    if (this.state.step === 2) {
-      this.props.navigation.setParams({ title: 'Enter address' });
-    }
+  goBack = () => {
     this.setState({ step: this.state.step - 1 });
-  }
+  };
 
-  sendPayment() {
-    const params = {
-      outputs: [
-        {
-          address: this.state.address,
-          amount: unitToBytes(this.state.primaryValue, this.state.primaryUnit),
-        },
-      ],
+  sendPayment = () => {
+    const {
+      address, primaryValue, primaryUnit
+    } = this.state;
+    const { params = {} } = this.props.navigation.state;
+    const { asset, correspondent, data } = params;
+    const requestData = {
+      params: {
+        outputs: [
+          {
+            address,
+            amount: unitToBytes(primaryValue, primaryUnit)
+          },
+        ],
+      },
+      correspondent,
+      data
     };
-    this.props.sendPayment(params);
-  }
+    // if (asset) {
+    //   data.params.asset = asset;
+    // }
+    this.props.sendPayment(requestData);
+  };
 
-  requestPayment() {
+  requestPayment = () => {
     const callback = _.get(
       this.props,
       'navigation.state.params.callback',
@@ -220,9 +219,9 @@ class PaymentScreen extends React.Component {
       this.state.primaryUnit,
     )})`;
     callback(requestString);
-  }
+  };
 
-  _validate() {
+  _validate = () => {
     const callback = _.get(this.props, 'navigation.state.params.callback');
     const { method } = this.props;
     if (
@@ -232,36 +231,39 @@ class PaymentScreen extends React.Component {
       alert('Invalid address');
       return false;
     }
-
     if (this.state.step === 2) {
-      if (isNaN(this.state.primaryValue)) {
+      if (!this.state.primaryValue || isNaN(this.state.primaryValue)) {
         alert('Invalid amount');
         return false;
       }
-
       if (!Object.keys(Methods).includes(method)) {
         alert('Something went wrong!');
         return false;
       }
-
       if (method === Methods.REQUEST && !callback) {
         alert('Something went wrong!');
         return false;
       }
     }
-
     return true;
-  }
+  };
+
+  getMaxPrimaryLength = () => {
+    const { primaryValue, primaryUnit } = this.state;
+    return getMaxLength(primaryValue, primaryUnit);
+  };
+
+  getMaxSecondaryLength = () => {
+    const { secondaryValue, secondaryUnit } = this.state;
+    return getMaxLength(secondaryValue, secondaryUnit);
+  };
 
   render() {
     const {
-      step,
-      address,
-      primaryValue,
-      secondaryValue,
-      primaryUnit,
-      secondaryUnit,
+      step, address, primaryValue,
+      secondaryValue, primaryUnit, secondaryUnit
     } = this.state;
+    const data = _.get(this.props, 'navigation.state.params.data', null);
 
     return (
       <SafeAreaView
@@ -302,12 +304,6 @@ class PaymentScreen extends React.Component {
                   </View>
                 )}
               </View>
-              <Button
-                disabled={!address}
-                text='Next'
-                style={styles.confirmButton}
-                onPress={this.submitStep}
-              />
             </React.Fragment>
           )}
           {step === 2 && (
@@ -318,46 +314,61 @@ class PaymentScreen extends React.Component {
               <View style={{ ...styles.field, ...styles.primaryField }}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={value => this.changeValue(value, 'primary')}
-                  value={!primaryValue ? '' : String(primaryValue)}
+                  onChangeText={this.changePrimaryValue}
+                  value={primaryValue}
                   keyboardType='decimal-pad'
                   autofocus={false}
+                  selectTextOnFocus={true}
+                  maxLength={this.getMaxPrimaryLength()}
                 />
                 <ActionSheet
-                  currentValue={primaryUnit}
-                  onChange={value => this.changePrimaryUnit(value)}
-                  items={PRIMARY_UNITS.map(({ label, altValue }) => ({
-                    label,
-                    value: altValue,
-                  }))}
+                  currentValue={getUnitLabel(primaryUnit)}
+                  onChange={this.changePrimaryUnit}
+                  items={PRIMARY_UNITS.map(({ label, altValue }) => ({ label, value: altValue }))}
                 />
               </View>
               <View style={styles.field}>
                 <TextInput
                   style={styles.input}
-                  onChangeText={value => this.changeValue(value, 'secondary')}
-                  value={!secondaryValue ? '' : String(secondaryValue)}
+                  onChangeText={this.changeSecondaryValue}
+                  value={secondaryValue}
                   keyboardType='decimal-pad'
                   autofocus={false}
+                  selectTextOnFocus={true}
+                  maxLength={this.getMaxSecondaryLength()}
                 />
                 <ActionSheet
                   currentValue={secondaryUnit}
                   onChange={value => this.changeSecondaryUnit(value)}
-                  items={SECONDARY_UNITS.map(({ label, altValue }) => ({
-                    label,
-                    value: altValue,
-                  }))}
+                  items={SECONDARY_UNITS.map(({ label, value }) => ({ label, value }))}
                 />
               </View>
-              <Button
-                text={
-                  this.props.method === Methods.REQUEST ? 'Request' : 'Send'
-                }
-                style={styles.confirmButton}
-                onPress={this.submitStep}
-              />
+              {data && (
+                <View style={styles.jsonContainer}>
+                  <Text>
+                    {JSON.stringify(data)}
+                  </Text>
+                </View>
+              )}
             </React.Fragment>
           )}
+          {this.props.method === Methods.SEND && Platform.OS === 'ios' && (
+            <View style={styles.nfcReaderContainer}>
+              <NfcReaderIOS />
+            </View>
+          )}
+          <Button
+            disabled={step === 1 && !address}
+            text={
+              step === 1
+                ? 'Next'
+                : this.props.method === Methods.REQUEST
+                  ? 'Request'
+                  : 'Send'
+            }
+            style={styles.confirmButton}
+            onPress={this.submitStep}
+          />
         </KeyboardAvoidingView>
       </SafeAreaView>
     );
@@ -370,15 +381,18 @@ PaymentScreen.defaultProps = {
 
 PaymentScreen.propTypes = {
   method: PropTypes.string.isRequired,
+  unit: PropTypes.string.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
   exchangeRates: selectExchangeRates(),
   myWalletAddress: selectWalletAddress(),
+  unit: selectUnitSize()
 });
 
 const mapDispatchToProps = dispatch => ({
   sendPayment: data => dispatch(sendPaymentStart(data)),
+  checkIsAA: payload => dispatch(checkIsAutonomousAgent(payload))
 });
 
 PaymentScreen = connect(mapStateToProps, mapDispatchToProps)(PaymentScreen);

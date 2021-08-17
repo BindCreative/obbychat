@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "610155830868",
+    "project_id": "obby-chat-testnet",
+    "storage_bucket": "obby-chat-testnet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610155830868:android:58b7e7f535092471e457c1",
+        "android_client_info": {
+          "package_name": "chat.obby.testnet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "610155830868-td1v6h6g9gsvgg64p9a5285cj4cs9g4v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCC3tb2114qmWUzlF2ECgvTSK-62GmQ8E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "610155830868-td1v6h6g9gsvgg64p9a5285cj4cs9g4v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

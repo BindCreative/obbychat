@@ -15,6 +15,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
+    flexWrap: 'wrap'
   },
   nextButton: {
     backgroundColor: colors.cyan.main,
@@ -47,4 +48,8 @@ export default StyleSheet.create({
     textAlign: 'center',
     color: colors.black,
   },
+  skipButton: {
+    width: '100%',
+    marginTop: 20
+  }
 });

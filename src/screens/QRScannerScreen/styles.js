@@ -13,7 +13,6 @@ export default StyleSheet.create({
     flex: 1,
   },
   backBtnContainer: {
-    position: 'absolute',
     bottom: 50,
     display: 'flex',
     justifyContent: 'center',
@@ -22,6 +21,7 @@ export default StyleSheet.create({
     width: '100%'
   },
   backBtn: {
-    width: 175
+    width: 250,
+    marginTop: 12
   }
 });

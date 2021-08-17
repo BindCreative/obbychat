@@ -4,7 +4,7 @@ import { colors } from './../../constants';
 export default StyleSheet.create({
   headerNormal: {
     paddingHorizontal: 15,
-    paddingTop: 30,
+    paddingTop: 34,
     paddingBottom: 5,
     backgroundColor: colors.white,
     flexDirection: 'row',
@@ -28,13 +28,17 @@ export default StyleSheet.create({
     height: 64,
     borderRadius: 32
   },
-  listItem: {
-    borderBottomColor: 'transparent',
-  },
   listItemText: {
     color: 'black',
     fontFamily: 'Agenda-Medium',
-    fontSize: 22,
+    fontSize: 22
+  },
+  listArrowIcon: {
+    color: colors.black,
+    transform: [{
+      rotate: '180deg'
+    }],
+    marginTop: 10
   },
   listItemHeader: {
     borderBottomColor: 'transparent',
@@ -44,10 +48,7 @@ export default StyleSheet.create({
     fontSize: 16,
     color: colors.grey.main,
   },
-  listArrowIcon: {
-    color: colors.black,
-    transform: [{
-      rotate: '180deg'
-    }]
-  },
+  divider: {
+    margin: 12
+  }
 });

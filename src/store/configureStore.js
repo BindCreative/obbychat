@@ -1,62 +1,50 @@
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import createSecureStore from 'redux-persist-expo-securestore';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { persistStore, persistReducer } from 'redux-persist';
 import createSagaMiddleware from '@redux-saga/core';
-import { reducer as formReducer } from 'redux-form';
 import rootSaga from './../sagas';
-import deviceReducer from '../reducers/device';
-import walletReducer from '../reducers/wallet';
-import balancesReducer from '../reducers/balances';
-import exchangeRatesReducer from '../reducers/exchangeRates';
-import walletHistoryReducer from '../reducers/walletHistory';
-import settingsReducer from '../reducers/settings';
-import messagesReducer from '../reducers/messages';
 
-import { common } from '../constants';
+import secureReducer from '../reducers/secureReducer';
+import mainReducer from '../reducers/mainReducer';
+import temporaryReducer from '../reducers/temporaryReducer';
+
+import customMiddleware from './customMiddleware';
 
 export default function configureStore() {
   // Middleware setup
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware];
+  const middlewares = [sagaMiddleware, customMiddleware];
   const middlewareEnhancer = applyMiddleware(...middlewares);
   const storeEnhancers = [middlewareEnhancer];
   const composedEnhancer = composeWithDevTools(...storeEnhancers);
   // const composedEnhancer = compose(...storeEnhancers);
 
   // Secure storage
-  const secureStorage = createSecureStore();
+  const secureStorage = Platform.OS === 'android' ? createSecureStore() : AsyncStorage;
   const securePersistConfig = {
     key: 'secure',
-    storage: secureStorage,
+    storage: secureStorage
   };
 
   // Non-secure storage
   const mainPersistConfig = {
     key: 'main',
-    storage: AsyncStorage,
+    storage: AsyncStorage
   };
 
   const rootReducer = combineReducers({
     main: persistReducer(
       mainPersistConfig,
-      combineReducers({
-        device: deviceReducer,
-        form: formReducer,
-        balances: balancesReducer,
-        exchangeRates: exchangeRatesReducer,
-        walletHistory: walletHistoryReducer,
-        settings: settingsReducer,
-        messages: messagesReducer,
-      }),
+      mainReducer
     ),
     secure: persistReducer(
       securePersistConfig,
-      combineReducers({
-        wallet: walletReducer,
-      }),
+      secureReducer
     ),
+    temporary: temporaryReducer
   });
 
   const store = createStore(rootReducer, undefined, composedEnhancer);

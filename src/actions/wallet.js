@@ -10,6 +10,11 @@ export const initWalletSuccess = (payload) => ({
   payload,
 });
 
+export const initAccountSuccess = (payload) => ({
+  type: actionTypes.ACCOUNT_INIT_SUCCESS,
+  payload,
+});
+
 export const initWalletFail = payload => ({
   type: actionTypes.WALLET_INIT_FAILED,
   payload,
@@ -50,4 +55,14 @@ export const sendPaymentSuccess = () => ({
 
 export const sendPaymentFail = () => ({
   type: actionTypes.PAYMENT_SEND_FAILED,
+});
+
+export const openPaymentLink = payload => ({
+  type: actionTypes.OPEN_PAYMENT_LINK,
+  payload
+});
+
+export const checkIsAutonomousAgent = payload => ({
+  type: actionTypes.CHECK_IS_AUTONOMOUS_AGENT,
+  payload
 });

@@ -6,9 +6,7 @@
  */
 export const bytesToUnit = (n, unit) => {
   switch (unit) {
-    case 'BYTE':
-    case 'B':
-      return Number(n);
+    case 'KBYTE':
     case 'kBYTE':
     case 'kB':
       return n / 1000;
@@ -37,25 +35,68 @@ export const unitToBytes = (n, unit) => {
     case 'MBYTE':
     case 'MB':
       return n * 1000000;
+    case 'KBYTE':
     case 'kBYTE':
-    case 'kB':
+    case 'KB':
       return n * 1000;
-    case 'BYTE':
-    case 'B':
-      return Number(n);
     default:
       return Number(n);
   }
 };
 
 export const PRIMARY_UNITS = [
-  { label: 'bytes', value: 'B', altValue: 'BYTE' },
-  { label: 'kB', value: 'kB', altValue: 'kBYTE' },
-  { label: 'MB', value: 'MB', altValue: 'MBYTE' },
-  { label: 'GB', value: 'GB', altValue: 'GBYTE' },
+  { label: 'BYTES', value: 'B', altValue: 'BYTE' },
+  { label: 'KBYTE', value: 'KB', altValue: 'kBYTE' },
+  { label: 'MBYTE', value: 'MB', altValue: 'MBYTE' },
+  { label: 'GBYTE', value: 'GB', altValue: 'GBYTE' },
 ];
 
 export const SECONDARY_UNITS = [
   { label: 'USD', value: 'USD' },
   { label: 'BTC', value: 'BTC' },
 ];
+
+export const getMaxDecimalsLength = (unit) => {
+  switch (unit) {
+    case 'KBYTE':
+    case 'kBYTE':
+    case 'KB':
+      return 3;
+    case 'MBYTE':
+    case 'MB':
+      return 6;
+    case 'GBYTE':
+    case 'GB':
+      return 9;
+    case 'USD':
+      return 2;
+    case 'BTC':
+      return 8;
+    default:
+      return 0;
+  }
+};
+
+export const getUnitAltValue = (unit) => {
+  let result = "BYTE";
+  PRIMARY_UNITS.some(({ value, altValue, label }) => {
+    if (value === unit || altValue === unit || label === unit) {
+      result = altValue;
+      return true;
+    }
+    return false;
+  });
+  return result;
+};
+
+export const getUnitLabel = (unit) => {
+  let result = "BYTES";
+  PRIMARY_UNITS.some(({ value, altValue, label }) => {
+    if (value === unit || altValue === unit || label === unit) {
+      result = label;
+      return true;
+    }
+    return false;
+  });
+  return result;
+};

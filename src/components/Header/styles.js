@@ -8,26 +8,27 @@ export default StyleSheet.create({
     paddingTop: 30,
     paddingBottom: 5,
     backgroundColor: colors.white,
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    flexWrap: 'nowrap'
   },
   headerBordered: {
     borderBottomColor: colors.grey.lightest,
     borderBottomWidth: 2,
   },
   headerLeft: {
-    flexDirection: 'row',
     marginLeft: 15,
+    flexDirection: 'row',
     flexWrap: 'nowrap',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    flex: 1
+    alignItems: 'center'
   },
   headerCenter: {
     flexDirection: 'row',
     flexWrap: 'nowrap',
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1
   },
   headerRight: {
     flexDirection: 'row',
@@ -38,11 +39,11 @@ export default StyleSheet.create({
   headerTitle: {
     fontFamily: 'Agenda-Medium',
     color: colors.black,
-    fontSize: 28
+    fontSize: 28,
+    width: screenWidth - 220
   },
   headerTitleSmall: {
-    fontSize: 21,
-    flex: 1
+    fontSize: 21
   },
   backBtn: {
     marginRight: 10,
