@@ -1,7 +1,8 @@
-import NfcManager, { NfcTech, Ndef, NfcAdapter } from 'react-native-nfc-manager';
+import { Alert } from 'react-native';
+import NfcManager, { Ndef, NfcEvents } from 'react-native-nfc-manager';
 import HCESession, { NFCContentType, NFCTagType4 } from 'react-native-hce';
 
-let simulation;
+let simulation = null;
 
 const decodeTag = (tag) => {
   const ndef =
@@ -15,14 +16,17 @@ const decodeTag = (tag) => {
 };
 
 export const stopNfcReader = async () => {
-  try {
-    await NfcManager.cancelTechnologyRequest();
-  } catch (e) {
-    console.log(e);
-  }
+  const cleanUp = () => {
+    NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+    NfcManager.setEventListener(NfcEvents.SessionClosed, null);
+  };
+  await NfcManager.unregisterTagEvent();
+  NfcManager.setEventListener(NfcEvents.SessionClosed, () => {
+    cleanUp();
+  });
 };
 
-export const runNfcReader = async () => {
+export const runNfcReader = () => new Promise(async (resolve) => {
   let uri = '';
   const supported = await NfcManager.isSupported();
   if (supported) {
@@ -30,25 +34,42 @@ export const runNfcReader = async () => {
     const isEnabled = await NfcManager.isEnabled();
     if (isEnabled) {
       try {
-        await NfcManager.requestTechnology(NfcTech.Ndef, { alertMessage: "Put your device near the other device that has QR code open" });
-        const tag = await NfcManager.getTag();
-        tag.ndefStatus = await NfcManager.ndefHandler.getNdefStatus();
-        uri = decodeTag(tag);
+        NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag) => {
+          uri = decodeTag(tag);
+          console.log(uri);
+          resolve(uri);
+        });
+        await NfcManager.registerTagEvent({ alertMessage: "Put your device near the other device that has QR code open" });
       } catch (ex) {
-        // console.log(ex);
-      } finally {
-        await stopNfcReader();
+        console.log(ex);
       }
     }
   }
-  return uri;
-};
+});
 
 export const runHceSimulation = async (url) => {
   const tag = new NFCTagType4(NFCContentType.URL, url);
-  simulation = await (new HCESession(tag)).start();
+  simulation = await new HCESession(tag).start();
 };
 
 export const stopHceSimulation = async () => {
-  await simulation.terminate();
+  if (simulation) {
+    await simulation.terminate();
+    simulation = null;
+  }
+};
+
+export const nfcHceRunner = async (url) => {
+  await stopNfcReader();
+  await runHceSimulation(url);
+};
+
+export const nfcHceStopper = async () => {
+  await stopHceSimulation();
+  await runNfcReader();
+};
+
+export const stopNfc = async () => {
+  await stopNfcReader();
+  await stopHceSimulation();
 };

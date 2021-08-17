@@ -7,7 +7,7 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 import { openLink } from "../../actions/device";
 import Button from './../../components/Button';
-import NfcReader from '../../components/NfcReader';
+import NfcReaderIOS from '../../components/NfcReaderIOS';
 import LoadingModal from '../../components/LoadingModal';
 import styles from './styles';
 
@@ -45,7 +45,7 @@ const QRScannerScreen = ({ navigation }) => {
         onRead={handleBarCodeScanned}
       />
       <View style={styles.backBtnContainer}>
-        <NfcReader />
+        {Platform.OS === 'ios' && <NfcReaderIOS />}
         <Button
           text='Cancel'
           style={styles.backBtn}

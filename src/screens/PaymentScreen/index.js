@@ -2,13 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { createStructuredSelector } from 'reselect';
-import {
-  TextInput,
-  Clipboard,
-  KeyboardAvoidingView,
-  View,
-  Text,
-} from 'react-native';
+import { TextInput, Clipboard, KeyboardAvoidingView, View, Text, Platform } from 'react-native';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 import SafeAreaView from 'react-native-safe-area-view';
 import _ from 'lodash';
@@ -16,7 +10,7 @@ import { isValidAddress } from 'obyte/lib/utils';
 
 import Header from '../../components/Header';
 import Button from '../../components/Button';
-import NfcReader from '../../components/NfcReader';
+import NfcReaderIOS from '../../components/NfcReaderIOS';
 import ActionSheet from '../../components/ActionSheet';
 import styles from './styles';
 import { colors } from '../../constants';
@@ -358,9 +352,9 @@ class PaymentScreen extends React.Component {
               )}
             </React.Fragment>
           )}
-          {this.props.method === Methods.SEND && (
+          {this.props.method === Methods.SEND && Platform.OS === 'ios' && (
             <View style={styles.nfcReaderContainer}>
-              <NfcReader />
+              <NfcReaderIOS />
             </View>
           )}
           <Button

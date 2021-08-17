@@ -12,7 +12,7 @@ import Header from '../../components/Header';
 import Button from './../../components/Button';
 import styles from './styles';
 
-import { runHceSimulation, stopHceSimulation } from '../../lib/NfcProxy';
+import { nfcHceRunner, nfcHceStopper } from '../../lib/NfcProxy';
 
 const getTitle = (type) => {
   switch (type) {
@@ -48,17 +48,15 @@ const QRCodeScreen = ({ navigation, backRoute }) => {
       subject: `My Obby chat ${
         type === 'WALLET_ADDRESS' ? 'wallet address' : 'pairing code'
       }`,
-      message: `${urlHost}${qrData}`,
-    },
+      message: `${urlHost}${qrData}`
+    }
   });
 
   useEffect(
     () => {
       if (Platform.OS === 'android') {
-        runHceSimulation(`${urlHost}${qrData}`);
-        return () => {
-          stopHceSimulation();
-        }
+        nfcHceRunner(`${urlHost}${qrData}`);
+        return nfcHceStopper;
       }
     },
     []

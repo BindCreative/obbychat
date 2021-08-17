@@ -10,7 +10,7 @@ import SafeAreaView from 'react-native-safe-area-view';
 
 import Header from '../../components/Header';
 import Button from './../../components/Button';
-import NfcReader from '../../components/NfcReader';
+import NfcReaderIOS from '../../components/NfcReaderIOS';
 import CopyIcon from './../../assets/images/icon-copy.svg';
 
 import { REGEX_PAIRING } from "../../lib/messaging";
@@ -71,9 +71,11 @@ const PairInputScreen = ({ navigation, backRoute }) => {
             </View>
           )}
         </View>
-        <View style={styles.nfcReaderContainer}>
-          <NfcReader />
-        </View>
+        {Platform.OS === 'ios' && (
+          <View style={styles.nfcReaderContainer}>
+            <NfcReaderIOS />
+          </View>
+        )}
         <Button
           text='Add contact'
           onPress={handleAddContact}

@@ -24,12 +24,11 @@ import { openLink } from "../../actions/device";
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
 import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
 
-// const prefix = 'obyte-tn:|obyte';
+import { runNfcReader, stopNfc} from "../../lib/NfcProxy";
+
 const prefix = testnet ? 'obyte-tn:|byteball-tn' : 'obyte:|byteball';
 
 const PUSH_CHANEL_ID = 'obby-chat-push-chanel-id';
-
-// oClient.justsaying
 
 setJSExceptionHandler((error, isFatal) => {
   if (error && isFatal) {
@@ -117,9 +116,8 @@ const App = ({
         PushNotificationIOS.setApplicationIconBadgeNumber(0);
       }
       messaging().setBackgroundMessageHandler(handlePush);
-      const unsubscribe = messaging().onMessage(handlePush);
-
-      return unsubscribe;
+      // const unsubscribe = messaging().onMessage(handlePush);
+      // return unsubscribe;
     },
     []
   );
@@ -239,6 +237,35 @@ const App = ({
     [accountInit, redirectParams, connectedToHub]
   );
 
+  const readNfcTag = async () => {
+    const link = await runNfcReader();
+    if (link) {
+      setRedirectParams(link);
+    }
+  };
+
+  const appStateListener = (appState) => {
+    if (appState === 'active') {
+      readNfcTag();
+    } else {
+      stopNfc();
+    }
+  };
+
+  useEffect(
+    () => {
+      if (Platform.OS === 'android') {
+        AppState.addEventListener('change', appStateListener);
+        readNfcTag();
+        return () => {
+          AppState.removeEventListener('change', appStateListener);
+          stopNfc();
+        };
+      }
+    },
+    []
+  );
+
   const getRouteData = ({ routes, index }) => {
     const route = routes[index];
     if (route.routes) {
@@ -249,8 +276,10 @@ const App = ({
   };
 
   const onNavigationStateChange = () => {
-    const route = getRouteData(navigationRef.current.state.nav);
-    dispatch(setHistoryState(route));
+    if (navigationRef && navigationRef.current) {
+      const route = getRouteData(navigationRef.current.state.nav);
+      dispatch(setHistoryState(route));
+    }
   };
 
   return (

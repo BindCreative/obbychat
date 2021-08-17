@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>128900409481-cgub578lc06cmcnk0098699gjsn8140b.apps.googleusercontent.com</string>
+	<string>610155830868-tp4tcou9tfjm1tdtj7lleh4lj1aegvmf.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.128900409481-cgub578lc06cmcnk0098699gjsn8140b</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>128900409481-43gcqs3c61c65t6gpob66h64q62dqv12.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.610155830868-tp4tcou9tfjm1tdtj7lleh4lj1aegvmf</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAX86EbSF8diWKXw6MX9pDfy-qJn3wYe7U</string>
+	<string>AIzaSyDZZgBPuqq9Aq02XiF6AJTyL6EzrDhwANs</string>
 	<key>GCM_SENDER_ID</key>
-	<string>128900409481</string>
+	<string>610155830868</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>chat.obby.testnet</string>
 	<key>PROJECT_ID</key>
-	<string>obby-chat</string>
+	<string>obby-chat-testnet</string>
 	<key>STORAGE_BUCKET</key>
-	<string>obby-chat.appspot.com</string>
+	<string>obby-chat-testnet.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:128900409481:ios:fe4c29b8b352851804fe58</string>
+	<string>1:610155830868:ios:1bf171b7d5160b57e457c1</string>
 </dict>
 </plist>

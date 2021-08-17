@@ -160,6 +160,9 @@ android_resource(
     res = "src/main/res",
 )
 ```
+
+- Copy all from `android/app/google-services-testnet.json` and paste to `android/app/google-services.json`.
+
 - In Gradle' cleaning in the end (in /android folder):
 
     ```./gradlew clean```
@@ -255,6 +258,9 @@ android_resource(
     res = "src/main/res",
 )
 ```
+
+- Copy all from `android/app/google-services-mainnet.json` and paste to `android/app/google-services.json`.
+
 - In Gradle' cleaning in the end (in /android folder):
 
     ```./gradlew clean```
