@@ -31,7 +31,7 @@ export const getWalletHistoryState = state => getCurrentMain(state).walletHistor
 
 export const selectWalletBalances = (
   walletAddress = null,
-  includePending = false,
+  includePending = true,
 ) =>
   createSelector(
     [getBalancesState, selectWalletAddress()],
@@ -40,7 +40,7 @@ export const selectWalletBalances = (
       if (balancesState[wallet]) {
         let total = 0;
         for (let [key, value] of Object.entries(balancesState[wallet])) {
-          total += value.stable + value.pending;
+          total += value.stable;
           if (includePending) {
             total += value.pending;
           }
