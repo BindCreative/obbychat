@@ -85,7 +85,7 @@ export function* checkExistWallets(payload) {
     let mnemonic = new Mnemonic(seedWords);
     const xPrivKey = mnemonic.toHDPrivateKey(password);
 
-    const devicePath = testnet ? "m/44'/1'" : "m/44'/0'";
+    const devicePath = "m/1";
     const { privateKey: devicePrivateKey } = yield xPrivKey.derive(devicePath);
     const devicePrivateKeyBuf = yield devicePrivateKey.bn.toBuffer({ size: 32 });
     const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);
@@ -129,7 +129,7 @@ export function* createInitialWallet({ payload }) {
     const xPrivKey = mnemonic.toHDPrivateKey(password);
     
     // DeviceWif
-    const devicePath = testnet ? "m/44'/1'" : "m/44'/0'";
+    const devicePath = "m/1";
     const { privateKey: devicePrivateKey } = yield xPrivKey.derive(devicePath);
     const devicePrivateKeyBuf = yield devicePrivateKey.bn.toBuffer({ size: 32 });
     const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);

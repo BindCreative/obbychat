@@ -10,22 +10,25 @@ The mobile-only messaging app doesn’t need to be fully featured Obyte demonstr
 (minimum viable product):
 
 #### Completed features:
-- Generating seed words for new users.
+- Generating seed words for new users
 - List of chats and individual chats
-- Pairing with QR code and deep-link on website
-- Sending payment to contact via QR code or deep-link on website
+- List of available chatbots
 - Receiving payment from anyone, wallet balance, and history
 - Sign message feature (also for request address function)
+- Pairing with contact via QR code, NFC tag (Android) or deep-link on website
+- Sending payment to contact via QR code, NFC tag (Android) or deep-link on website
 
 #### In-development:
-- Pairing with NFC tag (Android)
+- Setup dedicated Obyte hub and in-app push notifications
+
+#### Planned for future
 - Generating new address for every new payment request
-- Sending payment to contact via NFC tag (Android)
 - Ability to do P2P Bitcoin exchange smart-contract
 - Ability to do P2P cryptocurrency price bet smart-contract
 - Ability to do P2P sports bet smart-contract
 - Showing signed smart-contracts
-- Setup dedicated Obyte hub and in-app push notifications
+- Full Autonomous Agent support
+- Multi-asset support
 
 For more details and participation, please join [Obyte discord channel](https://discord.gg/8hHXMxS).
 
