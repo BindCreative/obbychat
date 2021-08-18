@@ -135,13 +135,13 @@ export function* createInitialWallet({ payload }) {
     const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);
 
     // Wallet wif
-    const walletPath = testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
+    const walletPath = "m/44'/0'/0'/0"; //testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
     const { privateKey: walletPirvateKey } = yield xPrivKey.derive(walletPath);
     const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({ size: 32 });
     const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
 
     // Address and address wif
-    const addressPath = testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
+    const addressPath = "m/44'/0'/0'/0/0"; //testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
     const { privateKey } = yield xPrivKey.derive(addressPath);
     const publicKeyBuffer = yield privateKey.publicKey.toBuffer();
     const publicKey = yield publicKeyBuffer.toString('base64');
