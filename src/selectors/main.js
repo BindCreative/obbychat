@@ -37,14 +37,17 @@ export const selectWalletBalances = (
     [getBalancesState, selectWalletAddress()],
     (balancesState, currentWalletAddress) => {
       const wallet = walletAddress ? walletAddress : currentWalletAddress;
-      if (balancesState[wallet]) {
-        let total = 0;
-        for (let [key, value] of Object.entries(balancesState[wallet])) {
-          total += value.stable;
-          if (includePending) {
-            total += value.pending;
-          }
+      if (balancesState[wallet] && balancesState[wallet].base) {
+        let total = balancesState[wallet].base.stable;
+        if (includePending) {
+          total += balancesState[wallet].base.pending;
         }
+        // for (let [key, value] of Object.entries(balancesState[wallet])) {
+        //   total += value.stable;
+        //   if (includePending) {
+        //     total += value.pending;
+        //   }
+        // }
         return total;
       } else {
         return 0;
@@ -200,6 +203,7 @@ export const selectTransactions = () =>
       for (let [ij, joint] of walletHistory.joints.entries()) {
         const confirmed = !!joint.ball;
         let amount = 0;
+        let asset = '';
         let type;
         let toAddress = [];
         let fromAddress = joint.unit.authors.reduce((combinedValue, value) => {
@@ -227,6 +231,7 @@ export const selectTransactions = () =>
         }
 
         for (let [im, message] of joint.unit.messages.entries()) {
+          asset = message.payload.asset || 'base';
           if (message.payload.outputs) {
             for (let [io, output] of message.payload.outputs.entries()) {
               if (type === 'RECEIVED' && walletAddress === output.address) {
@@ -245,6 +250,7 @@ export const selectTransactions = () =>
           toAddress,
           fromAddress,
           amount,
+          asset,
           type,
           unitId: joint.unit.unit,
           timestamp: joint.unit.timestamp,
