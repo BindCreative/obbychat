@@ -232,6 +232,7 @@ export const selectTransactions = () =>
 
         for (let [im, message] of joint.unit.messages.entries()) {
           asset = message.payload.asset || 'base';
+          amount = 0;
           if (message.payload.outputs) {
             for (let [io, output] of message.payload.outputs.entries()) {
               if (type === 'RECEIVED' && walletAddress === output.address) {
@@ -243,23 +244,22 @@ export const selectTransactions = () =>
                 amount += output.amount;
               }
             }
+            transactions.push({
+              toAddress,
+              fromAddress,
+              amount,
+              asset,
+              type,
+              unitId: joint.unit.unit,
+              timestamp: joint.unit.timestamp,
+              headersCommission: joint.unit.headers_commission,
+              payloadCommission: joint.unit.payload_commission,
+              totalCommission:
+                joint.unit.headers_commission + joint.unit.payload_commission,
+              confirmed
+            });
           }
         }
-
-        transactions.push({
-          toAddress,
-          fromAddress,
-          amount,
-          asset,
-          type,
-          unitId: joint.unit.unit,
-          timestamp: joint.unit.timestamp,
-          headersCommission: joint.unit.headers_commission,
-          payloadCommission: joint.unit.payload_commission,
-          totalCommission:
-            joint.unit.headers_commission + joint.unit.payload_commission,
-          confirmed
-        });
       }
       return transactions;
     },

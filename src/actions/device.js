@@ -76,3 +76,20 @@ export const setHistoryState = payload => ({
   type: actionTypes.SET_HISTORY_STATE,
   payload
 });
+
+export const runNfcReader = () => ({
+  type: actionTypes.RUN_NFC_READER
+});
+
+export const stopNfcReader = () => ({
+  type: actionTypes.STOP_NFC_READER
+});
+
+export const runHceSimulator = payload => ({
+  type: actionTypes.RUN_HCE_SIMULATOR,
+  payload
+});
+
+export const stopHceSimulator = () => ({
+  type: actionTypes.STOP_HCE_SIMULATOR
+});

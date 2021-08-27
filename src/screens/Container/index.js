@@ -18,13 +18,12 @@ import NavigationService from '../../navigation/service';
 import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
 import { initWallet } from '../../actions/wallet';
-import { reSubscribeToHub, stopSubscribeToHub, setFcmToken, setHistoryState } from "../../actions/device";
-import { openLink } from "../../actions/device";
+import {
+  reSubscribeToHub, stopSubscribeToHub, setFcmToken, setHistoryState, openLink, runNfcReader, stopNfcReader, stopHceSimulator
+} from "../../actions/device";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
 import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
-
-import { runNfcReader, stopNfc} from "../../lib/NfcProxy";
 
 const prefix = testnet ? 'obyte-tn:|byteball-tn' : 'obyte:|byteball';
 
@@ -222,6 +221,9 @@ const App = ({
         setTimeout(() => {
           setAppReady(true);
           readyRef.current.appReady = true;
+          if (Platform.OS === 'android') {
+            dispatch(runNfcReader());
+          }
         }, 1000);
       }
     },
@@ -237,16 +239,14 @@ const App = ({
     [accountInit, redirectParams, connectedToHub]
   );
 
-  const readNfcTag = async () => {
-    const link = await runNfcReader();
-    if (link) {
-      setRedirectParams(link);
-    }
+  const stopNfc = () => {
+    dispatch(stopNfcReader());
+    dispatch(stopHceSimulator());
   };
 
   const appStateListener = (appState) => {
     if (appState === 'active') {
-      readNfcTag();
+      dispatch(runNfcReader());
     } else {
       stopNfc();
     }
@@ -256,7 +256,6 @@ const App = ({
     () => {
       if (Platform.OS === 'android') {
         AppState.addEventListener('change', appStateListener);
-        readNfcTag();
         return () => {
           AppState.removeEventListener('change', appStateListener);
           stopNfc();

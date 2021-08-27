@@ -19,10 +19,10 @@ const NfcReaderIOS = () => {
 
   const readNfcTag = async () => {
     const link = await runNfcReader();
+    await stopNfcReader();
     if (link) {
       dispatch(openLink({ link }));
     }
-    await stopNfcReader();
   };
 
   // return Platform.OS === 'android'
