@@ -1,6 +1,6 @@
 {
   "name": "obby",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "android": "adb reverse tcp:8081 tcp:8081 && react-native run-android",
