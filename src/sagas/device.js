@@ -26,7 +26,11 @@ import {
   clientParams
 } from './../lib/oCustom';
 
-import { setConnectionStatus, setNotificationsEnabling, enableNotificationsRequest } from "../actions/device";
+import { runNfcReader, stopNfcReader, runHceSimulation, stopHceSimulation } from "../lib/NfcProxy";
+
+import {
+  setConnectionStatus, setNotificationsEnabling, enableNotificationsRequest
+} from "../actions/device";
 import { setToastMessage } from './../actions/app';
 import { updateWalletData } from "../actions/balances";
 import {
@@ -797,6 +801,44 @@ export function* disableNotifications() {
   }
 }
 
+export function* runNfc() {
+  try {
+    const link = yield call(runNfcReader);
+    if (link) {
+      yield call(openLink, { link });
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export function* stopNfc() {
+  try {
+    yield call(stopNfcReader);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export function* runHce(action) {
+  try {
+    const { link } = action.payload;
+    yield call(stopNfc);
+    yield call(runHceSimulation, link)
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export function* stopHce() {
+  try {
+    yield call(stopHceSimulation);
+    yield call(runNfc);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export default function* watch() {
   yield all([
     watchHubMessages(),
@@ -811,6 +853,10 @@ export default function* watch() {
     takeEvery(actionTypes.OPEN_LINK, openLink),
     takeEvery(actionTypes.INIT_NOTIFICATIONS, initNotificationsRequest),
     takeEvery(actionTypes.ENABLE_NOTIFICATIONS, enableNotifications),
-    takeEvery(actionTypes.DISABLE_NOTIFICATIONS, disableNotifications)
+    takeEvery(actionTypes.DISABLE_NOTIFICATIONS, disableNotifications),
+    takeEvery(actionTypes.RUN_NFC_READER, runNfc),
+    takeEvery(actionTypes.STOP_NFC_READER, stopNfc),
+    takeEvery(actionTypes.RUN_HCE_SIMULATOR, runHce),
+    takeEvery(actionTypes.STOP_HCE_SIMULATOR, stopHce)
   ]);
 }

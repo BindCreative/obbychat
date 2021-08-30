@@ -76,7 +76,7 @@ class WalletScreen extends React.Component {
         >
           <View style={styles.txBoxRow}>
             <Text style={styles.txAmount}>
-              {bytesToUnit(tx.amount, unit)} {unit}
+              {tx.asset === 'base' ? `${bytesToUnit(tx.amount, unit)} ${unit}` : tx.amount}
             </Text>
             <Moment
               unix

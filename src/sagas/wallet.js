@@ -127,7 +127,7 @@ export function* createInitialWallet({ payload }) {
     let mnemonic = new Mnemonic(seedWords);
 
     const xPrivKey = mnemonic.toHDPrivateKey(password);
-    
+
     // DeviceWif
     const devicePath = "m/1";
     const { privateKey: devicePrivateKey } = yield xPrivKey.derive(devicePath);
@@ -135,10 +135,10 @@ export function* createInitialWallet({ payload }) {
     const deviceWif = yield call(toWif, devicePrivateKeyBuf, testnet);
 
     // Wallet wif
-    const walletPath = "m/44'/0'/0'/0"; //testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
-    const { privateKey: walletPirvateKey } = yield xPrivKey.derive(walletPath);
-    const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({ size: 32 });
-    const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
+    // const walletPath = "m/44'/0'/0'/0"; //testnet ? "m/44'/1'/0'/0" : "m/44'/0'/0'/0";
+    // const { privateKey: walletPirvateKey } = yield xPrivKey.derive(walletPath);
+    // const walletPrivKeyBuf = yield walletPirvateKey.bn.toBuffer({ size: 32 });
+    // const walletWif = yield call(toWif, walletPrivKeyBuf, testnet);
 
     // Address and address wif
     const addressPath = "m/44'/0'/0'/0/0"; //testnet ? "m/44'/1'/0'/0/0" : "m/44'/0'/0'/0/0";
@@ -156,13 +156,13 @@ export function* createInitialWallet({ payload }) {
         address,
         addressPath,
         deviceWif,
-        walletWif,
         addressWif,
         xPrivKey,
         publicKey,
         privateKey,
-        walletPirvateKey,
-        walletPath,
+        // walletWif,
+        // walletPirvateKey,
+        // walletPath,
         hashedWif,
         walletInit: true
       }),

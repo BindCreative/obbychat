@@ -43,13 +43,15 @@ const TransactionInfoScreen = ({
 
   const titleAmount = useMemo(
     () => {
-      const mBytes = bytesToUnit(transaction.amount, unit);
+      const amount = transaction.asset === 'base'
+        ? bytesToUnit(transaction.amount, unit)
+        : transaction.amount;
       switch (transaction.type) {
         case 'SENT':
-          return `-${mBytes}`;
+          return `-${amount}`;
         case 'RECEIVED':
-          return `+${mBytes}`;
-        default: return mBytes;
+          return `+${amount}`;
+        default: return amount;
       }
     },
     [unit, transaction]
@@ -79,11 +81,15 @@ const TransactionInfoScreen = ({
         <View style={styles.amountBlock}>
           <View style={styles.amountRow}>
             <Text style={styles.primaryAmount}>{titleAmount}</Text>
-            <Text style={styles.primaryUnit}>{unit}</Text>
+            {transaction.asset === 'base' && (
+              <Text style={styles.primaryUnit}>{unit}</Text>
+            )}
           </View>
-          <View style={styles.amountRow}>
-            <Text style={styles.secondaryAmount}>~${amountInDollars}</Text>
-          </View>
+          {transaction.asset === 'base' && (
+            <View style={styles.amountRow}>
+              <Text style={styles.secondaryAmount}>~${amountInDollars}</Text>
+            </View>
+          )}
         </View>
         <ScrollView style={styles.scrollContent}>
           <View style={styles.infoBlock}>
@@ -91,6 +97,16 @@ const TransactionInfoScreen = ({
               <Text style={styles.infoRowLabel}>Details</Text>
               <Text />
             </View>
+            {transaction.asset !== 'base' && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>
+                  Asset
+                </Text>
+                <Text style={styles.infoRowValue}>
+                  {transaction.asset}
+                </Text>
+              </View>
+            )}
             <View style={styles.infoRow}>
               <Text style={styles.infoRowLabel}>
                 {transaction.type === 'RECEIVED' ? 'From:' : 'To:'}
@@ -112,12 +128,14 @@ const TransactionInfoScreen = ({
                 {transaction.timestamp}
               </Moment>
             </View>
-            <View style={styles.infoRow}>
-              <Text style={styles.infoRowLabel}>Fees:</Text>
-              <Text style={styles.infoRowValue}>
-                {`${fees} ${unit}`}
-              </Text>
-            </View>
+            {transaction.type !== 'RECEIVED' && (
+              <View style={styles.infoRow}>
+                <Text style={styles.infoRowLabel}>Fees:</Text>
+                <Text style={styles.infoRowValue}>
+                  {`${fees} ${unit}`}
+                </Text>
+              </View>
+            )}
             <View style={styles.infoRow}>
               <Text style={styles.infoRowLabel}>ID:</Text>
               <Text

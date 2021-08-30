@@ -15,17 +15,6 @@ const decodeTag = (tag) => {
   return '';
 };
 
-export const stopNfcReader = async () => {
-  const cleanUp = () => {
-    NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
-    NfcManager.setEventListener(NfcEvents.SessionClosed, null);
-  };
-  await NfcManager.unregisterTagEvent();
-  NfcManager.setEventListener(NfcEvents.SessionClosed, () => {
-    cleanUp();
-  });
-};
-
 export const runNfcReader = () => new Promise(async (resolve) => {
   let uri = '';
   const supported = await NfcManager.isSupported();
@@ -47,9 +36,18 @@ export const runNfcReader = () => new Promise(async (resolve) => {
   }
 });
 
+export const stopNfcReader = async () => {
+  const cleanUp = () => {
+    NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+    NfcManager.setEventListener(NfcEvents.SessionClosed, null);
+  };
+  NfcManager.setEventListener(NfcEvents.SessionClosed, cleanUp);
+  NfcManager.unregisterTagEvent().catch(() => 0);
+};
+
 export const runHceSimulation = async (url) => {
   const tag = new NFCTagType4(NFCContentType.URL, url);
-  simulation = await new HCESession(tag).start();
+  simulation = await (new HCESession(tag)).start();
 };
 
 export const stopHceSimulation = async () => {
@@ -57,19 +55,4 @@ export const stopHceSimulation = async () => {
     await simulation.terminate();
     simulation = null;
   }
-};
-
-export const nfcHceRunner = async (url) => {
-  await stopNfcReader();
-  await runHceSimulation(url);
-};
-
-export const nfcHceStopper = async () => {
-  await stopHceSimulation();
-  await runNfcReader();
-};
-
-export const stopNfc = async () => {
-  await stopNfcReader();
-  await stopHceSimulation();
 };

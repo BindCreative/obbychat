@@ -5,16 +5,16 @@
  * @returns {int}
  */
 export const bytesToUnit = (n, unit) => {
-  switch (unit) {
-    case 'KBYTE':
-    case 'kBYTE':
-    case 'kB':
+  const lowerUnit = unit.toLowerCase();
+  switch (lowerUnit) {
+    case 'kbyte':
+    case 'kb':
       return n / 1000;
-    case 'MBYTE':
-    case 'MB':
+    case 'mbyte':
+    case 'mb':
       return n / 1000000;
-    case 'GBYTE':
-    case 'GB':
+    case 'gbyte':
+    case 'gb':
       return n / 1000000000;
     default:
       return Number(n);
@@ -28,16 +28,16 @@ export const bytesToUnit = (n, unit) => {
  * @returns {int}
  */
 export const unitToBytes = (n, unit) => {
-  switch (unit) {
-    case 'GBYTE':
-    case 'GB':
+  const lowerUnit = unit.toLowerCase();
+  switch (lowerUnit) {
+    case 'gbyte':
+    case 'gb':
       return n * 1000000000;
-    case 'MBYTE':
-    case 'MB':
+    case 'mbyte':
+    case 'mb':
       return n * 1000000;
-    case 'KBYTE':
-    case 'kBYTE':
-    case 'KB':
+    case 'kbyte':
+    case 'kb':
       return n * 1000;
     default:
       return Number(n);
@@ -57,20 +57,20 @@ export const SECONDARY_UNITS = [
 ];
 
 export const getMaxDecimalsLength = (unit) => {
-  switch (unit) {
-    case 'KBYTE':
-    case 'kBYTE':
-    case 'KB':
+  const lowerUnit = unit.toLowerCase();
+  switch (lowerUnit) {
+    case 'kbyte':
+    case 'kb':
       return 3;
-    case 'MBYTE':
-    case 'MB':
+    case 'mbyte':
+    case 'mb':
       return 6;
-    case 'GBYTE':
-    case 'GB':
+    case 'gbyte':
+    case 'gb':
       return 9;
-    case 'USD':
+    case 'usd':
       return 2;
-    case 'BTC':
+    case 'btc':
       return 8;
     default:
       return 0;

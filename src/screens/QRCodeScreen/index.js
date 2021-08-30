@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import * as PropTypes from 'prop-types';
+import { useDispatch } from "react-redux";
 import { View, Platform, Alert } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import _ from 'lodash';
@@ -12,7 +13,7 @@ import Header from '../../components/Header';
 import Button from './../../components/Button';
 import styles from './styles';
 
-import { nfcHceRunner, nfcHceStopper } from '../../lib/NfcProxy';
+import { runHceSimulator, stopHceSimulator } from "../../actions/device";
 
 const getTitle = (type) => {
   switch (type) {
@@ -23,6 +24,7 @@ const getTitle = (type) => {
 };
 
 const QRCodeScreen = ({ navigation, backRoute }) => {
+  const dispatch = useDispatch();
   const qrData = _.get(navigation, 'state.params.qrData');
   const type = _.get(navigation, 'state.params.type');
   const title = getTitle(type);
@@ -55,8 +57,10 @@ const QRCodeScreen = ({ navigation, backRoute }) => {
   useEffect(
     () => {
       if (Platform.OS === 'android') {
-        nfcHceRunner(`${urlHost}${qrData}`);
-        return nfcHceStopper;
+        dispatch(runHceSimulator({ link: `${urlHost}${qrData}` }));
+        return () => {
+          dispatch(stopHceSimulator());
+        };
       }
     },
     []

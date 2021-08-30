@@ -47,8 +47,8 @@ export const selectDevicePubKey = () =>
 export const selectWalletAddress = () =>
   createSelector(getTemporaryState, state => state.address);
 
-export const selectWalletWif = () =>
-  createSelector(getTemporaryState, state => state.walletWif);
+// export const selectWalletWif = () =>
+//   createSelector(getTemporaryState, state => state.walletWif);
 
 export const selectAddressWif = () =>
   createSelector(getTemporaryState, state => state.addressWif);
