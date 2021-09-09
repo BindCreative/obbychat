@@ -28,7 +28,9 @@ export const runNfcReader = () => new Promise(async (resolve) => {
           console.log(uri);
           resolve(uri);
         });
-        await NfcManager.registerTagEvent({ alertMessage: "Put your device near the other device that has QR code open" });
+        await NfcManager.registerTagEvent({
+          alertMessage: "Put your device near NFC tag or other device that has the QR-code open"
+        });
       } catch (ex) {
         console.log(ex);
       }

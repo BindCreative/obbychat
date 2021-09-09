@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import * as PropTypes from 'prop-types';
 import { useDispatch, connect } from "react-redux";
 import { createStructuredSelector } from 'reselect';
@@ -19,15 +19,19 @@ import LoadingScreen from '../../screens/LoadingScreen';
 import PasswordScreen from '../../screens/PasswordScreen';
 import { initWallet } from '../../actions/wallet';
 import {
-  reSubscribeToHub, stopSubscribeToHub, setFcmToken, setHistoryState, openLink, runNfcReader, stopNfcReader, stopHceSimulator
+  reSubscribeToHub, stopSubscribeToHub, setFcmToken, setHistoryState,
+  openLink, runNfcReader, stopNfcReader, stopHceSimulator
 } from "../../actions/device";
 
 import { selectSeedWords, selectPasswordProtected } from "../../selectors/secure";
-import { selectWalletInitAddress, selectAccountInit, selectWalletInit, selectConnectionStatus } from "../../selectors/temporary";
+import {
+  selectWalletInitAddress, selectAccountInit,
+  selectWalletInit, selectConnectionStatus, selectHistoryState
+} from "../../selectors/temporary";
 
 const prefix = testnet ? 'obyte-tn:|byteball-tn' : 'obyte:|byteball';
 
-const PUSH_CHANEL_ID = 'obby-chat-push-chanel-id';
+const PUSH_CHANEL_ID = 'obby-chat-push-chanel-id-4-300';
 
 setJSExceptionHandler((error, isFatal) => {
   if (error && isFatal) {
@@ -46,7 +50,14 @@ setJSExceptionHandler((error, isFatal) => {
 let wasConnected = true;
 
 const createChanel = () => new Promise((resolve) => {
-  PushNotification.createChannel({ channelId: PUSH_CHANEL_ID, channelName: "Obby Chat push chanel id" }, resolve);
+  PushNotification.getChannels((channels) => {
+    channels.forEach((channel) => {
+      if (channel !== PUSH_CHANEL_ID) {
+        PushNotification.deleteChannel(channel);
+      }
+    });
+  });
+  PushNotification.createChannel({ channelId: PUSH_CHANEL_ID, channelName: "Obby Chat push chanel id", largeIcon: 'ic_launcher' }, resolve);
 });
 
 export const requestNotificationsPermission = async () => {
@@ -55,8 +66,33 @@ export const requestNotificationsPermission = async () => {
     || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 };
 
+const showPush = async (push) => {
+  const { data } = push;
+  const {
+    title, message, notificationId, pubkey
+  } = data;
+  if (Platform.OS === 'android') {
+    PushNotification.localNotification({
+      largeIcon: '',
+      channelId: PUSH_CHANEL_ID,
+      title,
+      message,
+      data
+    });
+  } else {
+    PushNotificationIOS.addNotificationRequest({
+      id: notificationId,
+      title,
+      body: message,
+      userInfo: { pubkey }
+    })
+  }
+};
+
+PushNotification.configure({});
+
 const App = ({
-  walletAddress, seedWords, passwordProtected, walletInit, accountInit, connectedToHub
+  walletAddress, seedWords, passwordProtected, walletInit, accountInit, connectedToHub, historyState
 }) => {
   const dispatch = useDispatch();
   const [appReady, setAppReady] = useState(false);
@@ -67,63 +103,75 @@ const App = ({
   const inFocusRef = useRef(true);
   const netInfoRef = useRef(netInfo.isConnected);
   const lastInfocusRef = useRef('active');
+  const historyStateRef = useRef(historyState);
+
+  useEffect(
+    () => {
+      historyStateRef.current = historyState
+    },
+    [historyState]
+  );
 
   const getFcmToken = async () => {
     return await messaging().getToken();
   };
 
-  const handlePush = async (message) => {
-    console.log('message:', message);
-    const { notification, messageId } = message;
-    const { title, body, sound } = notification;
-    if (Platform.OS === 'android') {
-      PushNotification.localNotification({
-        channelId: PUSH_CHANEL_ID,
-        title,
-        message: body
-      });
-    }
-    if (Platform.OS === 'ios') {
-      PushNotificationIOS.getApplicationIconBadgeNumber((number) => {
-        PushNotificationIOS.addNotificationRequest({
-          id: messageId,
-          title,
-          body,
-          badge: number + 1
-        })
-      })
-    }
-  };
-
   const startFcm = async () => {
-    let enabled = true;
     if (Platform.OS === 'ios') {
-      enabled = await requestNotificationsPermission();
+      await requestNotificationsPermission();
     } else {
       await createChanel();
     }
-    if (enabled) {
-      const fcmToken = await getFcmToken();
-      dispatch(setFcmToken(fcmToken));
+    const fcmToken = await getFcmToken();
+    dispatch(setFcmToken(fcmToken));
+  };
+
+  const handlePush = async (push) => {
+    const { data: { pubkey } } = push;
+    if (
+      historyStateRef
+      && historyStateRef.current
+      && historyStateRef.current.routeName === "Chat"
+      && historyStateRef.current.params.correspondent.pubKey === pubkey
+    ) {
+      return null;
+    } else {
+      await showPush(push);
+    }
+  };
+
+  const handleMessage = (notification) => {
+    if (notification) {
+      if (notification.userInteraction) {
+        if (notification && notification.data) {
+          const { pubkey } = notification.data;
+          setRedirectParams({ pubkey });
+          notification.finish(PushNotificationIOS.FetchResult.NoData);
+        }
+      } else {
+        handlePush(notification);
+      }
     }
   };
 
   useEffect(
     () => {
       startFcm();
+      PushNotification.onNotification = handleMessage;
+      PushNotification.popInitialNotification(handleMessage);
       if (Platform.OS === 'ios') {
         PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      } else {
+        const unsubscribe = messaging().onMessage(handlePush);
+        return unsubscribe;
       }
-      messaging().setBackgroundMessageHandler(handlePush);
-      // const unsubscribe = messaging().onMessage(handlePush);
-      // return unsubscribe;
     },
     []
   );
 
   const redirect = () => {
     if (redirectParams) {
-      dispatch(openLink({ link: redirectParams }));
+      dispatch(openLink(redirectParams));
       setRedirectParams(null);
     }
   };
@@ -142,9 +190,9 @@ const App = ({
     }
   };
 
-  const handleLinkingUrl = (url) => {
-    if (url) {
-      setRedirectParams(url);
+  const handleLinkingUrl = (link) => {
+    if (link) {
+      setRedirectParams({ link });
     }
   };
 
@@ -195,28 +243,6 @@ const App = ({
 
   useEffect(
     () => {
-      if (!passwordNeeded) {
-        oClient.client.ws.addEventListener('close', init);
-      }
-      Linking.getInitialURL().then(handleLinkingUrl);
-      Linking.addEventListener('url', handleIosLinkingUrl);
-      AppState.addEventListener('change', changeListener);
-      if (oClient.client.open) {
-        oClient.client.ws.close();
-      } else {
-        oClient.client.onConnectCallback = () => {
-          oClient.client.ws.close();
-        }
-      }
-      return () => {
-        AppState.removeEventListener('change', changeListener);
-      };
-    },
-    []
-  );
-
-  useEffect(
-    () => {
       if (accountInit) {
         setTimeout(() => {
           setAppReady(true);
@@ -251,6 +277,28 @@ const App = ({
       stopNfc();
     }
   };
+
+  useEffect(
+    () => {
+      if (!passwordNeeded) {
+        oClient.client.ws.addEventListener('close', init);
+      }
+      Linking.getInitialURL().then(handleLinkingUrl);
+      Linking.addEventListener('url', handleIosLinkingUrl);
+      AppState.addEventListener('change', changeListener);
+      if (oClient.client.open) {
+        oClient.client.ws.close();
+      } else {
+        oClient.client.onConnectCallback = () => {
+          oClient.client.ws.close();
+        }
+      }
+      return () => {
+        AppState.removeEventListener('change', changeListener);
+      };
+    },
+    []
+  );
 
   useEffect(
     () => {
@@ -305,11 +353,13 @@ App.propTypes = {
   seedWords: PropTypes.string.isRequired,
   passwordProtected: PropTypes.bool.isRequired,
   walletInit: PropTypes.bool.isRequired,
-  accountInit: PropTypes.bool.isRequired
+  accountInit: PropTypes.bool.isRequired,
+  historyState: PropTypes.object
 };
 
 App.defaultProps = {
-  walletAddress: ''
+  walletAddress: '',
+  historyState: null
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -318,7 +368,8 @@ const mapStateToProps = createStructuredSelector({
   passwordProtected: selectPasswordProtected(),
   walletInit: selectWalletInit(),
   accountInit: selectAccountInit(),
-  connectedToHub: selectConnectionStatus()
+  connectedToHub: selectConnectionStatus(),
+  historyState: selectHistoryState()
 });
 
 export default connect(mapStateToProps, null)(App);

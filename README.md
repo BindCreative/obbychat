@@ -137,6 +137,9 @@ Run `yarn ios`
     <string name="app_name">Obby chat testnet</string>
 </resources>
 ```
+- In `android/app/src/main/AndroidManifest.xml`:
+
+    ```package="chat.obby.testnet"```
 - In `android/app/src/main/java/chat/obby/testnet/MainActivity.java`:
 
     ```package chat.obby.testnet;```
@@ -231,6 +234,9 @@ android_resource(
     <string name="app_name">Obby chat</string>
 </resources>
 ```
+- In `android/app/src/main/AndroidManifest.xml`:
+
+    ```package="chat.obby.mainnet"```
 - In `android/app/src/main/java/chat/obby/mainnet/MainActivity.java`:
 
     ```package chat.obby.mainnet;```

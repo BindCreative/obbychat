@@ -141,6 +141,16 @@ export const selectCorrespondentByPairingSecret = pairingSecret =>
     return null;
   });
 
+export const selectCorrespondentByPubKey = pubKey =>
+  createSelector(getMessagesState, state => {
+    for (let address in state.correspondents) {
+      if (state.correspondents[address].pubKey === pubKey) {
+        return { ...state.correspondents[address], address };
+      }
+    }
+    return null;
+  });
+
 export const selectCorrespondentWalletAddress = address =>
   createSelector(getMessagesState, state => {
     return state.correspondents[address]?.walletAddress;
