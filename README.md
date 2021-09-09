@@ -132,26 +132,38 @@ Run `yarn ios`
     ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/androidTestnetFolder.png)
     
 - Update `android/app/src/main/res/values/strings.xml`
+
 ```
 <resources>
     <string name="app_name">Obby chat testnet</string>
 </resources>
 ```
+
 - In `android/app/src/main/AndroidManifest.xml`:
 
     ```package="chat.obby.testnet"```
+    
 - In `android/app/src/main/java/chat/obby/testnet/MainActivity.java`:
 
     ```package chat.obby.testnet;```
+    
+- In `android/app/src/main/java/chat/obby/mainnet/MainApplication.java`:
+
+    ```package chat.obby.testnet;```
+    ```import chat.obby.testnet.generated.BasePackageList;```
+    
 - In `android/app/src/main/java/chat/obby/testnet/generated/BasePackageList.java`:
 
     ```package chat.obby.testnet.generated;```
+    
 - In `android/app/src/main/AndroidManifest.xml`:
 
     ```package="chat.obby.testnet"```
+    
 - In `android/app/build.gradle`:
 
     ```applicationId "chat.obby.testnet"```
+    
 - In `android/app/_BUCK`:
 
 ```
@@ -229,17 +241,25 @@ android_resource(
     ![alt text](https://github.com/BindCreative/obbychat/raw/master/readmeImages/androidMainnetFolder.png)
     
 - Update `android/app/src/main/res/values/strings.xml`
+
 ```
 <resources>
     <string name="app_name">Obby chat</string>
 </resources>
 ```
+
 - In `android/app/src/main/AndroidManifest.xml`:
 
     ```package="chat.obby.mainnet"```
+    
 - In `android/app/src/main/java/chat/obby/mainnet/MainActivity.java`:
 
     ```package chat.obby.mainnet;```
+    
+- In `android/app/src/main/java/chat/obby/mainnet/MainApplication.java`:
+
+    ```package chat.obby.mainnet;```
+    ```import chat.obby.mainnet.generated.BasePackageList;```
     
 - In `android/app/src/main/java/chat/obby/mainnet/generated/BasePackageList.java`:
 
