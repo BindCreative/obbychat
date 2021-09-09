@@ -145,9 +145,6 @@ Run `yarn ios`
     ```package chat.obby.testnet;```
 - In `android/app/src/main/java/chat/obby/testnet/generated/BasePackageList.java`:
 
-    ```package chat.obby.testnet.generated;```
-- In `android/app/src/main/AndroidManifest.xml`:
-
     ```package="chat.obby.testnet"```
 - In `android/app/build.gradle`:
 
@@ -240,10 +237,6 @@ android_resource(
 - In `android/app/src/main/java/chat/obby/mainnet/MainActivity.java`:
 
     ```package chat.obby.mainnet;```
-    
-- In `android/app/src/main/java/chat/obby/mainnet/generated/BasePackageList.java`:
-
-    ```package chat.obby.mainnet.generated;```
     
 - In `android/app/src/main/AndroidManifest.xml`:
 
