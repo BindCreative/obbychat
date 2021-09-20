@@ -5,8 +5,8 @@ Instant messaging app for Obyte. Offering secure end-to-end encryption, cryptocu
 Building the new era chat that is from the ground up closer to its users in a sleek and light way.
 
 Mainnet wallet can be installed from official stores
-https://play.google.com/store/apps/details?id=chat.obby.mainnet
-https://apps.apple.com/us/app/obby-chat/id1572838153
+* https://play.google.com/store/apps/details?id=chat.obby.mainnet
+* https://apps.apple.com/us/app/obby-chat/id1572838153
 
 ### Current roadmap
 
