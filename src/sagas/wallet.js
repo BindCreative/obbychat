@@ -46,12 +46,12 @@ export function* init({ payload }) {
     yield put(initDeviceInfo());
     // Handle websocket traffic
     yield call(subscribeToHub);
-    yield put(initNotificationsRequest());
     // Fetch wallet data from hub
     yield call(fetchBalances);
     yield call(fetchWitnesses);
     yield call(initDefaultBots);
     yield call(fetchWalletHistory);
+    yield put(initNotificationsRequest());
     yield put(initAccountSuccess());
   } catch (error) {
     console.log(error);

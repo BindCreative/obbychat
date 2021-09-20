@@ -59,7 +59,8 @@ import {
   selectCorrespondent,
   selectDeviceTempKeyData,
   selectTransactionByUnitId,
-  selectNotificationsEnabled
+  selectNotificationsEnabled,
+  selectCorrespondentByPubKey
 } from "../selectors/main";
 import {
   selectDeviceAddress,
@@ -704,36 +705,43 @@ export function* openPaymentFromChat(action) {
 
 export function* openLink(action) {
   try {
-    const { link } = action.payload;
+    const { link, pubkey } = action.payload;
     const decodedLink = decodeURIComponent(link);
     const linkParams = { type: "unsupported" };
-    decodedLink
-      .replace(REGEX_PAIRING, () => {
-        linkParams.type = 'pairing';
-        linkParams.data = decodedLink;
-      })
-      .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
-        linkParams.type = 'payment';
-        const query = link.split("?")[1];
-        linkParams.data = { walletAddress, query };
-      });
+    if (link) {
+      decodedLink
+        .replace(REGEX_PAIRING, () => {
+          linkParams.type = 'pairing';
+          linkParams.data = decodedLink;
+        })
+        .replace(REGEXP_QR_REQUEST_PAYMENT, (str, payload, walletAddress) => {
+          linkParams.type = 'payment';
+          const query = link.split("?")[1];
+          linkParams.data = { walletAddress, query };
+        });
 
-    const { type, data } = linkParams;
+      const { type, data } = linkParams;
 
-    switch (type) {
-      case 'pairing': {
-        yield put(acceptInvitation({ data }));
-        return;
+      switch (type) {
+        case 'pairing': {
+          yield put(acceptInvitation({ data }));
+          return;
+        }
+        case 'payment': {
+          NavigationService.popToTop();
+          yield put(openPaymentLink(data));
+          return;
+        }
+        default: {
+          NavigationService.popToTop();
+          yield put(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
+          return;
+        }
       }
-      case 'payment': {
-        NavigationService.popToTop();
-        yield put(openPaymentLink(data));
-        return;
-      }
-      default: {
-        NavigationService.popToTop();
-        yield put(setToastMessage({ type: 'ERROR', message: 'Unsupported link' }));
-        return;
+    } else if (pubkey) {
+      const correspondent = yield select(selectCorrespondentByPubKey(pubkey));
+      if (correspondent) {
+        NavigationService.navigate('Chat', { correspondent });
       }
     }
   } catch (e) {
@@ -764,7 +772,7 @@ export function* enableNotifications() {
       oClient.client.request(
         'hub/enable_notification',
         { registrationId, platform: Platform.OS },
-        (request, response) => {
+        (_, response) => {
           if (!response || (response && response !== 'ok')) {
             reject(false);
           } else {
@@ -786,7 +794,7 @@ export function* disableNotifications() {
       oClient.client.request(
         'hub/disable_notification',
         registrationId,
-        (request, response) => {
+        (_, response) => {
           if (!response || (response && response !== 'ok')) {
             reject(true);
           } else {
