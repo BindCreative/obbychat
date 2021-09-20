@@ -4,6 +4,10 @@ Instant messaging app for Obyte. Offering secure end-to-end encryption, cryptocu
 
 Building the new era chat that is from the ground up closer to its users in a sleek and light way.
 
+Mainnet wallet can be installed from official stores
+https://play.google.com/store/apps/details?id=chat.obby.mainnet
+https://apps.apple.com/us/app/obby-chat/id1572838153
+
 ### Current roadmap
 
 The mobile-only messaging app doesn’t need to be fully featured Obyte demonstration, and it should only focus on those users who use chatting apps. The new app is being written in React Native, and initially, we would only need the following features for the MVP
@@ -17,8 +21,6 @@ The mobile-only messaging app doesn’t need to be fully featured Obyte demonstr
 - Sign message feature (also for request address function)
 - Pairing with contact via QR code, NFC tag (Android) or deep-link on website
 - Sending payment to contact via QR code, NFC tag (Android) or deep-link on website
-
-#### In-development:
 - Setup dedicated Obyte hub and in-app push notifications
 
 #### Planned for future
