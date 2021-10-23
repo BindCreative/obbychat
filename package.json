@@ -34,7 +34,7 @@
     "expo-secure-store": "^8.0.0",
     "https-browserify": "0.0.1",
     "jetifier": "^1.6.6",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "native-base": "^2.13.14",
     "obyte": "^0.1.17",
