@@ -58,7 +58,7 @@ const ChatScreen = ({
 
   const onRequestSignMessage = () => {
     if (!text) {
-      Alert.alert('', 'Text field is empty');
+      Alert.alert('', 'Enter the message you would like to request to sign');
     } else {
       onSend([{ text: `[Data request](sign-message-request:${text.trim()})` }]);
     }
