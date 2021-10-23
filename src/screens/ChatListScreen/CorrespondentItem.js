@@ -8,16 +8,14 @@ import makeBlockie from 'ethereum-blockies-base64';
 import styles from './styles';
 import {List} from "react-native-paper";
 
-const CorrespondentItem = ({ correspondent, navigation, setState }) => (
+const CorrespondentItem = ({ correspondent, navigation, openChangeDialog }) => (
   <List.Item
     key={correspondent.address}
     style={styles.listItem}
     onPress={() => {
       navigation.navigate('Chat', { correspondent })
     }}
-    onLongPress={() => {
-      setState({ changeNameDialog: { correspondent, visible: true } })
-    }}
+    onLongPress={() => openChangeDialog(correspondent)}
     left={() => (
       <View style={styles.userAvatarContainer}>
         <Image
@@ -48,7 +46,7 @@ const CorrespondentItem = ({ correspondent, navigation, setState }) => (
 CorrespondentItem.propTypes = {
   correspondent: PropTypes.object.isRequired,
   navigation: PropTypes.object.isRequired,
-  setState: PropTypes.func.isRequired
+  openChangeDialog: PropTypes.func.isRequired
 };
 
 export default CorrespondentItem;
