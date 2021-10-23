@@ -84,12 +84,20 @@ class ChatListScreen extends React.Component {
       default:
         return (
           <CorrespondentItem
-            setState={this.setState}
             navigation={this.props.navigation}
             correspondent={correspondent}
+            openChangeDialog={this.handleOpenChangeDialog}
           />
         );
     }
+  };
+
+  handleOpenChangeDialog = (correspondent) => {
+    this.setState({ changeNameDialog: { correspondent, visible: true } })
+  };
+
+  handleCloseChangeDialog = () => {
+    this.setState({ changeNameDialog: { ...this.state.changeNameDialog, visible: false } })
   };
 
   render() {
@@ -97,10 +105,7 @@ class ChatListScreen extends React.Component {
     const { changeNameDialog, initialized } = this.state;
 
     return (
-      <SafeAreaView
-        style={styles.container}
-        forceInset={{ top: 'always', bottom: 'always' }}
-      >
+      <SafeAreaView style={styles.container} forceInset={{ top: 'always', bottom: 'always' }}>
         <Header
           {...this.props}
           title='Chat'
@@ -123,6 +128,7 @@ class ChatListScreen extends React.Component {
                 data={!!unpairedBots.length ? [...correspondents, listSeparator, ...unpairedBots] : correspondents}
                 keyExtractor={correspondent => correspondent.address}
                 renderItem={this.renderItem}
+                stickyHeaderIndices={!!unpairedBots.length ? [correspondents.length] : []}
               />
             )}
             <Dialog.Container visible={changeNameDialog.visible}>
@@ -139,14 +145,7 @@ class ChatListScreen extends React.Component {
                 }
                 value={changeNameDialog.correspondent.name}
               />
-              <Dialog.Button
-                label='Cancel'
-                onPress={() =>
-                  this.setState({
-                    changeNameDialog: { ...changeNameDialog, visible: false },
-                  })
-                }
-              />
+              <Dialog.Button label='Cancel' onPress={this.handleCloseChangeDialog} />
               <Dialog.Button label='Rename' onPress={this.changeContactName} />
             </Dialog.Container>
           </Fragment>

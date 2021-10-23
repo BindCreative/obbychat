@@ -64,7 +64,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
   },
   noContactsContainer: {
-    flex: 1,
     padding: 10,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -98,19 +97,20 @@ export default StyleSheet.create({
     lineHeight: 16
   },
   dividerView: {
-    height: 24,
-    marginVertical: 16
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white
   },
   divider: {
-    margin: 12
+    width: windowWidth - 24
   },
   dividerText: {
     position: 'absolute',
     textAlign: 'center',
     lineHeight: 24,
     backgroundColor: colors.white,
-    width: 120,
-    left: windowWidth / 2 - 60,
+    width: 130,
     color: colors.grey.main
   }
 });

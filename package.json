@@ -1,6 +1,6 @@
 {
   "name": "obby",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "android": "adb reverse tcp:8081 tcp:8081 && react-native run-android",
@@ -37,7 +37,7 @@
     "lodash": "^4.17.15",
     "moment": "^2.29.1",
     "native-base": "^2.13.14",
-    "obyte": "git+https://github.com/tarmo888/obyte.js.git#test-new-library",
+    "obyte": "^0.1.17",
     "patch-package": "^6.2.2",
     "path-browserify": "0.0.0",
     "process": "^0.11.10",
